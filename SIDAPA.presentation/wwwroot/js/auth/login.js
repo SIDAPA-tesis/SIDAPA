@@ -37,6 +37,12 @@
                 headers: { Accept: "application/json" },
                 credentials: "same-origin"
             });
+            // 400 = el formulario ya no es válido (otra sesión abierta o la app se reinició): se recarga la página.
+            if (response.status === 400) {
+                showError("La página expiró. Recargando…");
+                window.location.reload();
+                return;
+            }
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const result = await response.json();

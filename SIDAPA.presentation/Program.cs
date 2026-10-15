@@ -1,9 +1,9 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;            
-using Microsoft.IdentityModel.Tokens;                           
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using SIDAPA.infraestructure;
 using SIDAPA.infraestructure.Persistence.Seed;
-using SIDAPA.infraestructure.Security;                          
+using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,11 +27,12 @@ if (string.IsNullOrWhiteSpace(readerBaseUrl))
     throw new InvalidOperationException("Missing 'TaxScan:BaseUrl' in configuration.");
 }
 
-var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();     
+var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 
-if (jwt.Key.Length < 32)                                                                      
+if (jwt.Key.Length < 32)
     throw new InvalidOperationException("Missing or short 'Jwt:Key' (min 32 chars). Set it with dotnet user-secrets.");
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt);                   
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt);
+builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -52,6 +53,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
         options.Events = new JwtBearerEvents
         {
+            // Pantallas sin sesión: al login (las APIs se quedan con 401).
+            OnChallenge = ctx =>
+            {
+                if (ctx.Request.Path.StartsWithSegments("/api")) return Task.CompletedTask;
+                ctx.HandleResponse();
+                var returnUrl = Uri.EscapeDataString(ctx.Request.Path + ctx.Request.QueryString);
+                ctx.Response.Redirect($"/Auth/Login?returnUrl={returnUrl}");
+                return Task.CompletedTask;
+            },
+            // Con sesión pero sin permiso: página de acceso denegado (las APIs se quedan con 403).
+            OnForbidden = ctx =>
+            {
+                if (!ctx.Request.Path.StartsWithSegments("/api"))
+                    ctx.Response.Redirect("/Auth/Denied");
+                return Task.CompletedTask;
+            },
             // el token viene en la cookie, no en el encabezado Authorization
             OnMessageReceived = ctx =>
             {
@@ -92,7 +109,7 @@ app.UseAuthentication();
 app.UseMiddleware<TokenRenewalMiddleware>();   // renueva el token a la mitad de su vida
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.MapStaticAssets().AllowAnonymous();
 
 app.MapControllerRoute(
         name: "default",

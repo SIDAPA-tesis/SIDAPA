@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.presentation.Models.Auth;
@@ -5,12 +6,16 @@ using SIDAPA.presentation.Security;
 
 namespace SIDAPA.presentation.Controllers.Web.Auth;
 
+[AllowAnonymous]
 public class AuthController(IUserService userService, ITokenService tokenService) : Controller
 {
     private const string LoginView = "~/Views/Auth/Login.cshtml";
     private const string InvalidCredentialsMessage = "Correo o contraseña incorrectos.";
 
+    // Sin caché: si el usuario ya entró y regresa con el botón Atrás, el navegador vuelve a pedir
+    // la página (y lo manda al inicio) en lugar de mostrar un formulario viejo con otro token antiforgery.
     [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public IActionResult Login()
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -49,6 +54,9 @@ public class AuthController(IUserService userService, ITokenService tokenService
         AuthCookie.Delete(Response);
         return RedirectToAction(nameof(Login));
     }
+
+    [HttpGet]
+    public IActionResult Denied() => View("~/Views/Auth/Denied.cshtml");
 
     private IActionResult LoginFailed(LoginViewModel model, string error)
     {
