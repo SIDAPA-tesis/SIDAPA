@@ -13,6 +13,7 @@ public class DevAuthController(ITokenService tokenService) : ControllerBase
 {
     /// <summary>Ejemplo: POST /api/dev/auth/token?role=GLOSADOR</summary>
     [HttpPost("token")]
+    [AllowAnonymous]
     public IActionResult Token(RolesEnum role = RolesEnum.CAPTURADOR)
     {
         var token = tokenService.CreateToken(new UserSessionDto(1, "Usuario de prueba", "prueba@sidapa.mx", role, null));

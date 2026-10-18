@@ -1,0 +1,20 @@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Acceso denegado";
+}
+<main class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="card border-0 shadow rounded-4 p-4 p-md-5 text-center">
+                <h1 class="h3 fw-bold mb-3">Acceso denegado</h1>
+                <p class="text-secondary mb-4">Tu rol no tiene permiso para entrar a esta sección.</p>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <a href="/" class="btn btn-primary rounded-pill px-4">Volver al inicio</a>
+                    <form asp-controller="Auth" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-outline-secondary rounded-pill px-4">Cambiar de usuario</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
