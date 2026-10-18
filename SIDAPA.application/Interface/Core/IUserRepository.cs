@@ -6,4 +6,5 @@ public interface IUserRepository
 {
     /// <summary>Busca al usuario por correo (sin distinguir mayúsculas) e incluye su rol.</summary>
     Task<UserEntity?> GetByEmailAsync(string email, CancellationToken ct = default);
+    Task SaveLoginStateAsync(UserEntity user, CancellationToken ct = default);
 }

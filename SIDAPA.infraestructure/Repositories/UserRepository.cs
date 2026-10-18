@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Microsoft.EntityFrameworkCore;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Entities.Core.Operative;
@@ -16,4 +17,11 @@ public class UserRepository(SidapaDbContext context) : IUserRepository
             .Include(x => x.Role)
             .FirstOrDefaultAsync(x => x.Email.ToLower() == normalized, ct);
     }
+
+    public Task SaveLoginStateAsync(UserEntity user, CancellationToken ct = default) =>
+        context.Users
+            .Where(x => x.Id == user.Id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(x => x.FailedLoginAttempts, user.FailedLoginAttempts)
+                .SetProperty(x => x.LockedUntil, user.LockedUntil), ct);
 }
