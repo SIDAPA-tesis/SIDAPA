@@ -4,11 +4,10 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-      <UserSecretsId>5ba05243-3c16-4a80-b195-863b0c0a1193</UserSecretsId>
-  </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SIDAPA.domain\SIDAPA.domain.csproj" />
+        <ProjectReference Include="..\SIDAPA.domain\SIDAPA.domain.csproj"/>
     </ItemGroup>
 
 </Project>
