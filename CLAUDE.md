@@ -49,7 +49,7 @@ SIDAPA.presentation  ──►  SIDAPA.application  ──►  SIDAPA.domain
 | `SIDAPA.domain` | `Entities/{Core,CustomDeclaration}/{Catalogs,Operative}/*Entity.cs`, `Enums/Core/`, `Rules/Core/` (e.g. `ReferenciaStatusFlow`), `Exceptions/CoreException/` |
 | `SIDAPA.application` | `Interface/` (`ITaxScanClient`) and `Interface/Core/` (`IUserService`, `ITokenService`…), `Services/Core/`, `DTOs/Core/Auth/`, `DTOs/TaxScan/` |
 | `SIDAPA.infraestructure` | `Persistence/SidapaDbContext.cs`, `Persistence/Configurations/{Core,CustomDeclaration}/…`, `Migrations/`, `Repositories/`, `ApiClients/` (`TaxScanClient`), `Security/` (`JwtOptions`, `JwtTokenServices`), `DependencyInjection.cs` (`AddInfraestructure`) |
-| `SIDAPA.presentation` | `Controllers/Web/<Area>/` (pages), `Controllers/Api/` (JSON), `Views/`, `Security/` (`AuthCookie`, `TokenRenewalMiddleware`), `wwwroot/`, `Program.cs` |
+| `SIDAPA.presentation` | `Controllers/Web/<Area>/` (pages), `Controllers/Api/` (JSON), `Views/`, `Filters/` (`DomainExceptionFilter`, `AntiforgeryRedirectFilter`), `Security/` (`AuthCookie`, `TokenRenewalMiddleware`), `wwwroot/`, `Program.cs` |
 
 **Rules**
 - **Interfaces live in `application`; implementations in `infraestructure`.**
@@ -58,6 +58,17 @@ SIDAPA.presentation  ──►  SIDAPA.application  ──►  SIDAPA.domain
 - External HTTP clients (the reader) live in `infraestructure/ApiClients`; application only sees
   the interface and DTOs, never raw JSON.
 - `presentation` registers everything through `builder.Services.AddInfraestructure(...)`.
+
+**Errors**
+- Business errors are **exceptions that inherit from `DomainException`** (e.g. `InvalidCredentialsException`),
+  one class per error, in `domain/Exceptions/CoreException/`. Don't return error enums or result objects.
+- Controllers don't use try/catch for them: put `[TypeFilter(typeof(DomainExceptionFilter))]` on the POST
+  action and the filter re-renders the same view with the message (`asp-validation-summary`).
+
+**Catalogs as enums**
+- Fixed system catalogs are **enums in `domain/Enums/Core/`** (`RolesEnum`, `ReferenciaStatusEnum`). Use
+  the enum in code, never magic numbers or strings; when a string is needed use `nameof(RolesEnum.GLOSADOR)`
+  or `.ToString()`.
 
 ## Naming & code conventions
 
@@ -92,8 +103,8 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
 - `JwtTokenServices` creates the token; claims: `sub`, `name`, `email`, `role`, `client_id`.
 - The token travels in the cookie **`sidapa_token`** (`AuthCookie`: HttpOnly, Secure, SameSite=Strict).
   `Program.cs` reads it in `OnMessageReceived`; `MapInboundClaims = false`, `RoleClaimType = "role"`.
-- Protect endpoints with `[Authorize]` / `[Authorize(Roles = "...")]`. The role string in the token must
-  match the one in `[Authorize]` exactly (roles: `RolesEnum`).
+- The `role` claim is the **`RolesEnum` name** (`CAPTURADOR`, `GLOSADOR`…). Protect endpoints with
+  `[Authorize]` / `[Authorize(Roles = nameof(RolesEnum.GLOSADOR))]`; the comparison is exact (case-sensitive).
 - Sliding renewal at half-life: `TokenRenewalMiddleware`.
 - `Controllers/Api/Dev*Controller.cs` are **testing endpoints only**; do not build features on them and
   restrict or remove them before production.
@@ -112,6 +123,12 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
 - **Use Bootstrap first** (grid, forms, buttons, alerts, utilities). Write custom CSS only for what
   Bootstrap lacks (animations, special shapes), in `wwwroot/css/<feature>/`; JS in `wwwroot/js/`.
   Link Bootstrap **before** custom CSS; use `asp-append-version="true"` on own assets.
+- **Colors and sizes come from `wwwroot/css/base/theme.css`** (`--sidapa-*` variables; provisional palette
+  until design defines it). Never write colors directly (`#hex`, `rgb`) in other stylesheets.
+- Use relative units (`rem`, `%`, `clamp()`), not `px`, and let Bootstrap's grid handle responsiveness
+  (`col-12 col-lg-*`, `d-none d-lg-block`) instead of writing media queries.
+- **Prefer server rendering over JavaScript:** forms do a normal POST and the server re-renders the view
+  with errors. Add JS only for what the server can't do.
 - Business logic never goes in views or controllers: controllers call application services.
 - Respect `prefers-reduced-motion` for decorative animations.
 

@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
             ClockSkew = TimeSpan.FromMinutes(1),
             NameClaimType = "name",
-            RoleClaimType = "role"          // para que [Authorize(Roles = "Glosador")] funcione
+            RoleClaimType = "role"          // para que [Authorize(Roles = nameof(RolesEnum.GLOSADOR))] funcione
         };
         options.Events = new JwtBearerEvents
         {

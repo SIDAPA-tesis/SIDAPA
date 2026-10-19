@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="~/favicon.png" />
     @* Bootstrap local primero; los estilos propios de cada pantalla van después (sección Styles). *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* Paleta y medidas comunes (después de Bootstrap para que la tome). *@
+    <link rel="stylesheet" href="~/css/base/theme.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>

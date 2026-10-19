@@ -1,5 +1,6 @@
 using SIDAPA.application.DTOs.Core.Auth;
 using SIDAPA.application.Interface.Core;
+using SIDAPA.domain.Enums.Core;
 
 namespace SIDAPA.presentation.Security;
 
@@ -25,7 +26,7 @@ public class TokenRenewalMiddleware(RequestDelegate next)
                     int.Parse(user.FindFirst("sub")!.Value),
                     user.FindFirst("name")!.Value,
                     user.FindFirst("email")!.Value,
-                    user.FindFirst("role")!.Value,
+                    Enum.Parse<RolesEnum>(user.FindFirst("role")!.Value, ignoreCase: true),
                     int.TryParse(user.FindFirst("client_id")?.Value, out var clientId) ? clientId : null);
 
                 AuthCookie.Write(context.Response, tokenService.CreateToken(session));

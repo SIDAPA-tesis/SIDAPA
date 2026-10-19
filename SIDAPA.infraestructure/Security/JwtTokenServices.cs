@@ -18,7 +18,7 @@ public class JwtTokenService(JwtOptions options) : ITokenService
             new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new(JwtRegisteredClaimNames.Name, user.Name),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new("role", user.Role),
+            new("role", user.Role.ToString()),   // nombre del enum: "CAPTURADOR", "GLOSADOR"…
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         if (user.ClientId is int clientId)

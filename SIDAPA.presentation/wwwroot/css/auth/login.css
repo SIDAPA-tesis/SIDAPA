@@ -1,3 +1,82 @@
+/* Pantalla de inicio de sesión.
+   Bootstrap resuelve el acomodo y lo responsivo: en pantallas chicas solo se ve la tarjeta a todo
+   el ancho; desde lg aparece el fondo a la izquierda (col-lg-7 / col-lg-5). Por eso aquí no hay media queries.
+   Aquí solo va lo que Bootstrap no tiene: el fondo animado y el botón circular.
+   Colores y medidas salen de css/base/theme.css; nada en px ni colores directos. */
+
+.login-page {
+    --login-tile: clamp(10rem, 18vw, 16rem);   /* tamaño del patrón del fondo, crece con la pantalla */
+    background-color: var(--sidapa-color-background);
+    overflow-x: clip;
+}
+
+/* ---------- Fondo decorativo ---------- */
+.login-bg {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--sidapa-color-background-alt);
+}
+
+/* Los SVG se usan como máscara: la forma la dan los SVG y el color sale de la paleta.
+   Repetidos con el mismo periodo y desfasados forman un patrón. La capa se mueve exactamente
+   un periodo en diagonal, así el bucle no se nota. */
+.login-bg__layer {
+    position: absolute;
+    inset: calc(-1 * var(--login-tile)) 0 0 calc(-1 * var(--login-tile));
+    background-color: var(--sidapa-color-primary);
+    opacity: .14;
+    mask-image:
+        url("../../img/login/container.svg"),
+        url("../../img/login/box.svg"),
+        url("../../img/login/truck.svg"),
+        url("../../img/login/seal.svg");
+    mask-size: var(--login-tile) var(--login-tile);
+    mask-position:
+        0 0,
+        calc(var(--login-tile) / 2) 0,
+        calc(var(--login-tile) / 4) calc(var(--login-tile) / 2),
+        calc(var(--login-tile) * 3 / 4) calc(var(--login-tile) / 2);
+    mask-repeat: repeat;
+    animation: login-drift 40s linear infinite;
+    will-change: transform;
+}
+
+@keyframes login-drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(var(--login-tile), var(--login-tile)); }
+}
+
+/* ---------- Tarjeta ---------- */
+.login-stage {
+    width: min(100%, var(--sidapa-form-width));
+}
+
+/* Botón circular montado a la mitad del borde izquierdo de la tarjeta. */
+.login-arrow {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: var(--sidapa-control-size);
+    aspect-ratio: 1;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Lista del resumen de errores sin viñetas. */
+.login-card .validation-summary-errors ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-bg__layer {
+        animation: none;
+    }
+}
+
 /* Pantalla de inicio de sesión. Bootstrap resuelve grid, formulario, botones y alertas;
    aquí solo va lo que Bootstrap no tiene: fondo animado, botón circular y transición de salida. */
 

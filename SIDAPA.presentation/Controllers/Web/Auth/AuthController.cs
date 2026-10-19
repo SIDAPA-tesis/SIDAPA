@@ -1,19 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIDAPA.application.Interface.Core;
+using SIDAPA.presentation.Filters;
 using SIDAPA.presentation.Models.Auth;
 using SIDAPA.presentation.Security;
 
 namespace SIDAPA.presentation.Controllers.Web.Auth;
 
 [AllowAnonymous]
+[TypeFilter(typeof(AntiforgeryRedirectFilter))]
 public class AuthController(IUserService userService, ITokenService tokenService) : Controller
 {
-    private const string LoginView = "~/Views/Auth/Login.cshtml";
-    private const string InvalidCredentialsMessage = "Correo o contraseña incorrectos.";
-
-    // Sin caché: si el usuario ya entró y regresa con el botón Atrás, el navegador vuelve a pedir
-    // la página (y lo manda al inicio) en lugar de mostrar un formulario viejo con otro token antiforgery.
     [HttpGet]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public IActionResult Login()
@@ -21,30 +18,25 @@ public class AuthController(IUserService userService, ITokenService tokenService
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToHome();
 
-        return View(LoginView, new LoginViewModel());
+        return View(new LoginViewModel());
     }
 
     /// <summary>
-    /// Responde JSON si la petición viene de login.js (Accept: application/json);
-    /// si no, es un post normal que vuelve a pintar la vista con el error.
+    /// Post normal del formulario. Si las credenciales no son correctas, UserService lanza
+    /// InvalidCredentialsException y DomainExceptionFilter vuelve a pintar la vista con el mensaje.
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [TypeFilter(typeof(DomainExceptionFilter))]
     public async Task<IActionResult> Login(LoginViewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
-            return LoginFailed(model, ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage);
+            return View(model);
 
-        var result = await userService.LoginAsync(model.Email, model.Password, ct);
-        if (!result.Succeeded)
-            return LoginFailed(model, InvalidCredentialsMessage);
+        var session = await userService.LoginAsync(model.Email, model.Password, ct);
+        AuthCookie.Write(Response, tokenService.CreateToken(session));
 
-        AuthCookie.Write(Response, tokenService.CreateToken(result.Session!));
-
-        var redirectUrl = Url.Action("Index", "Index")!;
-        return WantsJson()
-            ? Json(new { ok = true, redirectUrl })
-            : Redirect(redirectUrl);
+        return RedirectToHome();
     }
 
     [HttpPost]
@@ -56,21 +48,7 @@ public class AuthController(IUserService userService, ITokenService tokenService
     }
 
     [HttpGet]
-    public IActionResult Denied() => View("~/Views/Auth/Denied.cshtml");
-
-    private IActionResult LoginFailed(LoginViewModel model, string error)
-    {
-        if (WantsJson())
-            return Json(new { ok = false, error });
-
-        model.Password = "";
-        ModelState.Clear();
-        ModelState.AddModelError(string.Empty, error);
-        return View(LoginView, model);
-    }
-
-    private bool WantsJson() =>
-        Request.Headers.Accept.ToString().Contains("application/json", StringComparison.OrdinalIgnoreCase);
+    public IActionResult Denied() => View();
 
     private IActionResult RedirectToHome() => RedirectToAction("Index", "Index");
 }

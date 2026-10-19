@@ -1,0 +1,44 @@
+/* Paleta y medidas comunes de SIDAPA.
+   PROVISIONAL: los valores los define diseño (Armando). Al cambiar uno aquí cambia en todas las pantallas.
+   Regla: ninguna otra hoja escribe colores directos (#hex, rgb, nombres); siempre var(--sidapa-…).
+   Se carga en los layouts después de Bootstrap y antes de los estilos de cada pantalla. */
+
+:root {
+    /* ---------- Colores ---------- */
+    --sidapa-color-primary: #1f4e79;
+    --sidapa-color-primary-hover: #183d5f;
+    --sidapa-color-on-primary: #ffffff;      /* texto sobre el color primario */
+
+    --sidapa-color-ink: #1b2430;             /* texto principal */
+    --sidapa-color-muted: #5b6776;           /* texto secundario */
+
+    --sidapa-color-surface: #ffffff;         /* tarjetas, paneles */
+    --sidapa-color-background: #eef2f7;      /* fondo de página */
+    --sidapa-color-background-alt: #dde6f0;  /* fondo decorativo, zonas secundarias */
+    --sidapa-color-border: #c9d3df;
+
+    /* ---------- Medidas (relativas, nada en px) ---------- */
+    --sidapa-control-size: 2.75rem;          /* botones de ícono, círculos */
+    --sidapa-form-width: 26rem;              /* ancho máximo de formularios sueltos (login) */
+
+    /* ---------- Bootstrap usa la misma paleta ---------- */
+    --bs-body-color: var(--sidapa-color-ink);
+    --bs-body-bg: var(--sidapa-color-surface);      /* Bootstrap lo usa para tarjetas e inputs */
+    --bs-secondary-color: var(--sidapa-color-muted);
+    --bs-border-color: var(--sidapa-color-border);
+}
+
+/* Bootstrap compila el color de sus botones; aquí se reemplaza por el de la paleta. */
+.btn-primary {
+    --bs-btn-color: var(--sidapa-color-on-primary);
+    --bs-btn-bg: var(--sidapa-color-primary);
+    --bs-btn-border-color: var(--sidapa-color-primary);
+    --bs-btn-hover-color: var(--sidapa-color-on-primary);
+    --bs-btn-hover-bg: var(--sidapa-color-primary-hover);
+    --bs-btn-hover-border-color: var(--sidapa-color-primary-hover);
+    --bs-btn-active-color: var(--sidapa-color-on-primary);
+    --bs-btn-active-bg: var(--sidapa-color-primary-hover);
+    --bs-btn-active-border-color: var(--sidapa-color-primary-hover);
+    --bs-btn-disabled-bg: var(--sidapa-color-primary);
+    --bs-btn-disabled-border-color: var(--sidapa-color-primary);
+}
