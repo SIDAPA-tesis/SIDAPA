@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12306.390 stable
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIDAPA.presentation", "SIDAPA.presentation\SIDAPA.presentation.csproj", "{C7FC1851-D825-44DB-913A-93DA69D85183}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIDAPA.domain", "SIDAPA.domain\SIDAPA.domain.csproj", "{2DA9E726-39DD-4D4E-865F-CFD7A40C3B84}"
@@ -30,5 +33,8 @@ Global
 		{8BEDBFD2-23F1-4BC8-8D58-561C6A929C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BEDBFD2-23F1-4BC8-8D58-561C6A929C11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BEDBFD2-23F1-4BC8-8D58-561C6A929C11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -9,12 +9,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # user-secrets solo se cargan automáticamente en Development.
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       TaxScan__BaseUrl: http://reader:8000
       Jwt__Key: ${JWT_KEY}
-      # Dentro de Docker la BD se llama "db" (no localhost); usa las mismas variables del .env.
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     volumes:
       # Monta el secrets.json generado por `dotnet user-secrets` en la ruta
@@ -49,6 +47,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 60s
     networks:
       - sidapa-network
   reader:
