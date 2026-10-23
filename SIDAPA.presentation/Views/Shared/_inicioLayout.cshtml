@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="sidapa-html">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - SIDAPA</title>
+
+    <link rel="stylesheet" href="~/css/layout/landingPage/inicio-base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout/landingPage/inicio-hero.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout/landingPage/inicio-secciones.css" asp-append-version="true" />
+</head>
+<body class="sidapa-pagina">
+
+    <header class="sidapa-nav">
+
+        @* Logo por remplazar ya lo esoy haciendo aguenten, lo presentare en el grupo del tesis*@
+        <a class="sidapa-nav__marca" asp-controller="Home" asp-action="Index">
+            <svg class="sidapa-nav__logo" viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+                <defs>
+                    <linearGradient id="sidapa-logo-cielo" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#48CAE4" />
+                        <stop offset="1" stop-color="#EBFDFF" />
+                    </linearGradient>
+                    <clipPath id="sidapa-logo-recorte"><circle cx="18" cy="18" r="18" /></clipPath>
+                </defs>
+                <g clip-path="url(#sidapa-logo-recorte)">
+                    <rect width="36" height="36" fill="url(#sidapa-logo-cielo)" />
+                    <ellipse cx="18" cy="38" rx="26" ry="12" fill="#6AA63A" />
+                </g>
+            </svg>
+            <span>SIDAPA</span>
+        </a>
+
+        @* Aquí va el menú del usuario / inicio de sesión. *@
+        <button type="button" class="sidapa-nav__usuario" aria-label="Cuenta de usuario">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="10" r="3" />
+                <path d="M6.2 18.5c1.3-2.3 3.4-3.5 5.8-3.5s4.5 1.2 5.8 3.5" />
+            </svg>
+        </button>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    @* ===================== PIE DE PÁGINA ===================== *@
+    <footer class="sidapa-pie">
+        <div class="sidapa-contenedor">
+            <small>© @DateTime.Now.Year SIDAPA</small>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
