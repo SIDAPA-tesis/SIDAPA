@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+    <title>@ViewData["Title"] - SIDAPA </title>
+
+    <script>
+        (function ()){
+            try {
+                var movil = window.matchMedia("(max-width: 767px)").matches;
+                var guardado = localStorage.getItem("sidebar-collapsed") == "1"; 
+                if (movil || guardado) {
+                    document.documentElement.classList.add("sidebar-collapsed");
+                }
+            } catch (e) {
+                console.error("Error al cargar el menu desplegable ", e);
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/componets/slideMenu.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/layout/adminPanel/adminPanel.css" asp-append-version="true"/>
+
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <partial name="_Sidebar"/>
+        </aside>
+
+        <div class="main-content">
+            <header class="topbar">
+                <button type="button"
+                        id="toggleSidebar"
+                        class="menu-toggle"
+                        aria-controls="sidebar"
+                        aria-expanded="true"
+                        aria-label="Mostrar u ocultar Menu">
+                        ☰
+                </button>
+
+                <span>@ViewData["Title"]</span>
+            </header>
+
+            <main class="page-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+        <script src="~/js/dashboard.js" asp-append-version="true"></script>
+
+        @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

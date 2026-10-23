@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var actual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var opciones = new[]
+    {
+        (Controlador: "Home", Texto: "Inicio"),
+        (Controlador: "Usuarios", Texto: "Usuarios"),
+        (Controlador: "Reportes", Texto: "Reportes"),
+        (Controlador: "Pedimentos", Texto: "Pedimentos"),
+    };
+}
+
+<div class="brand">SIDAPA</div>
+
+<nav aria-label="Menu Principal">
+    @foreach (var opcion in opciones)
+    {
+        var esActual = string.Equals(actual, opcion.Controlador, StringComparison.OrdinalIgnoreCase);
+
+        <a asp-controller="@opcion.Controlador"
+           asp-action="Index"
+           class="@(esActual ? "active" : null)"
+           aria-current="@(esActual ? "page" : null)">@opcion.Controlador</a>
+    }
+</nav>

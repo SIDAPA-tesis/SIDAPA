@@ -1,0 +1,116 @@
+﻿/* =========================================================
+   INICIO · BASE
+   Variables, barra superior y pie de página.
+   Todo va con prefijo "sidapa-" y se activa solo con
+   <html class="sidapa-html"> y <body class="sidapa-pagina">,
+   así no choca con el CSS del dashboard.
+   ========================================================= */
+
+.sidapa-html {
+    /* Paleta */
+    --sidapa-azul: #2F5AFF;
+    --sidapa-marino: #011832;
+    --sidapa-claro: #FAFAFA;
+    --sidapa-gris: #D9D9D9;
+    --sidapa-cian: #48CAE4;
+    --sidapa-hielo: #EBFDFF;
+    --sidapa-suave: rgb(1 24 50 / 0.75);
+    --sidapa-nav-h: 64px;
+    /* Sin barra de scroll visible (la página sí se puede desplazar) */
+    scrollbar-width: none;
+    scroll-padding-top: var(--sidapa-nav-h);
+}
+
+    .sidapa-html::-webkit-scrollbar {
+        display: none;
+    }
+
+@media (prefers-reduced-motion: no-preference) {
+    .sidapa-html {
+        scroll-behavior: smooth;
+    }
+}
+
+.sidapa-pagina,
+.sidapa-pagina *,
+.sidapa-pagina *::before,
+.sidapa-pagina *::after {
+    box-sizing: border-box;
+}
+
+.sidapa-pagina {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--sidapa-marino);
+    background: var(--sidapa-claro);
+}
+
+.sidapa-contenedor {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ---------- Barra superior ---------- */
+
+.sidapa-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--sidapa-nav-h);
+    padding: 0 24px;
+    background: var(--sidapa-claro);
+    border-bottom: 1px solid var(--sidapa-gris);
+}
+
+.sidapa-nav__marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--sidapa-marino);
+    text-decoration: none;
+}
+
+.sidapa-nav__logo {
+    width: 36px;
+    height: 36px;
+}
+
+.sidapa-nav__usuario {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--sidapa-marino);
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+    .sidapa-nav__usuario:hover {
+        background: var(--sidapa-hielo);
+    }
+
+    .sidapa-nav__marca:focus-visible,
+    .sidapa-nav__usuario:focus-visible {
+        outline: 2px solid var(--sidapa-azul);
+        outline-offset: 2px;
+    }
+
+/* ---------- Pie de página ---------- */
+
+.sidapa-pie {
+    padding: 24px 0;
+    color: var(--sidapa-hielo);
+    background: var(--sidapa-marino);
+}
