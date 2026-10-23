@@ -1,0 +1,25 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<SIDAPA.presentation.Models.Dashboard.ReporteMensual>
+
+@{
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = "Reporte";
+    var maximo = Model.Max(r => r.Altas);
+}
+
+<h1>Altas de Pedimento</h1>
+<p class="lead">Pedimentos totales del mes</p>
+
+<ul class="bars">
+    @foreach (var fila in Model)
+    {
+        var porcentaje = maximo == 0 ? 0 : fila.Altas * 100 / maximo;
+
+        <li>
+            <span>@fila.Mes</span>
+            <div class="bar"><span style="width:@(porcentaje)%"></span></div>
+        </li>
+    }
+</ul>
