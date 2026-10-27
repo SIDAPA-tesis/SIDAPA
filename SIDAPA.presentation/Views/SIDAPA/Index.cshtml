@@ -1,0 +1,162 @@
+@using SIDAPA.presentation.Models;
+
+@model InicioViewModel
+
+@{
+    Layout = "_inicioLayout";
+    ViewData["Title"] = "Inicio";
+    var total = Model.Pendientes.Count;
+}
+
+
+@* =====================================================================
+   SECCIÓN 1 · HERO BANNER
+   Estilos: wwwroot/css/inicio-hero.css
+   Ocupa la pantalla completa bajo la barra superior (sin barra de scroll).
+   ===================================================================== *@
+<section class="sidapa-hero" aria-labelledby="sidapa-hero-titulo">
+
+    @* 1.1 Formas geométricas duplicadas (fondo, con movimiento suave).
+          Coordenadas tomadas del wireframe. "fondo" = la de atrás, "frente" = la de adelante. *@
+    <svg class="sidapa-hero__formas" viewBox="0 0 1280 800" preserveAspectRatio="xMidYMin slice"
+         aria-hidden="true" focusable="false">
+        <g class="sidapa-forma sidapa-forma--fondo">
+            <polygon points="62,150 1185,555 446,923" />
+        </g>
+        <g class="sidapa-forma sidapa-forma--frente">
+            <polygon points="67,88 1188,492 450,860" />
+        </g>
+    </svg>
+
+    <div class="sidapa-hero__interior">
+
+        @* 1.2 Texto principal *@
+        <div class="sidapa-hero__texto">
+            <h1 class="sidapa-hero__titulo" id="sidapa-hero-titulo">Texto Prueba</h1>
+            <p class="sidapa-hero__subtitulo">Comienza a trabajar con SIDAPA</p>
+        </div>
+
+        @* 1.3 Saludo y lista corta de pendientes (arriba a la derecha) *@
+        <aside class="sidapa-hero__aside" aria-label="Saludo y pendientes">
+            <h2 class="sidapa-hero__saludo">@Model.Saludo</h2>
+
+            @if (total > 0)
+            {
+                <p class="sidapa-hero__resumen">Tienes @total @(total == 1 ? "pendiente" : "pendientes"):</p>
+
+                <ul class="sidapa-pendientes">
+                    @foreach (var pendiente in Model.Pendientes)
+                    {
+                        <li>
+                            <span>@pendiente.Titulo</span>
+                            <small>Vence: @pendiente.Vence</small>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="sidapa-hero__resumen">No tienes pendientes por ahora.</p>
+            }
+        </aside>
+
+    </div>
+</section>
+
+
+@* =====================================================================
+   SECCIÓN 2 · ACCESOS RÁPIDOS
+   Estilos: wwwroot/css/inicio-secciones.css
+   Enlaces a los módulos principales (desde aquí se entra al dashboard).
+   ===================================================================== *@
+<section class="sidapa-seccion" id="accesos" aria-labelledby="accesos-titulo">
+    <div class="sidapa-contenedor">
+        <h2 id="accesos-titulo">Accesos rápidos</h2>
+        <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
+
+        <ul class="sidapa-rejilla">
+            <li>
+                <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
+                    <h3>Usuarios</h3>
+                    <p>Consulta las cuentas y sus roles.</p>
+                </a>
+            </li>
+            <li>
+                <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
+                    <h3>Reportes</h3>
+                    <p>Revisa las altas por mes.</p>
+                </a>
+            </li>
+            @* Agrega aquí más accesos copiando un <li> *@
+            <li>
+                <div class="sidapa-tarjeta">
+                    <h3>Nuevo acceso</h3>
+                    <p>Espacio para otro módulo.</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</section>
+
+
+@* =====================================================================
+   SECCIÓN 3 · NOVEDADES
+   Estilos: wwwroot/css/inicio-secciones.css
+   Avisos, comunicados o actividad reciente. Fondo alterno (sidapa-seccion--alt).
+   ===================================================================== *@
+<section class="sidapa-seccion sidapa-seccion--alt" id="novedades" aria-labelledby="novedades-titulo">
+    <div class="sidapa-contenedor">
+        <h2 id="novedades-titulo">Novedades</h2>
+        <p class="sidapa-seccion__intro">Lo más reciente del sistema.</p>
+
+        <div class="sidapa-rejilla">
+            <article class="sidapa-tarjeta">
+                <h3>Título de la novedad</h3>
+                <p>Descripción breve de la novedad.</p>
+            </article>
+            <article class="sidapa-tarjeta">
+                <h3>Título de la novedad</h3>
+                <p>Descripción breve de la novedad.</p>
+            </article>
+            <article class="sidapa-tarjeta">
+                <h3>Título de la novedad</h3>
+                <p>Descripción breve de la novedad.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+
+@* =====================================================================
+   SECCIÓN 4 · ACERCA DEL SISTEMA
+   Estilos: wwwroot/css/inicio-secciones.css
+   Texto a la izquierda y espacio para imagen a la derecha.
+   ===================================================================== *@
+<section class="sidapa-seccion" id="acerca" aria-labelledby="acerca-titulo">
+    <div class="sidapa-contenedor sidapa-dos-columnas">
+        <div>
+            <h2 id="acerca-titulo">Acerca de SIDAPA</h2>
+            <p>Agregar una descripción general del sistema: qué hace y para quién está pensado.</p>
+            <p>Agregar un segundo párrafo con más detalle.</p>
+        </div>
+
+        @* Reemplaza este bloque por <img src="~/img/..." alt="..."> *@
+        <div class="sidapa-espacio-imagen" role="img" aria-label="Espacio reservado para una imagen">
+            Espacio para imagen
+        </div>
+    </div>
+</section>
+
+
+@* =====================================================================
+   SECCIÓN 5 · AYUDA Y CONTACTO
+   Estilos: wwwroot/css/inicio-secciones.css
+   Datos de contacto o enlace a soporte. Fondo alterno.
+   ===================================================================== *@
+<section class="sidapa-seccion sidapa-seccion--alt" id="ayuda" aria-labelledby="ayuda-titulo">
+    <div class="sidapa-contenedor">
+        <h2 id="ayuda-titulo">Ayuda y contacto</h2>
+        <p class="sidapa-seccion__intro">¿Tienes dudas? Escríbenos y te ayudamos.</p>
+        <p><a class="sidapa-enlace" href="mailto:contacto@ejemplo.com">contacto@ejemplo.com</a></p>
+    </div>
+</section>

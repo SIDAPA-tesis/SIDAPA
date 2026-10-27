@@ -11,7 +11,7 @@ public static class NotificationRule
     {
         var text = message?.Trim() ?? "";
 
-        if(text.Length == 0) throw new EmptyNotificationException();
+        if(text.Length == 0) throw new EmptyNotificationMessageException();
 
         if(text.Length > MaxMessageLength) throw new NotificationMessageTooLongException(MaxMessageLength);
 

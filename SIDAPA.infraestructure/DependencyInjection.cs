@@ -32,7 +32,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
-        //services.AddSingleton<IDocumentFileValidator, DocumentFileValidator>();   // SCRUM-50 (ya estaba en dev)
+        services.AddSingleton<IDocumentFileValidator, DocumentFileValidator>();   // SCRUM-50
 
         // SCRUM-59: avisos (panel y correo)
         services.AddScoped<INotificationRepository, NotificationRepository>();
