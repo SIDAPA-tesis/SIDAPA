@@ -24,4 +24,13 @@ public class UserRepository(SidapaDbContext context) : IUserRepository
             .ExecuteUpdateAsync(s => s
                 .SetProperty(x => x.FailedLoginAttempts, user.FailedLoginAttempts)
                 .SetProperty(x => x.LockedUntil, user.LockedUntil), ct);
+
+    public Task<UserEntity?> GetByIdAsync(int id, CancellationToken ct = default) =>
+    context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+
+    public async Task<IReadOnlyList<UserEntity>> GetActiveByClientAsync(int clientId, CancellationToken ct = default) =>
+        await context.Users
+            .AsNoTracking()
+            .Where(x => x.ClientId == clientId && x.IsActive)
+            .ToListAsync(ct);
 }

@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SIDAPA.infraestructure;
+using SIDAPA.infraestructure.Email;
 using SIDAPA.infraestructure.Persistence.Seed;
 using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
@@ -31,7 +32,9 @@ var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOp
 
 if (jwt.Key.Length < 32)
     throw new InvalidOperationException("Missing or short 'Jwt:Key' (min 32 chars). Set it with dotnet user-secrets.");
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt);
+
+var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, email);
 builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
