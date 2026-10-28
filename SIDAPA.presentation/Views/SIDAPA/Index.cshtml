@@ -73,98 +73,19 @@
     <div class="sidapa-contenedor">
         @if (User.IsInRole("ADMINISTRADOR"))
         {
-            <h2 id="accesos-titulo">Accesos rápidos</h2>
-            <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
-
-            <ul class="sidapa-rejilla">
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
-                        <h3>Usuarios</h3>
-                        <p>Consulta las cuentas y sus roles.</p>
-                    </a>
-                </li>
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
-                        <h3>Reportes</h3>
-                        <p>Revisa las altas por mes.</p>
-                    </a>
-                </li>
-                @* Agrega aquí más accesos copiando un <li> *@
-                <li>
-                    <div class="sidapa-tarjeta">
-                        <h3>Nuevo acceso</h3>
-                        <p>Espacio para otro módulo.</p>
-                    </div>
-                </li>
-            </ul>
+            <partial name="_AccesosAdmin" />
         }
         else if (User.IsInRole("CAPTURADOR"))
         {
-            <h2 id="accesos-titulo">Accesos rápidos</h2>
-            <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
-
-            <ul class="sidapa-rejilla">
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
-                        <h3>Usuarios</h3>
-                        <p>Consulta las cuentas y sus roles.</p>
-                    </a>
-                </li>
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
-                        <h3>Reportes</h3>
-                        <p>Revisa las altas por mes.</p>
-                    </a>
-                </li>
-                @* Agrega aquí más accesos copiando un <li> *@
-                <li>
-                    <div class="sidapa-tarjeta">
-                        <h3>Nuevo acceso</h3>
-                        <p>Espacio para otro módulo.</p>
-                    </div>
-                </li>
-            </ul>
+            <partial name="_AccesosCapturador" />
         }
         else if (User.IsInRole("GLOSADOR"))
         {
-            <h2 id="accesos-titulo">Accesos rápidos</h2>
-            <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
-
-            <ul class="sidapa-rejilla">
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
-                        <h3>Catalogo de fracciones</h3>
-                        <p>Consulta los nuevos productos el estado de las fracciones prevalidadas</p>
-                    </a>
-                </li>
-            </ul>
+            <partial name="_AccesosGlosador" />
         }
         else if (User.IsInRole("VALIDADOR"))
         {
-            <h2 id="accesos-titulo">Accesos rápidos</h2>
-            <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
-
-            <ul class="sidapa-rejilla">
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
-                        <h3>Usuarios</h3>
-                        <p>Consulta las cuentas y sus roles.</p>
-                    </a>
-                </li>
-                <li>
-                    <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
-                        <h3>Reportes</h3>
-                        <p>Revisa las altas por mes.</p>
-                    </a>
-                </li>
-                @* Agrega aquí más accesos copiando un <li> *@
-                <li>
-                    <div class="sidapa-tarjeta">
-                        <h3>Nuevo acceso</h3>
-                        <p>Espacio para otro módulo.</p>
-                    </div>
-                </li>
-            </ul>
+            <partial name="_AccesosValidador" />
         }
     </div>
 </section>
@@ -181,62 +102,19 @@
         <p class="sidapa-seccion__intro">Lo más reciente del sistema.</p>
         @if (User.IsInRole("ADMINISTRADOR"))
         {
-            <div class="sidapa-rejilla">
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-            </div>
+            <partial name="_novedadesAdmin"/>
         }
         else if (User.IsInRole("GLOSADOR"))
         {
-            <div class="sidapa-rejilla">
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-            </div>
+            <partial name="_novedadesGlosador" />
         }
         else if (User.IsInRole("CAPTURADOR"))
         {
-            <div class="sidapa-rejilla">
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-                <article class="sidapa-tarjeta">
-                    <h3>Título de la novedad</h3>
-                    <p>Descripción breve de la novedad.</p>
-                </article>
-            </div>
+            <partial name="_novedadesCapturador" />
         }
-        @if (User.IsInRole("VALIDADOR")){
-        <div class="sidapa-rejilla">
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-        </div>
+        @if (User.IsInRole("VALIDADOR"))
+        {
+            <partial name="_novedadesValidador" />
         }
     </div>
 </section>
