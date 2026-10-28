@@ -273,6 +273,8 @@ tbody tr:last-child td {
     font-variant-numeric: tabular-nums;
 }
 
+
+
 /* ---------- Pantallas pequeñas ---------- */
 
 @media (max-width: 768px) {
@@ -301,3 +303,42 @@ tbody tr:last-child td {
     }
 }
 
+/* ---------- Cerrar Sesión ---------- */
+
+.logout-section {
+    margin-top: auto; /* Si el sidebar es flex, empuja el botón hasta abajo */
+    padding: 16px 12px;
+    border-top: 1px solid var(--ink-soft);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 0.95rem;
+    color: #ff8a8a; /* Un tono rojo claro que resalta en fondo oscuro */
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+    .logout-btn:hover {
+        background: rgba(220, 53, 69, 0.15); /* Fondo rojo tenue al pasar el mouse */
+        color: #ffb3b3;
+    }
+
+    .logout-btn:focus-visible {
+        outline: 2px solid var(--accent-soft);
+        outline-offset: 2px;
+    }
+
+    /* Para que el icono herede el color del texto */
+    .logout-btn svg {
+        flex-shrink: 0;
+    }

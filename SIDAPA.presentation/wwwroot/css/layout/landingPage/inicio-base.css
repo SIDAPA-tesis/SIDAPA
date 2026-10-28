@@ -107,6 +107,19 @@
         outline-offset: 2px;
     }
 
+    .sidapa-nav__usuario.dropdown-toggle::after {
+        display: none !important;
+    }
+
+.sidapa-nav__usuario {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
 /* ---------- Pie de página ---------- */
 
 .sidapa-pie {

@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
-    var nombreUsuario = User.Identity?.Name ?? "Administrador";
+    var nombreUsuario = User.Identity?.Name ?? "ADMINISTRADOR";
     Layout = "_dashboardLayout";
 }
 
@@ -9,12 +9,14 @@
         <div>
             <p class="home-dashboard__eyebrow">PANEL DE CONTROL</p>
             <h1>Bienvenido, @nombreUsuario</h1>
-            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de MiSistema.</p>
+            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de SIDAPA</p>
         </div>
         <span class="home-dashboard__period">Resumen general</span>
     </header>
 
+    @if (User.IsInRole("ADMINISTRADOR")){
     <section class="home-dashboard__stats" aria-label="Indicadores principales">
+
         <article class="home-dashboard__stat home-dashboard__stat--teal">
             <div class="home-dashboard__stat-top"><span>Total de pedimentos</span><span class="home-dashboard__icon" aria-hidden="true">▤</span></div>
             <strong>1,282</strong><small>Registros acumulados</small>
@@ -36,7 +38,7 @@
             <div class="home-dashboard__track"><span style="width: 25%"></span></div>
         </article>
     </section>
-
+    
     <section class="home-dashboard__main-grid">
         <article class="home-dashboard__panel">
             <div class="home-dashboard__panel-heading">
@@ -77,6 +79,10 @@
                 </tbody>
             </table>
         </div>
+    </section>
+    }
+    <section class="home-dashboard__panel">
+
     </section>
     <p class="home-dashboard__disclaimer">Los indicadores y registros mostrados son datos de ejemplo, no información consultada de la base de datos.</p>
 </div>
