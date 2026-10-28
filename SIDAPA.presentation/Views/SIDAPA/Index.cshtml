@@ -71,30 +71,22 @@
    ===================================================================== *@
 <section class="sidapa-seccion" id="accesos" aria-labelledby="accesos-titulo">
     <div class="sidapa-contenedor">
-        <h2 id="accesos-titulo">Accesos rápidos</h2>
-        <p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
-
-        <ul class="sidapa-rejilla">
-            <li>
-                <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
-                    <h3>Usuarios</h3>
-                    <p>Consulta las cuentas y sus roles.</p>
-                </a>
-            </li>
-            <li>
-                <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
-                    <h3>Reportes</h3>
-                    <p>Revisa las altas por mes.</p>
-                </a>
-            </li>
-            @* Agrega aquí más accesos copiando un <li> *@
-            <li>
-                <div class="sidapa-tarjeta">
-                    <h3>Nuevo acceso</h3>
-                    <p>Espacio para otro módulo.</p>
-                </div>
-            </li>
-        </ul>
+        @if (User.IsInRole("ADMINISTRADOR"))
+        {
+            <partial name="_AccesosAdmin" />
+        }
+        else if (User.IsInRole("CAPTURADOR"))
+        {
+            <partial name="_AccesosCapturador" />
+        }
+        else if (User.IsInRole("GLOSADOR"))
+        {
+            <partial name="_AccesosGlosador" />
+        }
+        else if (User.IsInRole("VALIDADOR"))
+        {
+            <partial name="_AccesosValidador" />
+        }
     </div>
 </section>
 
@@ -108,21 +100,22 @@
     <div class="sidapa-contenedor">
         <h2 id="novedades-titulo">Novedades</h2>
         <p class="sidapa-seccion__intro">Lo más reciente del sistema.</p>
-
-        <div class="sidapa-rejilla">
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-            <article class="sidapa-tarjeta">
-                <h3>Título de la novedad</h3>
-                <p>Descripción breve de la novedad.</p>
-            </article>
-        </div>
+        @if (User.IsInRole("ADMINISTRADOR"))
+        {
+            <partial name="_novedadesAdmin"/>
+        }
+        else if (User.IsInRole("GLOSADOR"))
+        {
+            <partial name="_novedadesGlosador" />
+        }
+        else if (User.IsInRole("CAPTURADOR"))
+        {
+            <partial name="_novedadesCapturador" />
+        }
+        @if (User.IsInRole("VALIDADOR"))
+        {
+            <partial name="_novedadesValidador" />
+        }
     </div>
 </section>
 
@@ -132,6 +125,7 @@
    Estilos: wwwroot/css/inicio-secciones.css
    Texto a la izquierda y espacio para imagen a la derecha.
    ===================================================================== *@
+@if (User.IsInRole("CLIENTE")){
 <section class="sidapa-seccion" id="acerca" aria-labelledby="acerca-titulo">
     <div class="sidapa-contenedor sidapa-dos-columnas">
         <div>
@@ -146,7 +140,7 @@
         </div>
     </div>
 </section>
-
+}
 
 @* =====================================================================
    SECCIÓN 5 · AYUDA Y CONTACTO

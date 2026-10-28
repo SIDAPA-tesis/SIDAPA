@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
-    var nombreUsuario = User.Identity?.Name ?? "Administrador";
+    var nombreUsuario = User.Identity?.Name ?? "ADMINISTRADOR";
     Layout = "_dashboardLayout";
 }
 
@@ -9,74 +9,30 @@
         <div>
             <p class="home-dashboard__eyebrow">PANEL DE CONTROL</p>
             <h1>Bienvenido, @nombreUsuario</h1>
-            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de MiSistema.</p>
+            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de SIDAPA</p>
         </div>
         <span class="home-dashboard__period">Resumen general</span>
     </header>
 
-    <section class="home-dashboard__stats" aria-label="Indicadores principales">
-        <article class="home-dashboard__stat home-dashboard__stat--teal">
-            <div class="home-dashboard__stat-top"><span>Total de pedimentos</span><span class="home-dashboard__icon" aria-hidden="true">▤</span></div>
-            <strong>1,282</strong><small>Registros acumulados</small>
-            <div class="home-dashboard__track"><span style="width: 85%"></span></div>
-        </article>
-        <article class="home-dashboard__stat home-dashboard__stat--amber">
-            <div class="home-dashboard__stat-top"><span>En proceso</span><span class="home-dashboard__icon" aria-hidden="true">◷</span></div>
-            <strong>146</strong><small>Pendientes de concluir</small>
-            <div class="home-dashboard__track"><span style="width: 45%"></span></div>
-        </article>
-        <article class="home-dashboard__stat home-dashboard__stat--green">
-            <div class="home-dashboard__stat-top"><span>Completados</span><span class="home-dashboard__icon" aria-hidden="true">✓</span></div>
-            <strong>1,084</strong><small>Procesos finalizados</small>
-            <div class="home-dashboard__track"><span style="width: 80%"></span></div>
-        </article>
-        <article class="home-dashboard__stat home-dashboard__stat--red">
-            <div class="home-dashboard__stat-top"><span>Con incidencias</span><span class="home-dashboard__icon" aria-hidden="true">!</span></div>
-            <strong>52</strong><small>Requieren revisión</small>
-            <div class="home-dashboard__track"><span style="width: 25%"></span></div>
-        </article>
-    </section>
+    @if (User.IsInRole("ADMINISTRADOR"))
+    {
+        <partial name="_HomeAdmin" />
+    }
+    @* falta implementar las vistas de home y demas aspectos en el dashboard en el siguiente SCRUM las implemento*@
+    @if (User.IsInRole("CAPTURADOR"))
+    {
+        //<partial name="#" />
+    }
+    @if (User.IsInRole("GLOSADOR"))
+    {
+        //<partial name="#" />
+    }
+    @if (User.IsInRole("VALIDADOR"))
+    {
+        //<partial name="#" />
+    }
+    <section class="home-dashboard__panel">
 
-    <section class="home-dashboard__main-grid">
-        <article class="home-dashboard__panel">
-            <div class="home-dashboard__panel-heading">
-                <div><h2>Actividad de pedimentos</h2><p>Resumen mensual de ejemplo</p></div>
-                <span class="home-dashboard__tag">Últimos 6 meses</span>
-            </div>
-            <div class="home-dashboard__legend"><span><i class="home-dashboard__legend-dot home-dashboard__legend-dot--teal"></i>Completados</span><span><i class="home-dashboard__legend-dot home-dashboard__legend-dot--light"></i>En proceso</span></div>
-            <div class="home-dashboard__chart" role="img" aria-label="Gráfica ilustrativa de actividad mensual">
-                <div class="home-dashboard__chart-row"><span>Mayo</span><div class="home-dashboard__bar-track"><i style="width:63%"></i></div><b>75</b></div>
-                <div class="home-dashboard__chart-row"><span>Junio</span><div class="home-dashboard__bar-track"><i style="width:77%"></i></div><b>92</b></div>
-                <div class="home-dashboard__chart-row"><span>Julio</span><div class="home-dashboard__bar-track"><i style="width:70%"></i></div><b>84</b></div>
-                <div class="home-dashboard__chart-row"><span>Agosto</span><div class="home-dashboard__bar-track"><i style="width:92%"></i></div><b>110</b></div>
-                <div class="home-dashboard__chart-row"><span>Septiembre</span><div class="home-dashboard__bar-track"><i style="width:82%"></i></div><b>98</b></div>
-                <div class="home-dashboard__chart-row"><span>Octubre</span><div class="home-dashboard__bar-track"><i style="width:100%"></i></div><b>120</b></div>
-            </div>
-        </article>
-
-        <article class="home-dashboard__panel">
-            <div class="home-dashboard__panel-heading"><div><h2>Estado general</h2><p>Distribución ilustrativa</p></div></div>
-            <div class="home-dashboard__statuses">
-                <div><div class="home-dashboard__status-label"><span>Completados</span><b>84.6%</b></div><div class="home-dashboard__status-track"><i class="home-dashboard__fill--green" style="width:84.6%"></i></div></div>
-                <div><div class="home-dashboard__status-label"><span>En proceso</span><b>11.4%</b></div><div class="home-dashboard__status-track"><i class="home-dashboard__fill--teal" style="width:11.4%"></i></div></div>
-                <div><div class="home-dashboard__status-label"><span>Con incidencias</span><b>4%</b></div><div class="home-dashboard__status-track"><i class="home-dashboard__fill--red" style="width:4%"></i></div></div>
-            </div>
-            <div class="home-dashboard__note"><strong>Resumen del sistema</strong><p>Esta sección puede mostrar alertas, pendientes o información prioritaria para el administrador.</p></div>
-        </article>
-    </section>
-
-    <section class="home-dashboard__panel home-dashboard__recent">
-        <div class="home-dashboard__panel-heading"><div><h2>Actividad reciente</h2><p>Registros de demostración; sustituye estos datos por los reales.</p></div></div>
-        <div class="home-dashboard__table-wrap">
-            <table class="home-dashboard__table">
-                <thead><tr><th>Identificador</th><th>Descripción</th><th>Estado</th><th>Actualización</th></tr></thead>
-                <tbody>
-                    <tr><td><strong>PED-2026-1042</strong></td><td>Pedimento de importación</td><td><span class="home-dashboard__badge home-dashboard__badge--green">Completado</span></td><td>Recientemente</td></tr>
-                    <tr><td><strong>PED-2026-1041</strong></td><td>Pedimento de exportación</td><td><span class="home-dashboard__badge home-dashboard__badge--amber">En proceso</span></td><td>Recientemente</td></tr>
-                    <tr><td><strong>PED-2026-1040</strong></td><td>Revisión documental</td><td><span class="home-dashboard__badge home-dashboard__badge--red">Incidencia</span></td><td>Recientemente</td></tr>
-                </tbody>
-            </table>
-        </div>
     </section>
     <p class="home-dashboard__disclaimer">Los indicadores y registros mostrados son datos de ejemplo, no información consultada de la base de datos.</p>
 </div>

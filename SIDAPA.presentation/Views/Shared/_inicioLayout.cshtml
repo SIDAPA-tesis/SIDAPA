@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/layout/landingPage/inicio-base.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout/landingPage/inicio-hero.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout/landingPage/inicio-secciones.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
 </head>
 <body class="sidapa-pagina">
 
@@ -33,7 +34,14 @@
         </a>
 
         @* Aquí va el menú del usuario / inicio de sesión. *@
-        <button type="button" class="sidapa-nav__usuario" aria-label="Cuenta de usuario">
+        <div class="dropdown">
+        <button 
+            type="button" 
+            class="sidapa-nav__usuario dropdown-toggle" 
+            id="dropdownUsuario" 
+            data-bs-toggle="dropdown"
+            aria-label="Cuenta de usuario" 
+            aria-expanded="false">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor"
                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <circle cx="12" cy="12" r="10" />
@@ -41,6 +49,29 @@
                 <path d="M6.2 18.5c1.3-2.3 3.4-3.5 5.8-3.5s4.5 1.2 5.8 3.5" />
             </svg>
         </button>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUsuario">
+            <li>
+                <div class="dropdown-header">
+                    <strong>@User.Identity?.Name</strong><br />
+                        <small class="text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                </div>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li >
+                <a class="dropdown-item" href="#" onclick="toggleTema(event)">
+                    <i class="bi bi-palette"></i> Cambiar tema
+                </a>
+            </li>
+            <li>
+                <form asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                     </button>
+                </form>
+            </li>
+        </ul>
+    </div>
     </header>
 
     <main>
@@ -55,5 +86,25 @@
     </footer>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+            function toggleTema(e) {
+                e.preventDefault(); 
+
+                const html = document.documentElement;
+                const temaActual = html.getAttribute('data-bs-theme');
+                const nuevoTema = temaActual === 'dark' ? 'light' : 'dark';
+
+                html.setAttribute('data-bs-theme', nuevoTema);
+
+                localStorage.setItem('tema', nuevoTema);
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const temaGuardado = localStorage.getItem('tema') || 'light';
+                document.documentElement.setAttribute('data-bs-theme', temaGuardado);
+            });
+    </script>
 </body>
 </html>

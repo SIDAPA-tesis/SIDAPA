@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Views\Shared\Componets\WidgetAccesosRapidos\" />
+      <Folder Include="Views\Shared\Componets\WidgetNovedades\" />
       <Folder Include="Views\SIDAPA\Auth\" />
       <Folder Include="wwwroot\img\" />
     </ItemGroup>
