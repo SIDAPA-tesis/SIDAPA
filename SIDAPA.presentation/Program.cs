@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SIDAPA.infraestructure;
+using SIDAPA.infraestructure.External.CloudStorage;
 using SIDAPA.infraestructure.Persistence.Seed;
 using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
@@ -31,7 +32,17 @@ var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOp
 
 if (jwt.Key.Length < 32)
     throw new InvalidOperationException("Missing or short 'Jwt:Key' (min 32 chars). Set it with dotnet user-secrets.");
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt);
+
+// Google Cloud Storage. BucketName/SignedUrlExpiryMinutes en appsettings; CredentialsJson (JSON
+// completo del service account) en user-secrets: dotnet user-secrets set "GoogleCloudStorage:CredentialsJson" "<json>".
+var gcs = builder.Configuration.GetSection("GoogleCloudStorage").Get<GoogleCloudStorageOptions>()
+          ?? new GoogleCloudStorageOptions();
+if (string.IsNullOrWhiteSpace(gcs.BucketName))
+    throw new InvalidOperationException("Missing 'GoogleCloudStorage:BucketName' in configuration.");
+if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
+    throw new InvalidOperationException("Missing 'GoogleCloudStorage:CredentialsJson'. Set it with dotnet user-secrets.");
+
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs);
 builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
