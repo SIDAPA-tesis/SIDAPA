@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    var nombreUsuario = User.Identity?.Name ?? "ADMINISTRADOR";
+    Layout = "_dashboardLayout";
+}
+
+<div class="home-dashboard">
+    <header class="home-dashboard__heading">
+        <div>
+            <p class="home-dashboard__eyebrow">PANEL DE CONTROL</p>
+            <h1>Bienvenido, @nombreUsuario</h1>
+            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de SIDAPA</p>
+        </div>
+        <span class="home-dashboard__period">Resumen general</span>
+    </header>
+
+    @if (User.IsInRole("ADMINISTRADOR"))
+    {
+        <partial name="_HomeAdmin" />
+    }
+    @* falta implementar las vistas de home y demas aspectos en el dashboard en el siguiente SCRUM las implemento*@
+    @if (User.IsInRole("CAPTURADOR"))
+    {
+        //<partial name="#" />
+    }
+    @if (User.IsInRole("GLOSADOR"))
+    {
+        //<partial name="#" />
+    }
+    @if (User.IsInRole("VALIDADOR"))
+    {
+        //<partial name="#" />
+    }
+    <section class="home-dashboard__panel">
+
+    </section>
+    <p class="home-dashboard__disclaimer">Los indicadores y registros mostrados son datos de ejemplo, no información consultada de la base de datos.</p>
+</div>

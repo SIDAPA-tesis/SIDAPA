@@ -1,2 +1,14 @@
-﻿body {
+﻿:root {
+    --ink: #172033;
+    --ink-soft: #344155;
+    --paper: #f4f5f7;
+    --surface: #ffffff;
+    --line: #dde1e8;
+    --text: #1c2433;
+    --muted: #5d6879;
+    --accent: #1f7a72;
+    --accent-hover: #18635c;
+    --accent-soft: #7fd6cb;
+    --sidebar-w: 250px;
+    --topbar-h: 56px;
 }

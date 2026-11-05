@@ -1,0 +1,30 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h2 id="accesos-titulo">Accesos rápidos</h2>
+<p class="sidapa-seccion__intro">Entra directo a los módulos que más usas.</p>
+
+<ul class="sidapa-rejilla">
+    <li>
+        <a class="sidapa-tarjeta" asp-controller="Usuarios" asp-action="Index">
+            <h3>Usuarios</h3>
+            <p>Consulta las cuentas y sus roles.</p>
+        </a>
+    </li>
+    <li>
+        <a class="sidapa-tarjeta" asp-controller="Reportes" asp-action="Index">
+            <h3>Reportes</h3>
+            <p>Revisa las altas por mes.</p>
+        </a>
+    </li>
+    @* Agrega aquí más accesos copiando un <li> *@
+    <li>
+        <div class="sidapa-tarjeta">
+            <h3>Nuevo acceso</h3>
+            <p>Espacio para otro módulo.</p>
+        </div>
+    </li>
+</ul>

@@ -8,6 +8,7 @@ using SIDAPA.application.Interface.External.CloudStorage;
 using SIDAPA.application.Services.Core;
 using SIDAPA.infraestructure.ApiClients;
 using SIDAPA.infraestructure.External.CloudStorage;
+using SIDAPA.infraestructure.Email;
 using SIDAPA.infraestructure.Persistence;
 using SIDAPA.infraestructure.Repositories;
 using SIDAPA.infraestructure.Security;
@@ -18,7 +19,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfraestructure(
         this IServiceCollection services, string connectionString, string readerBaseUrl, JwtOptions jwt,
-        GoogleCloudStorageOptions gcs)
+        GoogleCloudStorageOptions gcs, EmailOptions email)
     {
         services.AddDbContext<SidapaDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql =>
@@ -36,7 +37,18 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
-        services.AddSingleton<IDocumentFileValidator, DocumentFileValidator>();
+        services.AddSingleton<IDocumentFileValidator, DocumentFileValidator>();   // SCRUM-50
+
+        // SCRUM-59: avisos (panel y correo)
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationService, NotificationService>();
+
+        // Con servidor configurado manda correos reales; si no, solo los escribe en el log.
+        services.AddSingleton(email);
+        if (email.IsConfigured)
+            services.AddSingleton<IEmailSender, SmtpEmailSender>();
+        else
+            services.AddSingleton<IEmailSender, LogEmailSender>();
 
         // Google Cloud Storage: "el contexto" (StorageClient + UrlSigner) se construye una sola vez
         // desde el service account y se registra como singleton; la app solo ve ICloudStorageService.
