@@ -1,7 +1,3 @@
-/src/Ubam.Evolution.Presentation/appsettings.Development.json
-/src/Ubam.Evolution.Presentation/appsettings.Production.json
-/src/Ubam.Evolution.Presentation/appsettings.json
-
 # Build outputs
 bin/
 obj/

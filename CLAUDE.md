@@ -1,4 +1,4 @@
-# CLAUDE.md — SIDAPA
+/# CLAUDE.md — SIDAPA
 
 Guidance for AI agents and developers working in this repository. Read this before writing code.
 
