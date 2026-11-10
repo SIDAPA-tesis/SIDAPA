@@ -7,7 +7,4 @@ public enum RolesEnum
     GLOSADOR = 3,
     CLIENTE = 4,
     VALIDADOR = 5
-    
-    
-    
 }

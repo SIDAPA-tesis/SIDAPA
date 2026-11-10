@@ -31,8 +31,8 @@ namespace SIDAPA.infraestructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("nombre");
 
                     b.HasKey("Id")
@@ -43,6 +43,88 @@ namespace SIDAPA.infraestructure.Migrations
                         .HasDatabaseName("uq_cat_tipo_documento_1");
 
                     b.ToTable("cat_tipo_documento", "sidapa");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (short)1,
+                            Name = "Constancia de Situación Fiscal (RFC activo)"
+                        },
+                        new
+                        {
+                            Id = (short)2,
+                            Name = "Opinión de Cumplimiento de Obligaciones Fiscales (32-D positiva)"
+                        },
+                        new
+                        {
+                            Id = (short)3,
+                            Name = "Acta Constitutiva y Poder Notarial del Representante Legal"
+                        },
+                        new
+                        {
+                            Id = (short)4,
+                            Name = "Identificación Oficial del Representante Legal"
+                        },
+                        new
+                        {
+                            Id = (short)5,
+                            Name = "Comprobante de Domicilio Fiscal"
+                        },
+                        new
+                        {
+                            Id = (short)6,
+                            Name = "Encargo Conferido ante el SAT"
+                        },
+                        new
+                        {
+                            Id = (short)7,
+                            Name = "Registro en el Padrón de Importadores / Padrón de Sectores Específicos (solo importación)"
+                        },
+                        new
+                        {
+                            Id = (short)8,
+                            Name = "Factura Comercial / CFDI con Complemento de Comercio Exterior"
+                        },
+                        new
+                        {
+                            Id = (short)9,
+                            Name = "Lista de Empaque (Packing List)"
+                        },
+                        new
+                        {
+                            Id = (short)10,
+                            Name = "Documento de Transporte (B/L, Guía Aérea o Carta Porte)"
+                        },
+                        new
+                        {
+                            Id = (short)11,
+                            Name = "Certificado o Prueba de Origen"
+                        },
+                        new
+                        {
+                            Id = (short)12,
+                            Name = "Ficha Técnica / Catálogo / Hoja de Seguridad (MSDS)"
+                        },
+                        new
+                        {
+                            Id = (short)13,
+                            Name = "Permisos, Licencias y Certificados de RRNAs / NOMs"
+                        },
+                        new
+                        {
+                            Id = (short)14,
+                            Name = "Póliza o Certificado de Seguro de Transporte"
+                        },
+                        new
+                        {
+                            Id = (short)15,
+                            Name = "Manifestación de Valor y Hoja de Cálculo (solo importación)"
+                        },
+                        new
+                        {
+                            Id = (short)16,
+                            Name = "Comprobantes de Pago de Fletes y Gastos Incrementable"
+                        });
                 });
 
             modelBuilder.Entity("SIDAPA.domain.Entities.Core.Catalogs.OperationTypeEntity", b =>

@@ -45,7 +45,6 @@ if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
 
 builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs);
 var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, email);
 builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
