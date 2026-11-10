@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var actual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var opciones = new[]
+    {
+        (Controlador: "Home", Texto: "Inicio", Roles: Array.Empty<string>()),
+        (Controlador: "Usuarios", Texto: "Usuarios", Roles: new[] { "ADMINISTRADOR" }),
+        (Controlador: "Reportes", Texto: "Reportes", Roles: new[] { "ADMINISTRADOR" }),
+        (Controlador: "Pedimentos", Texto: "Pedimentos", Roles: new [] { "ADMINISTRADOR", "VALIDADOR", "CAPTURADOR", "GLOSADOR"}),
+        (Controlador: "Productos", Texto: "Productos", Roles: new [] { "ADMINISTRADOR", "GLOSADOR"}),
+    };
+}
+
+<div class="brand">SIDAPA</div>
+
+<nav aria-label="Menu Principal">
+    @foreach (var opcion in opciones)
+    {
+        bool tieneRol = opcion.Roles.Length == 0 || opcion.Roles.Any(rol => User.IsInRole(rol));
+
+        if (tieneRol)
+        {
+            var esActual = string.Equals(actual, opcion.Controlador, StringComparison.OrdinalIgnoreCase);
+
+            <a asp-controller="@opcion.Controlador"
+            asp-action="Index"
+            class="@(esActual ? "active" : null)"
+            aria-current="@(esActual ? "page" : null)">@opcion.Texto</a>
+
+        }
+    }
+</nav>
+
+<div class="logout-section">
+    <form asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+        <button type="submit" class="logout-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Cerrar Sesión
+        </button>
+    </form>
+</div>

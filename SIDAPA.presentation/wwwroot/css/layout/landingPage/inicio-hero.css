@@ -1,0 +1,178 @@
+﻿/* =========================================================
+   INICIO · HERO BANNER
+   Formas geométricas animadas, texto y saludo con pendientes.
+   ========================================================= */
+
+.sidapa-hero {
+    position: relative;
+    min-height: calc(100vh - var(--sidapa-nav-h));
+    min-height: calc(100svh - var(--sidapa-nav-h));
+    overflow: hidden;
+    background: var(--sidapa-claro);
+}
+
+/* ---------- Formas (fondo) ---------- */
+
+.sidapa-hero__formas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* La de atrás: cian sólido */
+.sidapa-forma--fondo polygon {
+    fill: var(--sidapa-cian);
+}
+
+/* La de adelante: tono hielo con borde azul */
+.sidapa-forma--frente polygon {
+    fill: var(--sidapa-hielo);
+    stroke: var(--sidapa-azul);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+/* Movimiento suave: cada forma deriva unos pocos píxeles en sentido contrario */
+@keyframes sidapa-deriva-fondo {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(18px, -12px);
+    }
+}
+
+@keyframes sidapa-deriva-frente {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-14px, 10px);
+    }
+}
+
+.sidapa-forma--fondo {
+    animation: sidapa-deriva-fondo 14s ease-in-out infinite alternate;
+}
+
+.sidapa-forma--frente {
+    animation: sidapa-deriva-frente 18s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidapa-forma--fondo,
+    .sidapa-forma--frente {
+        animation: none;
+    }
+}
+
+/* ---------- Contenido ---------- */
+
+.sidapa-hero__interior {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+    gap: 32px;
+    min-height: inherit;
+    padding: 32px clamp(20px, 6.6vw, 85px);
+}
+
+.sidapa-hero__texto {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    align-self: center;
+    padding: 96px 0 12vh;
+}
+
+.sidapa-hero__titulo {
+    margin: 0;
+    font-size: clamp(2.5rem, 5.8vw, 4.75rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--sidapa-marino);
+}
+
+.sidapa-hero__subtitulo {
+    max-width: 32ch;
+    margin: 20px 0 0;
+    font-size: clamp(1.125rem, 2.2vw, 1.75rem);
+    color: var(--sidapa-marino);
+}
+
+/* ---------- Saludo y pendientes ---------- */
+
+.sidapa-hero__aside {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+}
+
+.sidapa-hero__saludo {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.sidapa-hero__resumen {
+    margin: 4px 0 0;
+    color: var(--sidapa-suave);
+}
+
+.sidapa-pendientes {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .sidapa-pendientes li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: 8px;
+        padding-left: 18px;
+        position: relative;
+    }
+
+        .sidapa-pendientes li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.55em;
+            width: 8px;
+            height: 8px;
+            background: var(--sidapa-azul);
+            border-radius: 50%;
+        }
+
+    .sidapa-pendientes small {
+        font-size: 0.875rem;
+        color: var(--sidapa-suave);
+    }
+
+/* ---------- Pantallas pequeñas ---------- */
+
+@media (max-width: 900px) {
+    .sidapa-hero__interior {
+        grid-template-columns: minmax(0, 1fr);
+        align-content: center;
+    }
+
+    .sidapa-hero__texto {
+        grid-column: 1;
+        padding: 48px 0 8px;
+    }
+
+    .sidapa-hero__aside {
+        grid-column: 1;
+        grid-row: 2;
+    }
+}

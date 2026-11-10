@@ -1,0 +1,89 @@
+﻿/* =========================================================
+   INICIO · SECCIONES (base simple)
+   Estructura mínima para acomodar y estilizar después.
+   ========================================================= */
+
+.sidapa-seccion {
+    padding: 72px 0;
+    background: var(--sidapa-claro);
+}
+
+.sidapa-seccion--alt {
+    background: var(--sidapa-hielo);
+}
+
+.sidapa-seccion h2 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.sidapa-seccion p {
+    max-width: 65ch;
+}
+
+.sidapa-seccion__intro {
+    margin: 0 0 32px;
+    color: var(--sidapa-suave);
+}
+
+/* Rejilla de tarjetas */
+.sidapa-rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidapa-tarjeta {
+    display: block;
+    height: 100%;
+    padding: 20px;
+    color: inherit;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid var(--sidapa-gris);
+    border-radius: 8px;
+}
+
+a.sidapa-tarjeta:hover {
+    border-color: var(--sidapa-azul);
+}
+
+a.sidapa-tarjeta:focus-visible {
+    outline: 2px solid var(--sidapa-azul);
+    outline-offset: 2px;
+}
+
+.sidapa-tarjeta h3 {
+    margin: 0 0 6px;
+    font-size: 1.0625rem;
+}
+
+.sidapa-tarjeta p {
+    margin: 0;
+    color: var(--sidapa-suave);
+}
+
+/* Texto + imagen */
+.sidapa-dos-columnas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    align-items: center;
+}
+
+.sidapa-espacio-imagen {
+    display: grid;
+    place-items: center;
+    min-height: 220px;
+    color: var(--sidapa-suave);
+    background: var(--sidapa-gris);
+    border-radius: 8px;
+}
+
+.sidapa-enlace {
+    color: var(--sidapa-azul);
+}

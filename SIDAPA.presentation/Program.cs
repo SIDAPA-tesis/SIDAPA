@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SIDAPA.infraestructure;
 using SIDAPA.infraestructure.External.CloudStorage;
+using SIDAPA.infraestructure.Email;
 using SIDAPA.infraestructure.Persistence.Seed;
 using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
@@ -43,6 +44,7 @@ if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
     throw new InvalidOperationException("Missing 'GoogleCloudStorage:CredentialsJson'. Set it with dotnet user-secrets.");
 
 builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs);
+var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
 builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
