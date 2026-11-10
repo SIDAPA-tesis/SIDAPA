@@ -58,14 +58,6 @@ public static class DependencyInjection
         services.AddSingleton(UrlSigner.FromCredential(credential));
         services.AddSingleton<ICloudStorageService, GoogleCloudStorageService>();
 
-        // Google Cloud Storage: "el contexto" (StorageClient + UrlSigner) se construye una sola vez
-        // desde el service account y se registra como singleton; la app solo ve ICloudStorageService.
-        var credential = CredentialFactory.FromJson<ServiceAccountCredential>(gcs.CredentialsJson).ToGoogleCredential();
-        services.AddSingleton(gcs);
-        services.AddSingleton(StorageClient.Create(credential));
-        services.AddSingleton(UrlSigner.FromCredential(credential));
-        services.AddSingleton<ICloudStorageService, GoogleCloudStorageService>();
-
         return services;
     }
 }

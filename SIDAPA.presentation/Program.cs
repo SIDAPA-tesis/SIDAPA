@@ -42,9 +42,9 @@ if (string.IsNullOrWhiteSpace(gcs.BucketName))
     throw new InvalidOperationException("Missing 'GoogleCloudStorage:BucketName' in configuration.");
 if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
     throw new InvalidOperationException("Missing 'GoogleCloudStorage:CredentialsJson'. Set it with dotnet user-secrets.");
-
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs);
 var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs,email);
+
 builder.Services.AddSidapaAuthorization();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
