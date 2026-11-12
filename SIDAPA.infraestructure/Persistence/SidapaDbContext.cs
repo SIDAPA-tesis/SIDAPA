@@ -19,6 +19,7 @@ public class SidapaDbContext(DbContextOptions<SidapaDbContext> options) : DbCont
     public DbSet<StatusEntity> Statuses => Set<StatusEntity>();
     public DbSet<DocumentTypeEntity> DocumentTypes => Set<DocumentTypeEntity>();
     public DbSet<RequiredDocumentEntity> RequiredDocuments => Set<RequiredDocumentEntity>();
+    public DbSet<ClaveTypeEntity> Claves => Set<ClaveTypeEntity>();
 
     // Core / Operative
     public DbSet<UserEntity> Users => Set<UserEntity>();

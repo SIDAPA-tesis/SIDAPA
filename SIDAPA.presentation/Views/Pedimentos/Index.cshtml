@@ -1,17 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model PanelPedimentosViewModel
+
 @{
     ViewData["Title"] = "Pedimentos";
-    Layout = "_dashboardLayout";
+    ViewData["ClasePagina"] = "page-content--ancha";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-    Hola
-</body>
-</html>
+@section Estilos {
+    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/componentes/tarjeta-pedimento.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/componentes/calendario.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vistas/pedimentos.css" asp-append-version="true" />
+}
+
+<div class="vista-pedimentos">
+
+    @* ---------- Buscador (sin JavaScript: se envía por GET y filtra en el servidor) ---------- *@
+    <form class="buscador" role="search" method="get">
+        <label class="solo-lectores" for="busqueda">Buscar pedimentos</label>
+        <input id="busqueda" type="search" name="q" value="@Model.Busqueda" placeholder="Buscar por número o empresa" />
+        <input type="hidden" name="mes" value="@Model.Calendario.MesActual" />
+        <button type="submit">Buscar</button>
+    </form>
+
+    <div class="vista-pedimentos__cuerpo">
+
+        @* ---------- Cards de pedimentos ---------- *@
+        <section aria-labelledby="titulo-lista">
+            <h1 class="vista-pedimentos__titulo" id="titulo-lista">Mis pedimentos</h1>
+
+            @if (Model.Pedimentos.Count == 0)
+            {
+                <p class="vista-pedimentos__vacio">No se encontraron pedimentos.</p>
+            }
+            else
+            {
+                <ul class="lista-tarjetas">
+                    @foreach (var pedimento in Model.Pedimentos)
+                    {
+                        <li><partial name="_TarjetaPedimento" model="pedimento" /></li>
+                    }
+                </ul>
+            }
+        </section>
+
+        @* ---------- Calendario de fechas límite ---------- *@
+        <aside aria-label="Calendario de fechas límite">
+            <partial name="_Calendario" model="Model.Calendario" />
+        </aside>
+
+    </div>
+</div>

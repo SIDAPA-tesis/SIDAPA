@@ -1,0 +1,144 @@
+﻿@model ClavesViewModel
+
+@{
+    ViewData["Title"] = "Claves";
+    ViewData["ClasePagina"] = "page-content--ancha";
+    var tablero = Model.Tablero;
+    var total = tablero.Metricas.Vigentes + tablero.Metricas.NoVigentes;
+}
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vistas/claves.css" asp-append-version="true" />
+}
+
+<div class="vista-claves">
+
+    <h1 class="vista-claves__titulo">Gestión de claves</h1>
+
+    @* ---------- Métricas ---------- *@
+    <section class="metricas" aria-label="Resumen de claves">
+        <div class="metrica">
+            <p class="metrica__titulo">Total de claves</p>
+            <p class="metrica__valor">@total.ToString("N0", CultureInfo.InvariantCulture)</p>
+        </div>
+        <div class="metrica">
+            <p class="metrica__titulo">Vigentes</p>
+            <p class="metrica__valor">@tablero.Metricas.Vigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+        </div>
+        <div class="metrica">
+            <p class="metrica__titulo">No vigentes</p>
+            <p class="metrica__valor metrica__valor--error">@tablero.Metricas.NoVigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+        </div>
+    </section>
+
+    @* ---------- Filtros (GET, sin JavaScript) ---------- *@
+    <form class="herramientas" method="get" role="search">
+        <div class="herramientas__filtros">
+            <label class="solo-lectores" for="filtro-busqueda">Buscar por clave, descripción o grupo</label>
+            <input id="filtro-busqueda" type="search" name="q" value="@Model.Busqueda"
+                   placeholder="Buscar por clave, descripción o grupo..." />
+
+            <label class="solo-lectores" for="filtro-vigente">Vigencia</label>
+            <select id="filtro-vigente" name="vigente">
+                <option value="">Todas</option>
+                <option value="true" selected="@(Model.Vigente == true)">Vigentes</option>
+                <option value="false" selected="@(Model.Vigente == false)">No vigentes</option>
+            </select>
+
+            <button type="submit" class="btn">Filtrar</button>
+        </div>
+
+        @* TODO: enlazar a la acción para crear una clave *@
+        <button type="button" class="btn">+ Nueva clave</button>
+    </form>
+
+    @* ---------- Tabla (cada fila abre el panel de detalle) ---------- *@
+    <div class="claves-contenedor">
+        <table class="claves-tabla">
+            <thead>
+                <tr>
+                    <th scope="col">Clave</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Grupo</th>
+                    <th scope="col">Subgrupo</th>
+                    <th scope="col">Vigencia</th>
+                    <th scope="col">Actualización</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (tablero.Claves.Count == 0)
+                {
+                    <tr class="claves-vacio"><td colspan="6">No se encontraron claves.</td></tr>
+                }
+
+                @foreach (var clave in tablero.Claves)
+                {
+                    var activa = clave.Codigo == tablero.Seleccionada?.Codigo;
+
+                    <tr class="claves-fila @(activa ? "claves-fila--activa" : null)">
+                        <td class="clave-codigo">
+                            <a class="claves-fila__enlace" asp-action="Index" asp-all-route-data="@Model.Ruta(clave.Codigo)">@clave.Codigo</a>
+                        </td>
+                        <td>@clave.Descripcion</td>
+                        <td>@clave.Grupo</td>
+                        <td>@(string.IsNullOrWhiteSpace(clave.SubGrupo) ? "—" : clave.SubGrupo)</td>
+                        <td>
+                            <span class="insignia @(clave.Vigente ? "insignia--ok" : "insignia--error")">@(clave.Vigente ? "Vigente" : "No vigente")</span>
+                        </td>
+                        <td>@clave.FechaActualizacion.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* ---------- Panel lateral de detalle (se muestra cuando la URL trae ?clave=...) ---------- *@
+@if (tablero.Seleccionada is { } seleccionada)
+{
+    <aside class="panel-detalle" role="dialog" aria-labelledby="panel-detalle-titulo">
+        <div class="panel-detalle__cabecera">
+            <h2 id="panel-detalle-titulo">Detalle de la clave</h2>
+            <a class="panel-detalle__cerrar" asp-action="Index" asp-all-route-data="@Model.Ruta()" aria-label="Cerrar detalle">&times;</a>
+        </div>
+
+        <dl class="panel-detalle__campos">
+            <div class="panel-detalle__campo">
+                <dt>Código de clave</dt>
+                <dd class="clave-codigo clave-codigo--grande">@seleccionada.Codigo</dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Descripción</dt>
+                <dd>@seleccionada.Descripcion</dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Grupo</dt>
+                <dd>@seleccionada.Grupo</dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Subgrupo</dt>
+                <dd>@(string.IsNullOrWhiteSpace(seleccionada.SubGrupo) ? "—" : seleccionada.SubGrupo)</dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Supuestos</dt>
+                <dd>@(string.IsNullOrWhiteSpace(seleccionada.Supuestos) ? "—" : seleccionada.Supuestos)</dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Vigencia</dt>
+                <dd>
+                    <span class="insignia @(seleccionada.Vigente ? "insignia--ok" : "insignia--error")">@(seleccionada.Vigente ? "Vigente" : "No vigente")</span>
+                </dd>
+            </div>
+            <div class="panel-detalle__campo">
+                <dt>Última actualización</dt>
+                <dd>@seleccionada.FechaActualizacion.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) hrs.</dd>
+            </div>
+        </dl>
+
+        <div class="panel-detalle__acciones">
+            @* TODO: enlazar a la acción para editar *@
+            <button type="button" class="btn">Editar registro</button>
+        </div>
+    </aside>
+}

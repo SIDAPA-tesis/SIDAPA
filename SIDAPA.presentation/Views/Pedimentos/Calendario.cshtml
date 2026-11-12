@@ -1,0 +1,63 @@
+﻿@model CalendarioViewModel
+
+@* Calendario mensual generado en el servidor. Estilos: css/componentes/calendario.css *@
+<section class="calendario" aria-labelledby="calendario-titulo">
+
+    <header class="calendario__cabecera">
+        <a class="calendario__nav" asp-action="Index" asp-all-route-data="@Model.Ruta(Model.MesAnterior)" aria-label="Mes anterior">&lsaquo;</a>
+        <h2 class="calendario__titulo" id="calendario-titulo">@Model.Titulo</h2>
+        <a class="calendario__nav" asp-action="Index" asp-all-route-data="@Model.Ruta(Model.MesSiguiente)" aria-label="Mes siguiente">&rsaquo;</a>
+    </header>
+
+    <ol class="calendario__semana" aria-hidden="true">
+        @foreach (var nombre in CalendarioViewModel.DiasSemana)
+        {
+            <li>@nombre</li>
+        }
+    </ol>
+
+    <ol class="calendario__rejilla">
+        @foreach (var dia in Model.Dias)
+        {
+            var clases = "calendario__dia"
+                + (dia.EnMes ? "" : " calendario__dia--fuera")
+                + (dia.EsHoy ? " calendario__dia--hoy" : "")
+                + (dia.Urgencia is { } urgencia ? $" calendario__dia--vence marca--{urgencia.ClaseEstado()}" : "");
+
+            <li class="@clases">
+                <time datetime="@dia.Fecha.Iso()">@dia.Fecha.Day</time>
+                @if (dia.Vencimientos.Count > 0)
+                {
+                    <span class="solo-lectores">@dia.Vencimientos.Count @(dia.Vencimientos.Count == 1 ? "pedimento vence" : "pedimentos vencen") este día</span>
+                }
+            </li>
+        }
+    </ol>
+
+    <ul class="calendario__leyenda" aria-label="Leyenda de colores">
+        <li class="marca--error">Vencido</li>
+        <li class="marca--aviso">Próximo (7 días)</li>
+        <li class="marca--ok">En tiempo</li>
+        <li class="marca--neutro">Completado</li>
+    </ul>
+
+    <h3 class="calendario__subtitulo">Fechas límite del mes</h3>
+
+    @if (Model.Vencimientos.Count == 0)
+    {
+        <p class="calendario__vacio">Ningún pedimento vence este mes.</p>
+    }
+    else
+    {
+        <ul class="calendario__lista">
+            @foreach (var vence in Model.Vencimientos)
+            {
+                <li>
+                    <span class="calendario__fecha">@vence.FechaLimite.TextoCorto()</span>
+                    <a asp-action="Detalle" asp-route-id="@vence.Id">@vence.Numero</a>
+                    <span class="insignia insignia--@vence.Urgencia.ClaseEstado()">@vence.Urgencia.Etiqueta()</span>
+                </li>
+            }
+        </ul>
+    }
+</section>

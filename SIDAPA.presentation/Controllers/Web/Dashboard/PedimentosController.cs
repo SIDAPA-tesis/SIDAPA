@@ -1,83 +1,36 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SIDAPA.application.Interface.Core;
+using SIDAPA.application.Services.Core;
+using SIDAPA.presentation.Models;
+using SIDAPA.presentation.Models.Pedimentos;
+using System.Globalization;
 
 namespace SIDAPA.presentation.Controllers.Web.Dashboard
 {
     public class PedimentosController : Controller
     {
-        // GET: PedimentosController
-        public ActionResult Index()
+        private readonly IPedimentoService _servicio;
+
+        public PedimentosController(IPedimentoService servicio) => _servicio = servicio;
+
+        // Panel del capturador: cards de pedimentos + calendario de fechas límite.
+        public async Task<IActionResult> Index(string? q, string? mes, CancellationToken ct)
         {
-            return View();
+            var panel = await _servicio.ObtenerPanelAsync(q, ParsearMes(mes), ct);
+            return View(PanelPedimentosViewModel.Desde(panel, q));
         }
 
-        // GET: PedimentosController/Details/5
-        public ActionResult Details(int id)
+        // Destino de las cards. Aquí va la vista completa del pedimento.
+        public async Task<IActionResult> Detalle(int id, CancellationToken ct)
         {
-            return View();
+            var pedimento = await _servicio.ObtenerAsync(id, ct);
+            return pedimento is null ? NotFound() : View(pedimento);
         }
 
-        // GET: PedimentosController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PedimentosController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PedimentosController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PedimentosController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PedimentosController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PedimentosController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        private static DateOnly? ParsearMes(string? mes) =>
+            DateOnly.TryParseExact($"{mes}-01", "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fecha)
+                ? fecha
+                : null;
     }
 }
