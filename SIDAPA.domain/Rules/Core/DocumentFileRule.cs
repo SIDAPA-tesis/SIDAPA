@@ -48,4 +48,14 @@ public static class DocumentFileRule
         header = header.TrimStart(Whitespace);
         return header.Length > 0 && header[0] == (byte)'<';
     }
+
+        /// <summary>Content-Type con el que se guarda el archivo en el bucket (según su extensión ya validada).</summary>
+    public static string ContentTypeFor(string fileName) => Path.GetExtension(fileName).ToLowerInvariant() switch
+    {
+        ".pdf" => "application/pdf",
+        ".xml" => "application/xml",
+        ".xls" => "application/vnd.ms-excel",
+        ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        _ => "application/octet-stream"
+    };
 }

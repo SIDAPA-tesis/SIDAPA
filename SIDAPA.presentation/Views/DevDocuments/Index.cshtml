@@ -1,0 +1,55 @@
+@using SIDAPA.domain.Enums.Core
+@model SIDAPA.presentation.Models.Dev.DevDocumentViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Prueba de documentos";
+}
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow rounded-4 p-4 mb-4">
+                <h1 class="h4 fw-bold mb-3">Documentos en la nube (SCRUM-48)</h1>
+
+                <form asp-action="Index" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-12 col-md-4">
+                            <label asp-for="ReferenciaId" class="form-label">Id de la referencia</label>
+                            <input asp-for="ReferenciaId" class="form-control" />
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <label asp-for="DocumentType" class="form-label">Tipo de documento</label>
+                            <select asp-for="DocumentType" asp-items="Html.GetEnumSelectList<DocumentTypeEnum>()" class="form-select"></select>
+                        </div>
+                    </div>
+
+                    <input asp-for="File" class="form-control mb-2" />
+                    <span asp-validation-for="File" class="invalid-feedback d-block mb-2"></span>
+
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Subir</button>
+                </form>
+            </div>
+
+            <div class="list-group shadow-sm">
+                @if (Model.Documents.Count == 0)
+                {
+                    <div class="list-group-item text-secondary">La referencia @Model.ReferenciaId no tiene documentos.</div>
+                }
+                @foreach (var d in Model.Documents)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-3">
+                        <div class="text-break">
+                            <div class="fw-semibold">@d.FileName</div>
+                            <small class="text-secondary d-block">
+                                @d.DocumentType · @((d.SizeInBytes / 1024d).ToString("0.#")) KB · @d.Status · @d.UploadedAt.ToString("yyyy-MM-dd HH:mm") UTC
+                            </small>
+                            <small class="text-secondary d-block"><code>@d.BucketPath</code></small>
+                        </div>
+                        <a asp-action="Download" asp-route-id="@d.Id" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill">Ver</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</main>

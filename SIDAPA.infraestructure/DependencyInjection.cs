@@ -43,6 +43,10 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationService, NotificationService>();
 
+        // SCRUM-48: documentos del expediente (bucket + ope_documento)
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IDocumentService, DocumentService>();
+
         // Con servidor configurado manda correos reales; si no, solo los escribe en el log.
         services.AddSingleton(email);
         if (email.IsConfigured)
