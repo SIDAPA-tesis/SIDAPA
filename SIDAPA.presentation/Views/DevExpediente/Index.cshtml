@@ -1,0 +1,57 @@
+@model SIDAPA.presentation.Models.Dev.DevExpedienteViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Prueba de expediente";
+}
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow rounded-4 p-4 mb-4">
+                <h1 class="h4 fw-bold mb-3">Expediente completo (SCRUM-56)</h1>
+
+                <form asp-action="Index" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <label asp-for="ReferenciaId" class="form-label">Id de la referencia</label>
+                    <input asp-for="ReferenciaId" class="form-control mb-3" />
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" name="Apply" value="false" class="btn btn-outline-primary rounded-pill px-4">Solo revisar</button>
+                        <button type="submit" name="Apply" value="true" class="btn btn-primary rounded-pill px-4">Evaluar y cambiar estatus</button>
+                    </div>
+                </form>
+            </div>
+
+            @if (Model.Result is { } r)
+            {
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    @if (r.StatusChanged)
+                    {
+                        <div class="alert alert-success py-2 small" role="status">La referencia pasó a EXPEDIENTE_COMPLETO y se avisó al cliente.</div>
+                    }
+
+                    <p class="mb-2">
+                        Estatus: <span class="badge text-bg-secondary">@r.Status</span>
+                        · @(r.IsComplete ? "Expediente completo" : $"Faltan {r.MissingDocuments.Count} documento(s)")
+                    </p>
+
+                    @if (r.MandatoryDocuments.Count == 0)
+                    {
+                        <p class="text-secondary small mb-0">Esta operación no tiene documentos obligatorios configurados.</p>
+                    }
+
+                    <ul class="list-group">
+                        @foreach (var doc in r.MandatoryDocuments)
+                        {
+                            var missing = r.MissingDocuments.Contains(doc);
+                            <li class="list-group-item d-flex justify-content-between gap-2">
+                                <span class="text-break">@doc</span>
+                                <span class="badge @(missing ? "text-bg-danger" : "text-bg-success")">@(missing ? "Falta" : "Correcto")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</main>
