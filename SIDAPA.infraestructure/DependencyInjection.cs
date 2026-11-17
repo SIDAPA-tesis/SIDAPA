@@ -47,6 +47,10 @@ public static class DependencyInjection
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IDocumentService, DocumentService>();
 
+        // SCRUM-56: expediente completo (cambio automático de estatus)
+        services.AddScoped<IReferenciaRepository, ReferenciaRepository>();
+        services.AddScoped<IExpedienteService, ExpedienteService>();
+
         // Con servidor configurado manda correos reales; si no, solo los escribe en el log.
         services.AddSingleton(email);
         if (email.IsConfigured)
