@@ -23,6 +23,8 @@ namespace SIDAPA.infraestructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("seq_numero_referencia");
+
             modelBuilder.Entity("SIDAPA.domain.Entities.Core.Catalogs.DocumentTypeEntity", b =>
                 {
                     b.Property<short>("Id")
@@ -143,6 +145,18 @@ namespace SIDAPA.infraestructure.Migrations
                         .HasName("pk_cat_tipo_operacion");
 
                     b.ToTable("cat_tipo_operacion", "sidapa");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = (short)1,
+                            Description = "Importación"
+                        },
+                        new
+                        {
+                            Code = (short)2,
+                            Description = "Exportación"
+                        });
                 });
 
             modelBuilder.Entity("SIDAPA.domain.Entities.Core.Catalogs.RequiredDocumentEntity", b =>
@@ -823,6 +837,408 @@ namespace SIDAPA.infraestructure.Migrations
                         .HasName("pk_cat_aduana_seccion");
 
                     b.ToTable("cat_aduana_seccion", "sidapa");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "010",
+                            AduanaCode = "01",
+                            IsActive = true,
+                            Name = "ACAPULCO, ACAPULCO DE JUÁREZ, GUERRERO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "020",
+                            AduanaCode = "02",
+                            IsActive = true,
+                            Name = "AGUA PRIETA, AGUA PRIETA, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "050",
+                            AduanaCode = "05",
+                            IsActive = true,
+                            Name = "SUBTENIENTE LÓPEZ, OTHÓN P. BLANCO, QUINTANA ROO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "060",
+                            AduanaCode = "06",
+                            IsActive = true,
+                            Name = "CIUDAD DEL CARMEN, CARMEN, CAMPECHE.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "070",
+                            AduanaCode = "07",
+                            IsActive = true,
+                            Name = "CIUDAD JUÁREZ, JUÁREZ, CHIHUAHUA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "080",
+                            AduanaCode = "08",
+                            IsActive = true,
+                            Name = "COATZACOALCOS, COATZACOALCOS, VERACRUZ.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "110",
+                            AduanaCode = "11",
+                            IsActive = true,
+                            Name = "ENSENADA, ENSENADA, BAJA CALIFORNIA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "120",
+                            AduanaCode = "12",
+                            IsActive = true,
+                            Name = "GUAYMAS, GUAYMAS, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "140",
+                            AduanaCode = "14",
+                            IsActive = true,
+                            Name = "LA PAZ, LA PAZ, BAJA CALIFORNIA SUR.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "160",
+                            AduanaCode = "16",
+                            IsActive = true,
+                            Name = "MANZANILLO, MANZANILLO, COLIMA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "170",
+                            AduanaCode = "17",
+                            IsActive = true,
+                            Name = "MATAMOROS, MATAMOROS, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "180",
+                            AduanaCode = "18",
+                            IsActive = true,
+                            Name = "MAZATLÁN, MAZATLÁN, SINALOA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "190",
+                            AduanaCode = "19",
+                            IsActive = true,
+                            Name = "MEXICALI, MEXICALI, BAJA CALIFORNIA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "200",
+                            AduanaCode = "20",
+                            IsActive = true,
+                            Name = "MÉXICO, CIUDAD DE MÉXICO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "220",
+                            AduanaCode = "22",
+                            IsActive = true,
+                            Name = "NACO, NACO, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "230",
+                            AduanaCode = "23",
+                            IsActive = true,
+                            Name = "NOGALES, NOGALES, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "240",
+                            AduanaCode = "24",
+                            IsActive = true,
+                            Name = "NUEVO LAREDO, NUEVO LAREDO, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "250",
+                            AduanaCode = "25",
+                            IsActive = true,
+                            Name = "OJINAGA, OJINAGA, CHIHUAHUA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "260",
+                            AduanaCode = "26",
+                            IsActive = true,
+                            Name = "PUERTO PALOMAS, ASCENSIÓN, CHIHUAHUA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "270",
+                            AduanaCode = "27",
+                            IsActive = true,
+                            Name = "PIEDRAS NEGRAS, PIEDRAS NEGRAS, COAHUILA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "280",
+                            AduanaCode = "28",
+                            IsActive = true,
+                            Name = "PROGRESO, PROGRESO, YUCATÁN.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "300",
+                            AduanaCode = "30",
+                            IsActive = true,
+                            Name = "CIUDAD REYNOSA, REYNOSA, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "310",
+                            AduanaCode = "31",
+                            IsActive = true,
+                            Name = "SALINA CRUZ, SALINA CRUZ, OAXACA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "330",
+                            AduanaCode = "33",
+                            IsActive = true,
+                            Name = "SAN LUIS RÍO COLORADO, SAN LUIS RÍO COLORADO, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "340",
+                            AduanaCode = "34",
+                            IsActive = true,
+                            Name = "CIUDAD MIGUEL ALEMÁN, MIGUEL ALEMÁN, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "370",
+                            AduanaCode = "37",
+                            IsActive = true,
+                            Name = "CIUDAD HIDALGO, SUCHIATE, CHIAPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "380",
+                            AduanaCode = "38",
+                            IsActive = true,
+                            Name = "TAMPICO, TAMPICO, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "390",
+                            AduanaCode = "39",
+                            IsActive = true,
+                            Name = "TECATE, TECATE, BAJA CALIFORNIA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "400",
+                            AduanaCode = "40",
+                            IsActive = true,
+                            Name = "TIJUANA, TIJUANA, BAJA CALIFORNIA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "420",
+                            AduanaCode = "42",
+                            IsActive = true,
+                            Name = "TUXPAN, TUXPAN, VERACRUZ.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "430",
+                            AduanaCode = "43",
+                            IsActive = true,
+                            Name = "VERACRUZ, VERACRUZ, VERACRUZ.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "440",
+                            AduanaCode = "44",
+                            IsActive = true,
+                            Name = "CIUDAD ACUÑA, ACUÑA, COAHUILA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "460",
+                            AduanaCode = "46",
+                            IsActive = true,
+                            Name = "TORREÓN, TORREÓN, COAHUILA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "470",
+                            AduanaCode = "47",
+                            IsActive = true,
+                            Name = "AEROPUERTO INTERNACIONAL DE LA CIUDAD DE MÉXICO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "480",
+                            AduanaCode = "48",
+                            IsActive = true,
+                            Name = "GUADALAJARA, TLAJOMULCO DE ZÚÑIGA, JALISCO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "500",
+                            AduanaCode = "50",
+                            IsActive = true,
+                            Name = "SONOYTA, PLUTARCO ELÍAS CALLES, SONORA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "510",
+                            AduanaCode = "51",
+                            IsActive = true,
+                            Name = "LÁZARO CÁRDENAS, LÁZARO CÁRDENAS, MICHOACÁN.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "520",
+                            AduanaCode = "52",
+                            IsActive = true,
+                            Name = "MONTERREY, GENERAL MARIANO ESCOBEDO, NUEVO LEÓN.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "530",
+                            AduanaCode = "53",
+                            IsActive = true,
+                            Name = "CANCÚN, BENITO JUÁREZ, QUINTANA ROO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "640",
+                            AduanaCode = "64",
+                            IsActive = true,
+                            Name = "QUERÉTARO, COLÓN, QUERÉTARO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "650",
+                            AduanaCode = "65",
+                            IsActive = true,
+                            Name = "TOLUCA, TOLUCA, ESTADO DE MÉXICO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "670",
+                            AduanaCode = "67",
+                            IsActive = true,
+                            Name = "CHIHUAHUA, CHIHUAHUA, CHIHUAHUA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "730",
+                            AduanaCode = "73",
+                            IsActive = true,
+                            Name = "AGUASCALIENTES, AGUASCALIENTES, AGUASCALIENTES.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "750",
+                            AduanaCode = "75",
+                            IsActive = true,
+                            Name = "PUEBLA, HUEJOTZINGO, PUEBLA.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "800",
+                            AduanaCode = "80",
+                            IsActive = true,
+                            Name = "COLOMBIA, ANÁHUAC, NUEVO LEÓN.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "810",
+                            AduanaCode = "81",
+                            IsActive = true,
+                            Name = "ALTAMIRA, ALTAMIRA, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "820",
+                            AduanaCode = "82",
+                            IsActive = true,
+                            Name = "CIUDAD CAMARGO, CAMARGO, TAMAULIPAS.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "830",
+                            AduanaCode = "83",
+                            IsActive = true,
+                            Name = "DOS BOCAS, PARAÍSO, TABASCO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "840",
+                            AduanaCode = "84",
+                            IsActive = true,
+                            Name = "GUANAJUATO, SILAO DE LA VICTORIA, GUANAJUATO.",
+                            Section = "0"
+                        },
+                        new
+                        {
+                            Code = "850",
+                            AduanaCode = "85",
+                            IsActive = true,
+                            Name = "AEROPUERTO INTERNACIONAL FELIPE ÁNGELES, ZUMPANGO, ESTADO DE MÉXICO.",
+                            Section = "0"
+                        });
                 });
 
             modelBuilder.Entity("SIDAPA.domain.Entities.CustomDeclaration.Catalogs.ContainerTypeEntity", b =>

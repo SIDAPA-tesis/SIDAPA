@@ -1,3 +1,4 @@
+using SIDAPA.application.DTOs.Core.Referencias;
 using SIDAPA.application.DTOs.Core.Notifications;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.application.Services.Core;
@@ -146,6 +147,13 @@ public class ExpedienteServiceTests
             Changes.Add((from, to, userId));
             return Task.FromResult(true);
         }
+
+        // El expediente no crea ni borra referencias.
+        public Task<long> NextNumberAsync(CancellationToken ct = default) => throw new NotSupportedException();
+        public Task AddAsync(ReferenciaEntity referencia, int userId, CancellationToken ct = default) => throw new NotSupportedException();
+        public Task DeleteAsync(int referenciaId, CancellationToken ct = default) => throw new NotSupportedException();
+        public Task<IReadOnlyList<ClientReferenciaDto>> GetByClientAsync(int clientId, CancellationToken ct = default) =>
+            throw new NotSupportedException();
     }
 
     private sealed class FakeDocumentRepository : IDocumentRepository

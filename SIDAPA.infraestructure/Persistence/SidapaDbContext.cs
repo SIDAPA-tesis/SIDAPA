@@ -80,7 +80,11 @@ public class SidapaDbContext(DbContextOptions<SidapaDbContext> options) : DbCont
     {
         modelBuilder.HasDefaultSchema(SidapaDbContext.Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SidapaDbContext).Assembly);
+
+        // Consecutivo del número de referencia (R-000123). Una secuencia evita duplicados con avisos simultáneos.
+        modelBuilder.HasSequence<long>(ReferenciaNumberSequence).StartsAt(1).IncrementsBy(1);
     }
 
     public const string Schema = "sidapa";
+    public const string ReferenciaNumberSequence = "seq_numero_referencia";
 }
