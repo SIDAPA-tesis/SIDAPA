@@ -17,6 +17,7 @@ namespace SIDAPA.application
 
             services.AddScoped<IPedimentoService, PedimentoService>();
             services.AddScoped<IClaveService, ClaveService>();
+            services.AddScoped<IArrivalNoticeService, ArrivalNoticeService>();   // SCRUM-46
             services.AddSingleton<IPermisosService, PermisosService>();
 
             return services;

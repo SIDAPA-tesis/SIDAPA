@@ -56,9 +56,8 @@ public static class DependencyInjection
         services.AddScoped<IPedimentoRepositorio, PedimentoRepository>();
         services.AddScoped<IClaveRepositorio, ClaveRepository>();
 
-        // SCRUM-46: aviso de arribo del Cliente (HU-02)
+        // SCRUM-46: catálogos del aviso de arribo (el servicio se registra en AddApplication)
         services.AddScoped<ICatalogRepository, CatalogRepository>();
-        services.AddScoped<IArrivalNoticeService, ArrivalNoticeService>();
 
         // Con servidor configurado manda correos reales; si no, solo los escribe en el log.
         services.AddSingleton(email);

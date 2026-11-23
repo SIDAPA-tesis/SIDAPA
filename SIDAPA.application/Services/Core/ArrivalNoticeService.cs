@@ -66,8 +66,8 @@ public class ArrivalNoticeService(
     public Task<IReadOnlyList<ClientReferenciaDto>> GetClientPanelAsync(int clientId, CancellationToken ct = default) =>
         referencias.GetByClientAsync(clientId, ct);
 
-    public Task<IReadOnlyList<AduanaOptionDto>> GetAduanasAsync(CancellationToken ct = default) =>
-        catalogs.GetActiveAduanasAsync(ct);
+    public async Task<ArrivalNoticeCatalogsDto> GetCatalogsAsync(CancellationToken ct = default) =>
+        new(await catalogs.GetActiveAduanasAsync(ct), await catalogs.GetDocumentTypesAsync(ct));
 
     private async Task ValidateFileAsync(ArrivalNoticeFileDto file, CancellationToken ct)
     {

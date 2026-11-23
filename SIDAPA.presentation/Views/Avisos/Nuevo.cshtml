@@ -1,0 +1,93 @@
+@model NuevoAvisoViewModel
+@{
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = "Nuevo aviso de arribo";
+    var maxMb = DocumentFileRule.maxSizeInBytes / (1024 * 1024);
+    var extensiones = string.Join(",", DocumentFileRule.AllowedExtensions);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/vistas/avisos.css" asp-append-version="true" />
+}
+
+@*
+    Funciona sin JavaScript: renglones fijos de archivo + tipo y un POST normal. Si algo falla, el servidor vuelve a
+    pintar la vista con el mensaje (validaciones del modelo o DomainExceptionFilter). avisos.js solo agrega la zona
+    para arrastrar y soltar y revisa extensión y tamaño antes de enviar, para no perder los demás archivos.
+*@
+<div class="container-fluid py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Nuevo aviso de arribo</h1>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Mis avisos de arribo</a>
+    </div>
+
+    <form asp-action="Nuevo" method="post" enctype="multipart/form-data" class="card shadow-sm border-0" novalidate
+          data-avisos-form data-max-bytes="@DocumentFileRule.maxSizeInBytes" data-extensiones="@extensiones">
+        <div class="card-body p-4">
+            <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <label asp-for="TipoOperacion" class="form-label">Tipo de operación <span class="text-danger">*</span></label>
+                    <select asp-for="TipoOperacion" class="form-select">
+                        @foreach (var tipo in ArrivalNoticeRule.AllowedOperationTypes)
+                        {
+                            <option value="@tipo">@(tipo == OperationTypeEnum.IMPORTACION ? "Importación" : "Exportación")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="FechaArribo" class="form-label">Fecha estimada de arribo <span class="text-danger">*</span></label>
+                    <input asp-for="FechaArribo" type="date" class="form-control" required />
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="Aduana" class="form-label">Aduana de arribo <span class="text-danger">*</span></label>
+                    <select asp-for="Aduana" class="form-select" required>
+                        <option value="">Selecciona una aduana</option>
+                        @foreach (var aduana in Model.Aduanas)
+                        {
+                            <option value="@aduana.Code">@aduana.Code · @aduana.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <fieldset class="mt-4">
+                <legend class="h5">Documentos <span class="text-danger">*</span></legend>
+                <p class="form-text mt-0">
+                    PDF, XML o Excel (.xls, .xlsx), máximo @maxMb MB cada uno. Indica qué documento es cada archivo
+                    (por ejemplo, la factura y el B/L).
+                </p>
+
+                <div class="avisos-dropzone rounded-3 p-4 mb-3 text-center text-body-secondary" data-avisos-dropzone hidden>
+                    Arrastra aquí tus archivos o elígelos en cada renglón.
+                </div>
+                <div class="text-danger small mb-2" data-avisos-error role="alert" aria-live="polite"></div>
+
+                <div class="vstack gap-2">
+                    @for (var i = 0; i < Model.Documentos.Count; i++)
+                    {
+                        <partial name="_RenglonDocumento" model="new RenglonDocumentoViewModel(i, Model.Documentos[i], Model.TiposDocumento)" />
+                    }
+                </div>
+            </fieldset>
+
+            <div class="mt-4">
+                <label asp-for="Observaciones" class="form-label"></label>
+                <textarea asp-for="Observaciones" class="form-control" rows="3"
+                          maxlength="@ArrivalNoticeRule.MaxNotesLength"></textarea>
+                <div class="form-text">Opcional, máximo @ArrivalNoticeRule.MaxNotesLength caracteres.</div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary px-4">Enviar aviso de arribo</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/avisos.js" asp-append-version="true"></script>
+}

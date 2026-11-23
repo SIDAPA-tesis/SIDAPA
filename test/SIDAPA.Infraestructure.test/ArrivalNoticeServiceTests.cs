@@ -217,6 +217,9 @@ public class ArrivalNoticeServiceTests
 
         public Task<bool> IsActiveAduanaAsync(string aduanaCode, CancellationToken ct = default) =>
             Task.FromResult(aduanaCode == Aduana);
+
+        public Task<IReadOnlyList<DocumentTypeOptionDto>> GetDocumentTypesAsync(CancellationToken ct = default) =>
+            Task.FromResult<IReadOnlyList<DocumentTypeOptionDto>>([]);
     }
 
     /// <summary>Sube al <see cref="FakeCloudStorage"/>; puede fallar en el N-ésimo archivo.</summary>

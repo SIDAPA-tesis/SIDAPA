@@ -13,5 +13,6 @@ public interface IArrivalNoticeService
 
     Task<IReadOnlyList<ClientReferenciaDto>> GetClientPanelAsync(int clientId, CancellationToken ct = default);
 
-    Task<IReadOnlyList<AduanaOptionDto>> GetAduanasAsync(CancellationToken ct = default);
+    /// <summary>Aduanas vigentes y tipos de documento para el formulario.</summary>
+    Task<ArrivalNoticeCatalogsDto> GetCatalogsAsync(CancellationToken ct = default);
 }

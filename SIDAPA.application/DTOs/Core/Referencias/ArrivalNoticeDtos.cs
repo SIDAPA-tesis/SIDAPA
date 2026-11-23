@@ -33,3 +33,9 @@ public record ClientReferenciaDto(
 
 /// <summary>Opción del catálogo de aduanas (Apéndice 1).</summary>
 public record AduanaOptionDto(string Code, string Name);
+
+/// <summary>Opción del catálogo de tipos de documento (cat_tipo_documento).</summary>
+public record DocumentTypeOptionDto(DocumentTypeEnum Id, string Name);
+
+/// <summary>Catálogos que necesita el formulario del aviso de arribo.</summary>
+public record ArrivalNoticeCatalogsDto(IReadOnlyList<AduanaOptionDto> Aduanas, IReadOnlyList<DocumentTypeOptionDto> DocumentTypes);
