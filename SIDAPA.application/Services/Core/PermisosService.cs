@@ -15,9 +15,9 @@ namespace SIDAPA.application.Services.Core
         {
             ["CAPTURADOR"] = [ModuleEnum.Pedimentos],
             ["GLOSADOR"] = [ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Reportes],
-            ["ADMINISTRADOR"] = Enum.GetValues<ModuleEnum>(),
+            ["ADMINISTRADOR"] = Enum.GetValues<ModuleEnum>().Where(m => m != ModuleEnum.AvisosArribo).ToArray(),
             ["VALIDADOR"] = [ModuleEnum.Pedimentos],
-            ["CLIENTE"] = Enum.GetValues<ModuleEnum>(),
+            ["CLIENTE"] = [ModuleEnum.AvisosArribo],   // solo su portal (docs/permisos-por-rol.md)
         };
 
         public IReadOnlyList<ModuleEnum> ModulosPara(IEnumerable<string> roles) =>

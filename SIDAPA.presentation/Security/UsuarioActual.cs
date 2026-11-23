@@ -1,12 +1,14 @@
-﻿using System.Security.Claims;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Enums.Core;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SIDAPA.presentation.Security
 {
     public class UsuarioActual : IUserActual
     {
+        // Program.cs usa MapInboundClaims = false: los claims llegan con su nombre corto del token.
+        private const string NameClaim = "name";
+        private const string RoleClaim = "role";
+
         public string Nombre { get; }
         public IReadOnlyCollection<string> Roles { get; }
 
@@ -16,8 +18,8 @@ namespace SIDAPA.presentation.Security
 
             if (usuario?.Identity?.IsAuthenticated == true)
             {
-                Nombre = usuario.Identity!.Name ?? "Usuario";
-                Roles = usuario.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+                Nombre = usuario.FindFirst(NameClaim)?.Value ?? "Usuario";
+                Roles = usuario.FindAll(RoleClaim).Select(c => c.Value).ToList();
             }
             else if (entorno.IsDevelopment())
             {

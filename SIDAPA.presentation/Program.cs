@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SIDAPA.application;
+using SIDAPA.application.Interface.Core;
 using SIDAPA.infraestructure;
 using SIDAPA.infraestructure.External.CloudStorage;
 using SIDAPA.infraestructure.Email;
@@ -44,7 +46,12 @@ if (string.IsNullOrWhiteSpace(gcs.BucketName))
 if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
     throw new InvalidOperationException("Missing 'GoogleCloudStorage:CredentialsJson'. Set it with dotnet user-secrets.");
 var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs,email);
+builder.Services.AddApplication();
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs, email);
+
+// Usuario de la petición actual (menú lateral por rol).
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserActual, UsuarioActual>();
 
 builder.Services.AddSidapaAuthorization();
 

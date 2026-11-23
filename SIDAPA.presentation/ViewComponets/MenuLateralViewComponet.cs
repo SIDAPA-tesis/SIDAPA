@@ -14,7 +14,9 @@ namespace SIDAPA.presentation.ViewComponets
             [ModuleEnum.Pedimentos] = ("Pedimentos", "Pedimentos"),
             [ModuleEnum.Claves] = ("Claves", "Claves"),
             [ModuleEnum.Reportes] = ("Reportes", "Reportes"),
+            [ModuleEnum.Productos] = ("Productos", "Productos"),
             [ModuleEnum.Usuarios] = ("Usuarios", "Usuarios"),
+            [ModuleEnum.AvisosArribo] = ("Mis avisos de arribo", "Avisos"),
         };
 
         private readonly IUserActual _usuario;

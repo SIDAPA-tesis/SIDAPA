@@ -11,6 +11,7 @@ namespace SIDAPA.domain.Enums.Core
         Claves,
         Reportes,
         Productos,
-        Usuarios
+        Usuarios,
+        AvisosArribo
     }
 }

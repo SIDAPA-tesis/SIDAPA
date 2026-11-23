@@ -52,6 +52,10 @@ public static class DependencyInjection
         services.AddScoped<IReferenciaRepository, ReferenciaRepository>();
         services.AddScoped<IExpedienteService, ExpedienteService>();
 
+        // Panel de pedimentos y catálogo de claves (servicios en AddApplication)
+        services.AddScoped<IPedimentoRepositorio, PedimentoRepository>();
+        services.AddScoped<IClaveRepositorio, ClaveRepository>();
+
         // Con servidor configurado manda correos reales; si no, solo los escribe en el log.
         services.AddSingleton(email);
         if (email.IsConfigured)
