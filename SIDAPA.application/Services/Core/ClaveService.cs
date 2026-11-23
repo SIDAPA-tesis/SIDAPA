@@ -1,10 +1,6 @@
-﻿using SIDAPA.application.DTOs.Core.Claves;
+using SIDAPA.application.DTOs.Core.Claves;
 using SIDAPA.application.Interface.Core;
-using SIDAPA.domain.Entities.Core.Catalogs;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using SIDAPA.domain.Entities.CustomDeclaration.Catalogs;
 
 namespace SIDAPA.application.Services.Core
 {
@@ -18,12 +14,11 @@ namespace SIDAPA.application.Services.Core
             FiltroClaves filtro, string? codigoSeleccionado, CancellationToken ct = default)
         {
             var claves = await _repositorio.ListarAsync(filtro, ct);
-            var conteo = await _repositorio.ContarPorEstadoAsync(ct);
 
             ClaveDto? seleccionada = null;
             if (!string.IsNullOrWhiteSpace(codigoSeleccionado))
             {
-                var clave = await _repositorio.ContarAsync(codigoSeleccionado, ct);
+                var clave = await _repositorio.ObtenerAsync(codigoSeleccionado, ct);
                 if (clave is not null) seleccionada = Mapear(clave);
             }
 
@@ -33,13 +28,13 @@ namespace SIDAPA.application.Services.Core
             return new TableroClavesDto(metricas, claves.Select(Mapear).ToList(), seleccionada);
         }
 
-        private static ClaveDto Mapear(ClaveTypeEntity c) => new(
-            c.Codigo,
-            c.Descripcion,
-            c.Grupo,
-            c.SubGrupo,
-            c.Supuestos,
-            c.Vigente,
-            c.FechaActualizacion);
+        private static ClaveDto Mapear(PedimentoKeyEntity c) => new(
+            c.Code,
+            c.Description,
+            c.Group,
+            c.Subgroup,
+            c.ApplicationCases,
+            c.IsActive,
+            c.UpdatedOn);
     }
 }

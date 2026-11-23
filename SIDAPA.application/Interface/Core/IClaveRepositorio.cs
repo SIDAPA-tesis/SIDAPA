@@ -1,18 +1,13 @@
-﻿using SIDAPA.domain.Entities.Core.Catalogs;
 using SIDAPA.application.DTOs.Core.Claves;
-using SIDAPA.application.Services.Core;
-using SIDAPA.domain.Enums.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SIDAPA.domain.Entities.CustomDeclaration.Catalogs;
 
 namespace SIDAPA.application.Interface.Core
 {
+    /// <summary>Claves de pedimento del Apéndice 2 (tabla <c>cat_clave_pedimento</c>).</summary>
     public interface IClaveRepositorio
     {
-        Task<IReadOnlyList<ClaveTypeEntity>> ListarAsync(FiltroClaves filtro, CancellationToken ct = default);
+        Task<IReadOnlyList<PedimentoKeyEntity>> ListarAsync(FiltroClaves filtro, CancellationToken ct = default);
+        Task<PedimentoKeyEntity?> ObtenerAsync(string codigo, CancellationToken ct = default);
         Task<(int Vigentes, int NoVigentes)> ContarAsync(CancellationToken ct = default);
-        Task<IReadOnlyDictionary<ClaveStateEnum, int>> ContarPorEstadoAsync(CancellationToken ct = default);
-
     }
 }

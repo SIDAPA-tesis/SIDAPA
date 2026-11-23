@@ -1,9 +1,7 @@
-﻿using SIDAPA.application.DTOs.Core.Pedimento;
+using SIDAPA.application.DTOs.Core.Pedimento;
 using SIDAPA.application.Interface.Core;
-using SIDAPA.domain.Entities.Core.Catalogs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SIDAPA.domain.Enums.Core;
+using SIDAPA.domain.Rules.Core;
 
 namespace SIDAPA.application.Services.Core
 {
@@ -37,7 +35,11 @@ namespace SIDAPA.application.Services.Core
 
         private DateOnly Hoy() => DateOnly.FromDateTime(_reloj.GetLocalNow().DateTime);
 
-        private static PedimentoDto Mapear(PedimentoTypeEntity p, DateOnly hoy) =>
-            new(p.Id, p.Numero, p.Empresa, p.ImagenUrl, p.Avance, p.FechaLimite, p.UrgenciaEn(hoy));
+        private static PedimentoDto Mapear(PedimentoResumenDto p, DateOnly hoy)
+        {
+            var avance = PedimentoUrgencyRule.ProgressFor((ReferenciaStatusEnum)p.StatusId);
+            return new(p.Id, p.Numero, p.Empresa, p.ImagenUrl, avance, p.FechaLimite,
+                PedimentoUrgencyRule.For(avance, p.FechaLimite, hoy));
+        }
     }
 }

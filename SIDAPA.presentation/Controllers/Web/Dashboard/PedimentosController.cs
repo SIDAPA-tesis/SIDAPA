@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIDAPA.application.Interface.Core;
-using SIDAPA.application.Services.Core;
+using Microsoft.AspNetCore.Authorization;
+using SIDAPA.presentation.Security;
 using SIDAPA.presentation.Models;
 using SIDAPA.presentation.Models.Pedimentos;
 using System.Globalization;
 
 namespace SIDAPA.presentation.Controllers.Web.Dashboard
 {
+    [Authorize(Policy = Policies.Staff)]
     public class PedimentosController : Controller
     {
         private readonly IPedimentoService _servicio;

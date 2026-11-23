@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using SIDAPA.domain.Enums;
-using SIDAPA.domain.Enums.Core;
-
 namespace SIDAPA.application.DTOs.Core.Claves
 {
     public record FiltroClaves(string? Busqueda, bool? Vigente);
@@ -16,7 +11,7 @@ namespace SIDAPA.application.DTOs.Core.Claves
         string? SubGrupo,
         string? Supuestos,
         bool Vigente,
-        DateTime FechaActualizacion);
+        DateOnly? FechaActualizacion);
 
 
     public record TableroClavesDto(
