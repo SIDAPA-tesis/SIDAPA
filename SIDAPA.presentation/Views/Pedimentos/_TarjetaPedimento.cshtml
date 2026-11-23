@@ -1,0 +1,28 @@
+﻿@model SIDAPA.application.DTOs.Core.Pedimento.PedimentoDto
+
+@* Card completa clicable: lleva a la vista del pedimento. Estilos: css/componentes/tarjeta-pedimento.css *@
+<a class="tarjeta-pedimento" asp-controller="Pedimentos" asp-action="Detalle" asp-route-id="@Model.Id">
+
+    @* Imagen representativa del pedimento o de la empresa (si no hay, se muestra la inicial) *@
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <img class="tarjeta-pedimento__imagen" src="@Model.ImagenUrl" alt="" loading="lazy" />
+    }
+    else
+    {
+        <span class="tarjeta-pedimento__imagen tarjeta-pedimento__imagen--vacia" aria-hidden="true">@(Model.Empresa.Length > 0 ? Model.Empresa[..1].ToUpperInvariant() : "·")</span>
+    }
+
+    <div>
+        <h2 class="tarjeta-pedimento__titulo">@Model.Numero</h2>
+        <p class="tarjeta-pedimento__subtitulo">@Model.Empresa</p>
+
+        @* Barra de progreso *@
+        <div class="tarjeta-pedimento__avance">
+            <div class="tarjeta-pedimento__barra" role="progressbar" aria-label="Avance del pedimento"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Model.Avance"
+                 style="--avance:@(Model.Avance)%"></div>
+            <span class="tarjeta-pedimento__porcentaje">@Model.Avance %</span>
+        </div>
+    </div>
+</a>

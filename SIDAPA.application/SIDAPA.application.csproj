@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SIDAPA.domain\SIDAPA.domain.csproj"/>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SIDAPA.domain\SIDAPA.domain.csproj" />
     </ItemGroup>
 
 </Project>

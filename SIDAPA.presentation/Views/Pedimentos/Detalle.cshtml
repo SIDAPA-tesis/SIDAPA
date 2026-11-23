@@ -1,0 +1,26 @@
+﻿@model SIDAPA.application.DTOs.Core.Pedimento.PedimentoDto;
+
+@{
+    ViewData["Title"] = "Pedimento";
+}
+
+@section Estilos {
+    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vistas/pedimentos.css" asp-append-version="true" />
+}
+
+<a class="pedimento-detalle__volver" asp-action="Index">&larr; Volver a pedimentos</a>
+
+<h1 class="pedimento-detalle__titulo">@Model.Numero</h1>
+<p class="pedimento-detalle__empresa">@Model.Empresa</p>
+
+<dl class="ficha">
+    <dt>Fecha límite</dt>
+    <dd>@Model.FechaLimite.Texto()</dd>
+    <dt>Avance</dt>
+    <dd>@Model.Avance %</dd>
+    <dt>Estado</dt>
+    <dd><span class="insignia insignia--@Model.Urgencia.ClaseEstado()">@Model.Urgencia.Etiqueta()</span></dd>
+</dl>
+
+@* AQUÍ VA LA VISTA COMPLETA DEL PEDIMENTO (destino de las cards) *@
