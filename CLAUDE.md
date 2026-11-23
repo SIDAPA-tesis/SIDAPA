@@ -131,6 +131,9 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
   with errors. Add JS only for what the server can't do.
 - Business logic never goes in views or controllers: controllers call application services.
 - Respect `prefers-reduced-motion` for decorative animations.
+- **Front-end policies + checker:** `.claude/skills/sidapa-frontend/SKILL.md` (CSS ≤ 300 lines, `loading="lazy"`,
+  max 1 page CSS, ViewModels, partials/ViewComponents without CSS/JS imports). Run
+  `.claude/skills/sidapa-frontend/check-frontend.ps1 -Include '<touched files>'` before finishing view work.
 
 ## Configuration & secrets
 
@@ -158,6 +161,9 @@ EF Core (infrastructure project, presentation as startup):
 dotnet ef migrations add <Name> --project SIDAPA.infraestructure --startup-project SIDAPA.presentation
 dotnet ef database update        --project SIDAPA.infraestructure --startup-project SIDAPA.presentation
 ```
+
+In Docker Compose the web container applies pending migrations by itself at startup
+(`Database__MigrateOnStartup: "true"` → `DatabaseMigrator`); `database update` is only needed when running locally.
 
 ## Git & Jira workflow
 

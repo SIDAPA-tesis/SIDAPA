@@ -14,13 +14,9 @@ services:
       TaxScan__BaseUrl: http://reader:8000
       Jwt__Key: ${JWT_KEY}
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      # Aplica las migraciones de EF Core pendientes al arrancar (ver DatabaseMigrator).
+      Database__MigrateOnStartup: "true"
     volumes:
-      # Monta el secrets.json generado por `dotnet user-secrets` en la ruta
-      # donde ASP.NET Core lo busca dentro del contenedor (solo lectura).
-      # La credencial de la base de datos NUNCA se copia a la imagen ni al repo.
-      #
-      # Windows (PowerShell/cmd):  %APPDATA%\Microsoft\UserSecrets\a87d2ab8-687e-416b-8e17-e16004650713\secrets.json
-      # Linux/macOS:               ~/.microsoft/usersecrets/a87d2ab8-687e-416b-8e17-e16004650713/secrets.json
       - ${APPDATA}/Microsoft/UserSecrets/a87d2ab8-687e-416b-8e17-e16004650713/secrets.json:/root/.microsoft/usersecrets/a87d2ab8-687e-416b-8e17-e16004650713/secrets.json:ro
     depends_on:
       db:

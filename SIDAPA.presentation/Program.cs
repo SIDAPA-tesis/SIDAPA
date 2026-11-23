@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using SIDAPA.infraestructure;
 using SIDAPA.infraestructure.External.CloudStorage;
 using SIDAPA.infraestructure.Email;
+using SIDAPA.infraestructure.Persistence;
 using SIDAPA.infraestructure.Persistence.Seed;
 using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
@@ -93,6 +94,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
+// Migraciones automáticas al arrancar. Apagado por defecto (en local se sigue usando `dotnet ef database update`);
+// docker-compose lo enciende con Database__MigrateOnStartup=true. Si falla, la app NO arranca:
+// es preferible un contenedor que se reinicia con el error en el log a una app sobre un esquema incompleto.
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+    await DatabaseMigrator.MigrateAsync(app.Services);
 
 // Roles (cat_rol) y, solo en Development, usuarios de prueba <rol>@sidapa.local.
 // La contraseña de prueba sale de user-secrets: dotnet user-secrets set "DevUsers:Password" "..."
