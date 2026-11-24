@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Pruebas de SIDAPA.infraestructure: repositorios/EF contra PostgreSQL real (Testcontainers, requiere Docker),
+      clientes externos con fakes del SDK o HttpMessageHandler, y seguridad (JWT).
+    -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\SIDAPA.infraestructure\SIDAPA.infraestructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.17.0" />
+    </ItemGroup>
+
+</Project>

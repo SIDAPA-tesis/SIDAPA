@@ -27,12 +27,17 @@ public class ReferenciaRepository(SidapaDbContext context) : IReferenciaReposito
     public async Task<bool> ChangeStatusAsync(int referenciaId, ReferenciaStatusEnum from, ReferenciaStatusEnum to,
         int userId, string? comment, DateTime changedAt, CancellationToken ct = default)
     {
-        var referencia = await context.Referencias
-            .FirstOrDefaultAsync(x => x.Id == referenciaId && x.StatusId == (short)from, ct);
-        if (referencia is null)
+        await using var transaction = await context.Database.BeginTransactionAsync(ct);
+
+        // La condición "sigue en from" va en el mismo UPDATE: si otro usuario la cambió (o tiene el candado
+        // de la fila y luego confirma), PostgreSQL vuelve a evaluar el WHERE y no actualiza nada.
+        // Leer primero y guardar después pisaba el cambio del otro usuario (lost update).
+        var updated = await context.Referencias
+            .Where(x => x.Id == referenciaId && x.StatusId == (short)from)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.StatusId, (short)to), ct);
+        if (updated == 0)
             return false;
 
-        referencia.StatusId = (short)to;
         context.StatusHistories.Add(new StatusHistoryEntity
         {
             ReferenciaId = referenciaId,
@@ -42,7 +47,8 @@ public class ReferenciaRepository(SidapaDbContext context) : IReferenciaReposito
             Comment = comment
         });
 
-        await context.SaveChangesAsync(ct);   // un solo SaveChanges = una sola transacción
+        await context.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);    // estatus + bitácora en una sola transacción
         return true;
     }
 

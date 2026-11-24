@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Pruebas de SIDAPA.presentation en memoria con WebApplicationFactory: autenticación por cookie,
+      políticas por rol, filtros, rutas y vistas. Sin BD real ni bucket: SidapaWebFactory los sustituye.
+    -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\SIDAPA.presentation\SIDAPA.presentation.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
+        <!-- Alinea con la versión que usa presentation (EF Design 10.0.12); Npgsql por sí solo trae 10.0.4 (MSB3277). -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
+    </ItemGroup>
+
+</Project>

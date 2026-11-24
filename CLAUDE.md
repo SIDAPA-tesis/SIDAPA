@@ -26,12 +26,20 @@ Spanish (`Pedimento`, `Partida`, `Aduana`, `Referencia`, `FraccionArancelaria`, 
 - **EF Core 10** (10.0.12) + **PostgreSQL 16** via `Npgsql.EntityFrameworkCore.PostgreSQL` 10.0.3.
 - **JWT** auth (`Microsoft.AspNetCore.Authentication.JwtBearer`), token carried in a cookie.
 - **Bootstrap 5.3.3**, local copy in `SIDAPA.presentation/wwwroot/lib/bootstrap/dist` (no CDN).
-- **Docker Compose**: `sidapa.presentation`, `db` (postgres:16-alpine), `reader` (built from `../sidapa-reader`).
+- **Docker Compose**, two independent environments: this repo runs `sidapa.presentation` + `db` (postgres:16-alpine);
+  `sidapa-reader` runs from its own `docker-compose.yml` in its repo.
 
 ## ⚠️ Hard rule: `.cshtml` (MVC), NOT Razor Components / Blazor
 
 Use classic **MVC controllers + `.cshtml` views**. Never add `.razor` files, Blazor, or interactive
 server components. `Program.cs` is already MVC (`AddControllersWithViews` + `MapControllerRoute`).
+
+## 🚧 Refactor in progress: modular architecture
+
+The repo is being reorganized into `<Type>/<Module>/<Submodule>/` (modules **Core**, **CaseFile**, **CustomDeclaration**;
+Core must not depend on any module). Before creating or moving backend files, read
+**`docs/refactor-arquitectura-modular.md`**: it has the target rules, the file-by-file mapping, the phase status and
+the log. New files must follow the target rules even if the phase that moves their neighbours hasn't run yet.
 
 ## Architecture — Clean Architecture
 
@@ -106,15 +114,17 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
 - The `role` claim is the **`RolesEnum` name** (`CAPTURADOR`, `GLOSADOR`…). Protect endpoints with
   `[Authorize]` / `[Authorize(Roles = nameof(RolesEnum.GLOSADOR))]`; the comparison is exact (case-sensitive).
 - Sliding renewal at half-life: `TokenRenewalMiddleware`.
-- `Controllers/Api/Dev*Controller.cs` are **testing endpoints only**; do not build features on them and
-  restrict or remove them before production.
+- No manual test endpoints (`Dev*Controller`, `/dev/...`): what you'd check by hand becomes an automated
+  test (see **Testing**). The checker flags any `Dev*Controller.cs`.
 
 ## Document reader (`sidapa-reader`)
 
 - Contract: `POST /invoices/read` (multipart file) → JSON in **snake_case**.
 - C# side: typed `HttpClient` `TaxScanClient : ITaxScanClient` with `JsonNamingPolicy.SnakeCaseLower`,
   DTOs in `application/DTOs/TaxScan`.
-- Base URL `TaxScan:BaseUrl`: `http://localhost:8000` locally, `http://reader:8000` inside Docker.
+- Base URL `TaxScan:BaseUrl`: `http://localhost:8000` locally. In Docker it comes from `TAXSCAN_BASE_URL` in `.env`
+  (default `http://host.docker.internal:8000`, the reader published on the host); point it at the reader's server
+  when they run on different machines. The two compose files share no network on purpose.
 
 ## Front-end (views)
 
@@ -143,8 +153,9 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<value>" --project SIDAPA.presentation
   dotnet user-secrets set "Jwt:Key" "<min 32 chars>"                      --project SIDAPA.presentation
   ```
-- Docker reads `POSTGRES_*` and `JWT_KEY` from `.env` (gitignored; template in `.env.example`) and mounts the
-  user-secrets file read-only.
+- Docker does **not** use user-secrets: every value comes from `.env` (gitignored; template in `.env.example`):
+  `POSTGRES_*`, `JWT_KEY`, `GCS_BUCKET_NAME`, `GCS_CREDENTIALS_BASE64` (service-account JSON in Base64),
+  `TAXSCAN_BASE_URL`, and optional `DEV_USERS_PASSWORD` / `EMAIL_*`. Compose fails fast if a required one is missing.
 - Don't commit local test artifacts that may contain tokens (e.g. `cookies.txt` from curl).
 
 ## Build & run
@@ -152,7 +163,9 @@ Statuses and the **Definition of Done** are documented in `docs/estatus-y-defini
 ```bash
 dotnet build SIDAPA.sln
 dotnet run --project SIDAPA.presentation --launch-profile https
-docker compose up -d --build            # db + reader + web (needs ../sidapa-reader next to this repo)
+docker compose up -d --build            # web + db (needs .env filled from .env.example)
+# reader, separate environment (in the sidapa-reader repo):
+cd ../sidapa-reader && docker compose up -d --build
 ```
 
 EF Core (infrastructure project, presentation as startup):
@@ -162,8 +175,37 @@ dotnet ef migrations add <Name> --project SIDAPA.infraestructure --startup-proje
 dotnet ef database update        --project SIDAPA.infraestructure --startup-project SIDAPA.presentation
 ```
 
-In Docker Compose the web container applies pending migrations by itself at startup
-(`Database__MigrateOnStartup: "true"` → `DatabaseMigrator`); `database update` is only needed when running locally.
+In Docker Compose the web container applies pending migrations and then the seed by itself at startup
+(`Database__MigrateOnStartup: "true"` → `DatabaseMigrator` + `DatabaseSeeder`); if either fails the container
+exits with the real error in `docker logs sidapa-presentation`. `database update` is only needed when running locally.
+Before committing, `dotnet ef migrations has-pending-model-changes` must say "No changes": a `DbSet` or configuration
+change without its migration makes `Migrate()` throw at startup (EF 9+ `PendingModelChangesWarning`).
+
+## Testing
+
+One test project per layer under `test/`, each referencing **only** its layer; the test lives in the project of the
+layer where the code under test lives, under the code's target folder (`<Type>/<Module>/<Submodule>/`):
+
+| Project | Tests | Doubles |
+|---|---|---|
+| `test/SIDAPA.domain.test` | rules, entities (pure unit) | none |
+| `test/SIDAPA.application.test` | services | shared fakes in `Fakes/` + NSubstitute, `FixedTimeProvider` |
+| `test/SIDAPA.infraestructure.test` | repositories vs **real PostgreSQL** (Testcontainers: `PostgresFixture`, `TestData`), external clients, JWT | fake `HttpMessageHandler` / SDK fakes |
+| `test/SIDAPA.presentation.test` | auth cookie, role policies, filters, routes (`SidapaWebFactory : WebApplicationFactory<Program>`) | NSubstitute for bucket/reader/email |
+
+Stack: **xUnit v3 + Shouldly + NSubstitute** (shared in `test/Directory.Build.props`). `global.json` opts into
+Microsoft.Testing.Platform, so `dotnet test` takes `--solution` / `--project`:
+
+```bash
+dotnet test --solution SIDAPA.sln
+dotnet test --project test/SIDAPA.application.test --filter-class "*DocumentServiceTests"
+```
+
+- Repository tests need **Docker running**; without it they are skipped locally. Set `SIDAPA_REQUIRE_DOCKER=1`
+  (CI) to make them fail instead. Never use EF InMemory/SQLite.
+- The real-GCS smoke test runs only with `SIDAPA_GCS_TEST_BUCKET` + `GOOGLE_APPLICATION_CREDENTIALS`.
+- **Testing / QA / refactor-for-testability guide + checker:** `.claude/skills/sidapa-testing/SKILL.md`. Run
+  `.claude/skills/sidapa-testing/check-tests.ps1` before finishing test work.
 
 ## Git & Jira workflow
 

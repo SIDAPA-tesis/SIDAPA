@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: document-file-validator-limits
+expected_outcome: |
+  Pruebas nuevas del validador en el proyecto de la capa correcta, cubriendo límites exactos de 20 MB, tipos permitidos/no permitidos y contenido que no coincide con la extensión, todas en verde, con un reporte de casos y riesgos.

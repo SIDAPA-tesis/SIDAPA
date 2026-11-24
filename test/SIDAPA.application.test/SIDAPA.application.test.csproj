@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Pruebas de SIDAPA.application: servicios con fakes (Fakes/) y NSubstitute. Sin BD, sin red. -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\SIDAPA.application\SIDAPA.application.csproj" />
+    </ItemGroup>
+
+</Project>

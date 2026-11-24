@@ -31,15 +31,19 @@ opciones, no protege nada por sí mismo.
 
 ## Cómo se prueba
 
-Rutas de prueba (solo Development) en `DevPermissionsController`: `/dev/permisos/cliente`,
-`/captura`, `/glosa`, `/admin`. Usuarios de prueba: `<rol>@sidapa.local` (contraseña en
-user-secrets `DevUsers:Password`).
+Con pruebas automáticas en `test/SIDAPA.presentation.test/Security/` (app completa en memoria con
+`SidapaWebFactory`), que reemplazan las antiguas rutas manuales `/dev/permisos/*` y `/api/dev/auth/*`:
 
-| Caso | Resultado esperado |
-|---|---|
-| Sin sesión → `/dev/permisos/glosa` | Redirige al login |
-| Capturador → `/dev/permisos/captura` | Entra |
-| Capturador → `/dev/permisos/glosa` | Acceso denegado |
-| Administrador → `/captura`, `/glosa`, `/admin` | Entra |
-| Administrador → `/cliente` | Acceso denegado |
-| Sin sesión → `GET /api/dev/auth/me` | 401 |
+- `AuthorizationPolicyTests`: la matriz de arriba completa, **cada política × cada rol** (incluido
+  Validador, que no entra a nada), con las políticas reales de `AddSidapaAuthorization`; y que el rol
+  distingue mayúsculas (`glosador` no entra).
+- `AuthCookieTests`: sin sesión → `/Auth/Login?returnUrl=…`; Capturador en `/Claves` → `/Auth/Denied`;
+  token vencido o firmado con otra llave → sin sesión; token a media vida → se entrega cookie nueva
+  (HttpOnly, Secure, SameSite=Strict).
+
+```bash
+dotnet test --project test/SIDAPA.presentation.test
+```
+
+Para probar a mano siguen existiendo los usuarios `<rol>@sidapa.local` (contraseña en user-secrets
+`DevUsers:Password`, solo Development).

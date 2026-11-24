@@ -1,3 +1,6 @@
+# Entorno de SIDAPA: aplicación web + PostgreSQL.
+# El lector de facturas (sidapa-reader) es otro entorno: se levanta aparte con el docker-compose.yml de su repo.
+# Todos los valores salen de .env (plantilla en .env.example); no se monta el secrets.json de user-secrets.
 services:
   sidapa.presentation:
     build:
@@ -13,13 +16,27 @@ services:
       ASPNETCORE_URLS: http://+:8080
       # Hora local de México: el panel de pedimentos calcula "hoy" con TimeProvider.GetLocalNow().
       TZ: America/Mexico_City
-      TaxScan__BaseUrl: http://reader:8000
-      Jwt__Key: ${JWT_KEY}
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
-      # Aplica las migraciones de EF Core pendientes al arrancar (ver DatabaseMigrator).
+      Jwt__Key: ${JWT_KEY:?Falta JWT_KEY en .env}
+      GoogleCloudStorage__BucketName: ${GCS_BUCKET_NAME:?Falta GCS_BUCKET_NAME en .env}
+      # JSON del service account en Base64 (DependencyInjection.ResolveCredentialsJson lo decodifica).
+      GoogleCloudStorage__CredentialsJson: ${GCS_CREDENTIALS_BASE64:?Falta GCS_CREDENTIALS_BASE64 en .env}
+      # Opcional: contraseña de los usuarios de prueba <rol>@sidapa.local (solo Development).
+      DevUsers__Password: ${DEV_USERS_PASSWORD:-}
+      # Opcional: sin Email__Host / Email__From los correos solo se escriben en el log.
+      Email__Host: ${EMAIL_HOST:-}
+      Email__Port: ${EMAIL_PORT:-587}
+      Email__User: ${EMAIL_USER:-}
+      Email__Password: ${EMAIL_PASSWORD:-}
+      Email__From: ${EMAIL_FROM:-}
+      # sidapa-reader corre en su propio entorno. Por defecto se busca publicado en el puerto 8000 del host;
+      # si vive en otro servidor basta con cambiar TAXSCAN_BASE_URL en .env.
+      TaxScan__BaseUrl: ${TAXSCAN_BASE_URL:-http://host.docker.internal:8000}
+      # Aplica las migraciones de EF Core pendientes y los datos iniciales al arrancar (ver DatabaseMigrator).
       Database__MigrateOnStartup: "true"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets/a87d2ab8-687e-416b-8e17-e16004650713/secrets.json:/root/.microsoft/usersecrets/a87d2ab8-687e-416b-8e17-e16004650713/secrets.json:ro
+    extra_hosts:
+      # Hace que host.docker.internal resuelva también en Linux (Docker Desktop ya lo trae).
+      - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy
@@ -46,15 +63,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    networks:
-      - sidapa-network
-  reader:
-    build: ../sidapa-reader
-    image: sidapa-reader:latest
-    container_name: sidapa-reader
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
     networks:
       - sidapa-network
 
