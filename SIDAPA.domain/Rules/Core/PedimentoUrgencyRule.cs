@@ -15,11 +15,18 @@ public static class PedimentoUrgencyRule
         return fechaLimite <= hoy.AddDays(DaysBeforeDue) ? UrgenciaEnum.Proximo : UrgenciaEnum.EnTiempo;
     }
 
-    /// <summary>Avance en porcentaje según el estatus (RECIBIDA = 0 %, CERRADO = 100 %).</summary>
+    /// <summary>
+    /// Avance en porcentaje según el estatus (RECIBIDA = 0 %, CERRADO = 100 %). Los estatus de retrabajo
+    /// (CON_ANOTACIONES, RECHAZADO_POR_VALIDADOR) cuentan como EN_GLOSA: regresan a glosa, no avanzan.
+    /// </summary>
     public static int ProgressFor(ReferenciaStatusEnum status)
     {
+        var effective = status is ReferenciaStatusEnum.CON_ANOTACIONES or ReferenciaStatusEnum.RECHAZADO_POR_VALIDADOR
+            ? ReferenciaStatusEnum.EN_GLOSA
+            : status;
+
         const int first = (int)ReferenciaStatusEnum.RECIBIDA;
         const int last = (int)ReferenciaStatusEnum.CERRADO;
-        return ((int)status - first) * 100 / (last - first);
+        return ((int)effective - first) * 100 / (last - first);
     }
 }

@@ -1,11 +1,12 @@
 ﻿@model PanelPedimentosViewModel
 
 @{
+    Layout = "_dashboardLayout";
     ViewData["Title"] = "Pedimentos";
     ViewData["ClasePagina"] = "page-content--ancha";
 }
 
-@section Estilos {
+@section Styles {
     <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/componentes/tarjeta-pedimento.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/componentes/calendario.css" asp-append-version="true" />

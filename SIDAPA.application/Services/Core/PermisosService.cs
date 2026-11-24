@@ -13,11 +13,11 @@ namespace SIDAPA.application.Services.Core
         // Qué módulos ve cada rol. Cambia aquí cuando cambien las responsabilidades.
         private static readonly Dictionary<string, ModuleEnum[]> PorRol = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["CAPTURADOR"] = [ModuleEnum.Pedimentos],
-            ["GLOSADOR"] = [ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Reportes],
-            ["ADMINISTRADOR"] = Enum.GetValues<ModuleEnum>().Where(m => m != ModuleEnum.AvisosArribo).ToArray(),
-            ["VALIDADOR"] = [ModuleEnum.Pedimentos],
-            ["CLIENTE"] = [ModuleEnum.AvisosArribo],   // solo su portal (docs/permisos-por-rol.md)
+            [nameof(RolesEnum.CAPTURADOR)] = [ModuleEnum.Pedimentos],
+            [nameof(RolesEnum.GLOSADOR)] = [ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Reportes],
+            [nameof(RolesEnum.ADMINISTRADOR)] = Enum.GetValues<ModuleEnum>().Where(m => m != ModuleEnum.AvisosArribo).ToArray(),
+            [nameof(RolesEnum.VALIDADOR)] = [],   // sin política todavía (docs/permisos-por-rol.md): solo Inicio
+            [nameof(RolesEnum.CLIENTE)] = [ModuleEnum.AvisosArribo],   // solo su portal (docs/permisos-por-rol.md)
         };
 
         public IReadOnlyList<ModuleEnum> ModulosPara(IEnumerable<string> roles) =>

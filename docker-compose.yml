@@ -11,6 +11,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
+      # Hora local de México: el panel de pedimentos calcula "hoy" con TimeProvider.GetLocalNow().
+      TZ: America/Mexico_City
       TaxScan__BaseUrl: http://reader:8000
       Jwt__Key: ${JWT_KEY}
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"

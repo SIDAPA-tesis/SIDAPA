@@ -1,13 +1,14 @@
 ﻿@model ClavesViewModel
 
 @{
+    Layout = "_dashboardLayout";
     ViewData["Title"] = "Claves";
     ViewData["ClasePagina"] = "page-content--ancha";
     var tablero = Model.Tablero;
     var total = tablero.Metricas.Vigentes + tablero.Metricas.NoVigentes;
 }
 
-@section Estilos {
+@section Styles {
     <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/vistas/claves.css" asp-append-version="true" />
 }
