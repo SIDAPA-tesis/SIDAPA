@@ -2,10 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.application.Services.Core;
-using SIDAPA.application.DTOs.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIDAPA.application
 {

@@ -18,7 +18,9 @@ namespace SIDAPA.application.Services.Core
             ClaveDto? seleccionada = null;
             if (!string.IsNullOrWhiteSpace(codigoSeleccionado))
             {
-                var clave = await _repositorio.ObtenerAsync(codigoSeleccionado, ct);
+                // Casi siempre la clave elegida ya viene en la lista; solo se consulta si el filtro la dejó fuera.
+                var clave = claves.FirstOrDefault(c => c.Code == codigoSeleccionado)
+                            ?? await _repositorio.ObtenerAsync(codigoSeleccionado, ct);
                 if (clave is not null) seleccionada = Mapear(clave);
             }
 

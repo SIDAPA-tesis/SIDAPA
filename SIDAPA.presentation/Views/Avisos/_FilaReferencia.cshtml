@@ -7,7 +7,7 @@
 <tr class="@(Model.Destacada ? "avisos-fila--nueva" : null)" aria-current="@(Model.Destacada ? "true" : null)">
     <th scope="row" class="font-monospace">@r.ReferenciaNumber</th>
     <td>@r.AduanaName</td>
-    <td>@(r.ArrivalDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
+    <td>@(r.ArrivalDate?.Texto() ?? "—")</td>
     <td><span class="badge @estatus">@r.StatusName</span></td>
     <td class="text-end">@r.DocumentCount</td>
     <td>@r.CreatedAt.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</td>

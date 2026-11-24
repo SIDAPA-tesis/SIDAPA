@@ -15,7 +15,8 @@ public class ArrivalNoticeService(
     ICatalogRepository catalogs,
     IDocumentFileValidator fileValidator,
     IDocumentService documents,
-    ICloudStorageService cloudStorage) : IArrivalNoticeService
+    ICloudStorageService cloudStorage,
+    TimeProvider clock) : IArrivalNoticeService
 {
     public async Task<ArrivalNoticeCreatedDto> CreateAsync(CreateArrivalNoticeDto notice, CancellationToken ct = default)
     {
@@ -39,7 +40,7 @@ public class ArrivalNoticeService(
             ArrivalDate = notice.ArrivalDate,
             Notes = string.IsNullOrWhiteSpace(notice.Notes) ? null : notice.Notes.Trim(),
             StatusId = (short)ReferenciaStatusEnum.RECIBIDA,
-            CreatedAt = UtcNow()
+            CreatedAt = Now()
         };
         await referencias.AddAsync(referencia, notice.UserId, ct);
 
@@ -94,6 +95,6 @@ public class ArrivalNoticeService(
         catch { /* igual que arriba */ }
     }
 
-    // Igual que en UserService/DocumentService: la columna es "timestamp without time zone".
-    private static DateTime UtcNow() => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+    // UTC sin zona: la columna es "timestamp without time zone" (igual que en UserService/DocumentService).
+    private DateTime Now() => DateTime.SpecifyKind(clock.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
 }

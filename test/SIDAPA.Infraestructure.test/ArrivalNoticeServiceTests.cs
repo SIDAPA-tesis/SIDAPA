@@ -36,7 +36,8 @@ public class ArrivalNoticeServiceTests
         var referencias = new FakeReferenciaRepository();
         var storage = new FakeCloudStorage();
         var documents = new FakeDocumentService(storage);
-        var service = new ArrivalNoticeService(referencias, new FakeCatalogRepository(), new DocumentFileValidator(), documents, storage);
+        var service = new ArrivalNoticeService(referencias, new FakeCatalogRepository(), new DocumentFileValidator(), documents, storage,
+            TimeProvider.System);
         return new Sut(service, referencias, documents, storage);
     }
 

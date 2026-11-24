@@ -59,7 +59,7 @@ public class NuevoAvisoViewModel
 
     /// <summary>Renglones en los que el cliente eligió un archivo.</summary>
     public IEnumerable<DocumentoItemViewModel> ConArchivo() =>
-        Documentos.Take(MaxDocumentos).Where(d => d.Archivo is not null);
+        Documentos.Where(d => d.Archivo is not null);   // Completar ya dejó a lo más MaxDocumentos
 }
 
 public class DocumentoItemViewModel

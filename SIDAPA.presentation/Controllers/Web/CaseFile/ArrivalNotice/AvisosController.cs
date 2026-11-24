@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIDAPA.application.DTOs.Core.Referencias;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Enums.Core;
+using SIDAPA.domain.Rules.Core;
 using SIDAPA.presentation.Filters;
 using SIDAPA.presentation.Models.CaseFile.ArrivalNotice;
 using SIDAPA.presentation.Security;
@@ -13,8 +14,10 @@ namespace SIDAPA.presentation.Controllers.Web.CaseFile.ArrivalNotice;
 [Authorize(Policy = Policies.ClientPortal)]
 public class AvisosController(IArrivalNoticeService avisos) : Controller
 {
-    // 5 archivos de 20 MB más los campos del formulario. Cada archivo se valida aparte (20 MB) en application.
-    private const long RequestLimit = 110L * 1024 * 1024;
+    // Todos los renglones con archivos del tamaño máximo, más 10 MB para los campos del formulario.
+    // Cada archivo se valida aparte (DocumentFileRule) en application.
+    private const long RequestLimit =
+        NuevoAvisoViewModel.MaxDocumentos * DocumentFileRule.maxSizeInBytes + 10L * 1024 * 1024;
 
     [TempData] public string? ReferenciaCreada { get; set; }
 
@@ -52,29 +55,16 @@ public class AvisosController(IArrivalNoticeService avisos) : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var streams = new List<Stream>();
-        try
-        {
-            var files = model.ConArchivo()
-                .Select(d =>
-                {
-                    var stream = d.Archivo!.OpenReadStream();
-                    streams.Add(stream);
-                    return new ArrivalNoticeFileDto(d.Tipo ?? default(DocumentTypeEnum), d.Archivo.FileName, d.Archivo.Length, stream);
-                })
-                .ToList();
+        // Los streams de IFormFile los cierra ASP.NET Core al terminar la petición.
+        var files = model.ConArchivo()
+            .Select(d => new ArrivalNoticeFileDto(
+                d.Tipo ?? default(DocumentTypeEnum), d.Archivo!.FileName, d.Archivo.Length, d.Archivo.OpenReadStream()))
+            .ToList();
 
-            var created = await avisos.CreateAsync(new CreateArrivalNoticeDto(
-                clientId, userId, model.TipoOperacion, model.FechaArribo, model.Aduana, model.Observaciones, files), ct);
+        var created = await avisos.CreateAsync(new CreateArrivalNoticeDto(
+            clientId, userId, model.TipoOperacion, model.FechaArribo, model.Aduana, model.Observaciones, files), ct);
 
-            ReferenciaCreada = created.ReferenciaNumber;
-        }
-        finally
-        {
-            foreach (var stream in streams)
-                await stream.DisposeAsync();
-        }
-
+        ReferenciaCreada = created.ReferenciaNumber;
         return RedirectToAction(nameof(Index));
     }
 }

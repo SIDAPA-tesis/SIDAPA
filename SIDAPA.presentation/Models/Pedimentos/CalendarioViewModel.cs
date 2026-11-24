@@ -57,10 +57,8 @@ namespace SIDAPA.presentation.Models.Pedimentos
                 MesSiguiente = Formato(primero.AddMonths(1)),
                 Busqueda = busqueda,
                 Dias = dias,
-                Vencimientos = pedimentos
-                    .Where(p => p.FechaLimite.Year == primero.Year && p.FechaLimite.Month == primero.Month)
-                    .OrderBy(p => p.FechaLimite)
-                    .ToList()
+                // Los días del mes ya agrupan sus vencimientos y van en orden de fecha.
+                Vencimientos = dias.SelectMany(d => d.Vencimientos).ToList()
             };
         }
 

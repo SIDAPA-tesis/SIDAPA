@@ -87,7 +87,7 @@
                         <td>
                             <span class="insignia @(clave.Vigente ? "insignia--ok" : "insignia--error")">@(clave.Vigente ? "Vigente" : "No vigente")</span>
                         </td>
-                        <td>@(clave.FechaActualizacion?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? "—")</td>
+                        <td>@(clave.FechaActualizacion?.Texto() ?? "—")</td>
                     </tr>
                 }
             </tbody>
@@ -133,7 +133,7 @@
             </div>
             <div class="panel-detalle__campo">
                 <dt>Última actualización</dt>
-                <dd>@(seleccionada.FechaActualizacion?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? "—")</dd>
+                <dd>@(seleccionada.FechaActualizacion?.Texto() ?? "—")</dd>
             </div>
         </dl>
 
