@@ -1,0 +1,64 @@
+@model SubirSolicitudViewModel
+
+@{
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = "Subir documento solicitado";
+    var maxMb = DocumentFileRule.maxSizeInBytes / (1024 * 1024);
+    var extensiones = string.Join(",", DocumentFileRule.AllowedExtensions);
+}
+
+@*
+    HU-05 (SCRUM-64): un solo archivo para una sola solicitud. POST normal, sin JavaScript: si algo falla,
+    el servidor vuelve a pintar esta vista con el mensaje (validación del modelo o DomainExceptionFilter).
+    El tipo de documento no se elige: lo fija la solicitud.
+*@
+<div class="container-fluid py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Subir documento solicitado</h1>
+        <a asp-controller="Avisos" asp-action="Index" class="btn btn-outline-secondary btn-sm">Mis avisos de arribo</a>
+    </div>
+
+    @if (!Model.Disponible)
+    {
+        <div asp-validation-summary="All" class="alert alert-warning" role="alert"></div>
+        <a asp-controller="Avisos" asp-action="Index" class="btn btn-primary">Volver a mis avisos</a>
+    }
+    else
+    {
+        <form asp-action="Subir" method="post" enctype="multipart/form-data" class="card shadow-sm border-0" novalidate>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                }
+
+                <dl class="row mb-4">
+                    <dt class="col-12 col-sm-4 col-lg-3">Referencia</dt>
+                    <dd class="col-12 col-sm-8 col-lg-9 font-monospace">@Model.ReferenciaNumber</dd>
+
+                    <dt class="col-12 col-sm-4 col-lg-3">Documento que te pedimos</dt>
+                    <dd class="col-12 col-sm-8 col-lg-9 fw-semibold">@Model.Documento</dd>
+
+                    @if (Model.Nota is not null)
+                    {
+                        <dt class="col-12 col-sm-4 col-lg-3">Nota del capturador</dt>
+                        <dd class="col-12 col-sm-8 col-lg-9">@Model.Nota</dd>
+                    }
+
+                    <dt class="col-12 col-sm-4 col-lg-3">Solicitado el</dt>
+                    <dd class="col-12 col-sm-8 col-lg-9 mb-0">@Model.Solicitada.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</dd>
+                </dl>
+
+                <input asp-for="RequestId" type="hidden" />
+
+                <label asp-for="Archivo" class="form-label">Archivo <span class="text-danger">*</span></label>
+                <input asp-for="Archivo" type="file" class="form-control" accept="@extensiones" required aria-describedby="archivo-ayuda" />
+                <div id="archivo-ayuda" class="form-text">Formatos @extensiones · máximo @maxMb MB.</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0 d-flex justify-content-end gap-2">
+                <a asp-controller="Avisos" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Subir documento</button>
+            </div>
+        </form>
+    }
+</div>

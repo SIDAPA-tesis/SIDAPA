@@ -203,6 +203,12 @@ public class ArrivalNoticeServiceTests
                 upload.SizeInBytes, DocumentStatusEnum.RECIBIDO, upload.UploadedByUserId, FixedTimeProvider.Default.UtcDateTime);
         }
 
+        public Task<StoredFileDto> StoreFileAsync(UploadDocumentDto upload, CancellationToken ct = default) =>
+            throw new NotSupportedException("El aviso de arribo usa UploadAsync.");
+
+        public Task DeleteFileQuietlyAsync(string bucketPath) =>
+            throw new NotSupportedException("El aviso de arribo usa UploadAsync.");
+
         public Task<IReadOnlyList<DocumentDto>> GetByReferenciaAsync(int referenciaId, CancellationToken ct = default) =>
             throw new NotSupportedException();
 

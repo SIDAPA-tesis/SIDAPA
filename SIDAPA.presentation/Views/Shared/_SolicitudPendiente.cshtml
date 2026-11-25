@@ -1,0 +1,17 @@
+@model SIDAPA.presentation.Models.CaseFile.Documents.SolicitudPendienteViewModel
+
+<li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2 px-0">
+    <div>
+        <div class="fw-semibold">@Model.Documento</div>
+        @if (Model.Nota is not null)
+        {
+            <div class="small">@Model.Nota</div>
+        }
+        <div class="small text-body-secondary">
+            Solicitado el @Model.Solicitada.ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)
+        </div>
+    </div>
+    <a asp-controller="Solicitudes" asp-action="Subir" asp-route-requestId="@Model.RequestId" class="btn btn-primary btn-sm">
+        Subir <span class="visually-hidden">@Model.Documento</span>
+    </a>
+</li>

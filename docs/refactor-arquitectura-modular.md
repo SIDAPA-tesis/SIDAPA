@@ -81,7 +81,7 @@ Module    ∈ { Core, CaseFile, CustomDeclaration }
 
 | Módulo | Submódulos |
 |---|---|
-| Core | `Auth`, `Users`, `Permissions`, `Notifications`, `Storage`, `Home` |
+| Core | `Auth`, `Users`, `Permissions`, `Notifications`, `Storage`, `Home`, `Persistence` |
 | CaseFile | `ArrivalNotice`, `Referencias`, `Documents`, `Expediente` |
 | CustomDeclaration | `Catalogs`, `Pedimentos`, `Claves`, `Invoices`, `Products` |
 
@@ -369,3 +369,4 @@ Actualizar los `@using`/`@model` de las vistas y de los `_ViewImports` según lo
 |---|---|---|
 | 2026-11-23 | Luis Lobato + Claude Code | Revisión de organización y creación de este plan. H1–H4 ya resueltos en `SCRUM-46` (`f14becb`, `a011619`). |
 | 2026-11-23 | Luis Lobato + Claude Code | SCRUM-46 (`290d316`): `IArrivalNoticeService` ya se registra en `AddApplication` (parte de H5). Archivos nuevos de presentación con la regla objetivo: `Controllers/Web/CaseFile/ArrivalNotice/AvisosController`, `Models/CaseFile/ArrivalNotice/`. Las vistas quedan en `Views/Avisos/` hasta que exista `ModuleViewLocationExpander` (Fase 3 → `Views/CaseFile/Avisos/`). Nuevo DTO `DocumentTypeOptionDto` en `ArrivalNoticeDtos.cs` (Fase 2: va con `AduanaOptionDto` a `CustomDeclaration/Catalogs` o a `CaseFile/Documents`). |
+| 2026-11-24 | Luis Lobato + Claude Code | SCRUM-64 (HU-05): nuevo submódulo **`Core/Persistence`** (aprobado) para `IUnitOfWork`/`IUnitOfWorkTransaction` (`application/Interface/Core/Persistence/`); la implementación `UnitOfWork` queda en `infraestructure/Persistence/`. Archivos nuevos ya en ruta destino: `domain/Rules/CaseFile/DocumentRequestRule`, `domain/Exceptions/CaseFile/` (3 excepciones), `application/{Interface,Services,DTOs}/CaseFile/Documents/` (`IDocumentRequestRepository`, `IDocumentRequestService`, `DocumentRequestService`, DTOs), `infraestructure/Repositories/CaseFile/Documents/DocumentRequestRepository`, `presentation/Controllers/Web/CaseFile/Documents/SolicitudesController`, `presentation/Models/CaseFile/Documents/`. `IDocumentRequestService` se registra en `AddApplication`. Vistas en `Views/Solicitudes/` (Fase 3 → `Views/CaseFile/Solicitudes/`). ViewComponent nuevo `SolicitudesPendientesViewComponent` con el sufijo bien escrito, en la carpeta `ViewComponets/` (H7). |

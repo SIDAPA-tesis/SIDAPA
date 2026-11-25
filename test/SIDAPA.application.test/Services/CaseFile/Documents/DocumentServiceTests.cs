@@ -132,6 +132,42 @@ public class DocumentServiceTests
         await Should.ThrowAsync<DocumentNotFoundException>(() => _service.GetDownloadUrlAsync(123, _ct));
     }
 
+    // ------------------------------------------------------------------ StoreFileAsync / DeleteFileQuietlyAsync (SCRUM-64)
+
+    [Fact]
+    public async Task StoreFileAsync_SubeElArchivoSinRegistrarloEnLaBd()
+    {
+        // HU-05 registra la fila dentro de su propia transacción: aquí solo se sube al bucket
+        var stored = await _service.StoreFileAsync(Upload("Factura 001.pdf", Pdf), _ct);
+
+        var (path, bytes) = _storage.Uploaded.ShouldHaveSingleItem();
+        stored.BucketPath.ShouldBe(path);
+        stored.FileName.ShouldBe("Factura 001.pdf");
+        stored.SizeInBytes.ShouldBe(Pdf.Length);
+        stored.UploadedAt.Kind.ShouldBe(DateTimeKind.Unspecified);
+        bytes.ShouldBe(Pdf);
+        _repository.Saved.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task StoreFileAsync_ArchivoNoPermitido_NoSubeNada()
+    {
+        await Should.ThrowAsync<FileTypeNotAllowedException>(() => _service.StoreFileAsync(Upload("virus.exe", [0x4D, 0x5A, 0x90]), _ct));
+
+        _storage.Uploaded.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task DeleteFileQuietlyAsync_BorraElArchivoDelBucket()
+    {
+        var stored = await _service.StoreFileAsync(Upload("a.pdf", Pdf), _ct);
+
+        await _service.DeleteFileQuietlyAsync(stored.BucketPath);
+
+        _storage.Uploaded.ShouldBeEmpty();
+        _storage.Deleted.ShouldBe([stored.BucketPath]);
+    }
+
     private sealed class NonSeekableStream(byte[] bytes) : MemoryStream(bytes)
     {
         public override bool CanSeek => false;

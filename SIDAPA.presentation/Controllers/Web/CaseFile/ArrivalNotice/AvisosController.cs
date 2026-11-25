@@ -12,7 +12,7 @@ namespace SIDAPA.presentation.Controllers.Web.CaseFile.ArrivalNotice;
 
 /// <summary>Portal del Cliente: nuevo aviso de arribo y sus referencias (HU-02 / SCRUM-46).</summary>
 [Authorize(Policy = Policies.ClientPortal)]
-public class AvisosController(IArrivalNoticeService avisos) : Controller
+public class AvisosController(IArrivalNoticeService avisos, TimeProvider clock) : Controller
 {
     // Todos los renglones con archivos del tamaño máximo, más 10 MB para los campos del formulario.
     // Cada archivo se valida aparte (DocumentFileRule) en application.
@@ -32,7 +32,8 @@ public class AvisosController(IArrivalNoticeService avisos) : Controller
             return Forbid();
 
         var referencias = await avisos.GetClientPanelAsync(clientId, ct);
-        return View(new PanelClienteViewModel(referencias, ReferenciaCreada));
+        // Hora de México: en Docker la da TZ=America/Mexico_City (docker-compose.yml).
+        return View(new PanelClienteViewModel(referencias, ReferenciaCreada, clock.LocalTimeZone));
     }
 
     [HttpGet]

@@ -45,7 +45,7 @@ Una referencia solo puede pasar a los estatus de la columna **Puede pasar a**. C
 |---|---|
 | Recibida | En revisión |
 | En revisión | En espera de documentos · Expediente completo |
-| En espera de documentos | En revisión (cuando el cliente sube el documento) |
+| En espera de documentos | En revisión (cuando el cliente sube el **último** documento solicitado; ver `solicitud-de-documentos.md`) |
 | Expediente completo | Factura leída |
 | Factura leída | Factura confirmada |
 | Factura confirmada | En clasificación (si hay productos nuevos) · Borrador de pedimento |

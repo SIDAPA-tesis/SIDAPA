@@ -48,6 +48,17 @@ public sealed class FakeReferenciaRepository : IReferenciaRepository
         return Task.FromResult(true);
     }
 
+    /// <summary>Referencias bloqueadas con <see cref="LockStatusAsync"/> (el candado real lo prueba infraestructura).</summary>
+    public List<int> Locked { get; } = [];
+
+    public Task<ReferenciaStatusEnum?> LockStatusAsync(int referenciaId, CancellationToken ct = default)
+    {
+        Locked.Add(referenciaId);
+        return Task.FromResult(_store.TryGetValue(referenciaId, out var referencia)
+            ? (ReferenciaStatusEnum?)referencia.StatusId
+            : null);
+    }
+
     public Task<long> NextNumberAsync(CancellationToken ct = default) => Task.FromResult(++_sequence);
 
     public Task AddAsync(ReferenciaEntity referencia, int userId, CancellationToken ct = default)

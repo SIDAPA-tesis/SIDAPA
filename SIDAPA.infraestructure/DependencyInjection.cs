@@ -4,7 +4,9 @@ using Google.Cloud.Storage.V1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SIDAPA.application.Interface;
+using SIDAPA.application.Interface.CaseFile.Documents;
 using SIDAPA.application.Interface.Core;
+using SIDAPA.application.Interface.Core.Persistence;
 using SIDAPA.application.Interface.External.CloudStorage;
 using SIDAPA.application.Services.Core;
 using SIDAPA.infraestructure.ApiClients;
@@ -12,6 +14,7 @@ using SIDAPA.infraestructure.External.CloudStorage;
 using SIDAPA.infraestructure.Email;
 using SIDAPA.infraestructure.Persistence;
 using SIDAPA.infraestructure.Repositories;
+using SIDAPA.infraestructure.Repositories.CaseFile.Documents;
 using SIDAPA.infraestructure.Security;
 
 namespace SIDAPA.infraestructure;
@@ -51,6 +54,10 @@ public static class DependencyInjection
         // SCRUM-56: expediente completo (cambio automático de estatus)
         services.AddScoped<IReferenciaRepository, ReferenciaRepository>();
         services.AddScoped<IExpedienteService, ExpedienteService>();
+
+        // SCRUM-64 (HU-05): solicitudes de documentos y transacción entre repositorios
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDocumentRequestRepository, DocumentRequestRepository>();
 
         // Panel de pedimentos y catálogo de claves (servicios en AddApplication)
         services.AddScoped<IPedimentoRepositorio, PedimentoRepository>();

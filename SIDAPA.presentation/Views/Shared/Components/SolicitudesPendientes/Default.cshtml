@@ -1,0 +1,36 @@
+@model SIDAPA.presentation.Models.CaseFile.Documents.SolicitudesPendientesViewModel
+
+@*
+    HU-05: aviso de documento faltante. Dice qué documento falta y da un botón para subir solo ese archivo.
+    Es component: sin CSS ni JS propios, solo Bootstrap.
+*@
+@if (Model.Recibido is not null)
+{
+    <div class="alert alert-success" role="status">@Model.Recibido</div>
+}
+
+@if (Model.Grupos.Count > 0)
+{
+    <section class="card border-0 border-start border-4 border-warning shadow-sm mb-3" aria-labelledby="solicitudes-titulo">
+        <div class="card-body">
+            <h2 id="solicitudes-titulo" class="h5 mb-1">Documentos que te pedimos</h2>
+            <p class="text-body-secondary small mb-0">
+                Revisamos tu expediente y nos falta lo siguiente. Sube solo el archivo que te pedimos.
+            </p>
+
+            @foreach (var grupo in Model.Grupos)
+            {
+                <h3 class="h6 mt-3 mb-1 d-flex flex-wrap align-items-center gap-2">
+                    Referencia <span class="font-monospace">@grupo.ReferenciaNumber</span>
+                    <span class="badge text-bg-warning">@grupo.Faltan</span>
+                </h3>
+                <ul class="list-group list-group-flush">
+                    @foreach (var solicitud in grupo.Solicitudes)
+                    {
+                        <partial name="_SolicitudPendiente" model="solicitud" />
+                    }
+                </ul>
+            }
+        </div>
+    </section>
+}
