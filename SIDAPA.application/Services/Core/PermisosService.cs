@@ -1,0 +1,26 @@
+﻿using SIDAPA.application.Interface.Core;
+using SIDAPA.domain.Enums.Core;
+
+namespace SIDAPA.application.Services.Core
+{
+    public class PermisosService : IPermisosService
+    {
+        // Qué módulos ve cada rol. Cambia aquí cuando cambien las responsabilidades.
+        private static readonly Dictionary<string, ModuleEnum[]> PorRol = new(StringComparer.OrdinalIgnoreCase)
+        {
+            [nameof(RolesEnum.CAPTURADOR)] = [ModuleEnum.Pedimentos],
+            [nameof(RolesEnum.GLOSADOR)] = [ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Productos],   // igual que _Sidebar
+            [nameof(RolesEnum.ADMINISTRADOR)] = Enum.GetValues<ModuleEnum>().Where(m => m != ModuleEnum.AvisosArribo).ToArray(),
+            [nameof(RolesEnum.VALIDADOR)] = [],   // sin política todavía (docs/permisos-por-rol.md): solo Inicio
+            [nameof(RolesEnum.CLIENTE)] = [ModuleEnum.AvisosArribo],   // solo su portal (docs/permisos-por-rol.md)
+        };
+
+        public IReadOnlyList<ModuleEnum> ModulosPara(IEnumerable<string> roles) =>
+            roles.Where(PorRol.ContainsKey)
+                 .SelectMany(r => PorRol[r])
+                 .Append(ModuleEnum.Inicio)
+                 .Distinct()
+                 .Order()
+                 .ToList();
+    }
+}

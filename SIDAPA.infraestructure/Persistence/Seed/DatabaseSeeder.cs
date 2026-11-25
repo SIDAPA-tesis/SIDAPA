@@ -13,7 +13,7 @@ namespace SIDAPA.infraestructure.Persistence.Seed;
 /// <list type="bullet">
 /// <item>Catálogo de roles (cat_rol) a partir de <see cref="RolesEnum"/>, siempre que falte alguno.</item>
 /// <item>Solo si se pasa una contraseña (Development): un usuario de prueba por rol interno,
-/// <c>&lt;rol&gt;@sidapa.local</c>. El rol Cliente no se crea porque necesita una empresa.</item>
+/// <c>&lt;rol&gt;@sidapa.local</c>, más una empresa demo con su usuario Cliente (<c>cliente@sidapa.local</c>).</item>
 /// </list>
 /// Es idempotente: no duplica ni modifica lo que ya existe.
 /// TODO: pasar los roles a HasData en RoleConfiguration con su migración.
@@ -51,6 +51,41 @@ public static class DatabaseSeeder
                 IsActive = true
             });
         }
+        await context.SaveChangesAsync(ct);
+
+        await SeedDemoClientAsync(context, hasher, devUsersPassword, ct);
+    }
+
+    /// <summary>Empresa demo y su usuario Cliente (HU-02). Solo Development: llega aquí únicamente con contraseña.</summary>
+    private static async Task SeedDemoClientAsync(SidapaDbContext context, IPasswordHasher hasher, string password, CancellationToken ct)
+    {
+        const string email = "cliente@sidapa.local";
+        if (await context.Users.AnyAsync(u => u.Email == email, ct))
+            return;
+
+        const string rfc = "EDE010101AA1";
+        var client = await context.Clients.FirstOrDefaultAsync(c => c.Rfc == rfc, ct);
+        if (client is null)
+        {
+            client = new ClientEntity
+            {
+                Rfc = rfc,
+                BusinessName = "Empresa Demo S.A. de C.V.",
+                Address = "Domicilio de prueba",
+                NotificationEmail = email
+            };
+            context.Clients.Add(client);
+        }
+
+        context.Users.Add(new UserEntity
+        {
+            Name = "Cliente de prueba",
+            Email = email,
+            PasswordHash = hasher.Hash(password),
+            RoleId = (short)RolesEnum.CLIENTE,
+            Client = client,
+            IsActive = true
+        });
         await context.SaveChangesAsync(ct);
     }
 

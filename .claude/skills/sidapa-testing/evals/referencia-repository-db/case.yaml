@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: referencia-repository-db
+expected_outcome: |
+  Pruebas de integración de ReferenciaRepository contra PostgreSQL real (Testcontainers), con datos aislados por prueba, que cubren los tres comportamientos pedidos y reportan honestamente si se omitieron por falta de Docker.

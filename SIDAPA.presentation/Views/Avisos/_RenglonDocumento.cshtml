@@ -1,0 +1,24 @@
+@model RenglonDocumentoViewModel
+
+@{
+    var id = $"documento-{Model.Indice}";
+}
+
+@* Un renglón = un archivo + qué documento es. Los nombres llevan el índice para el model binding de la lista. *@
+<div class="row g-2 align-items-center avisos-renglon rounded-3 p-2" data-avisos-renglon>
+    <div class="col-12 col-md-6">
+        <label class="visually-hidden" for="@(id)-archivo">Archivo @(Model.Indice + 1)</label>
+        <input id="@(id)-archivo" name="Documentos[@Model.Indice].Archivo" type="file" class="form-control"
+               accept=".pdf,.xml,.xls,.xlsx" data-avisos-archivo />
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="visually-hidden" for="@(id)-tipo">Tipo de documento @(Model.Indice + 1)</label>
+        <select id="@(id)-tipo" name="Documentos[@Model.Indice].Tipo" class="form-select">
+            <option value="">¿Qué documento es?</option>
+            @foreach (var tipo in Model.Tipos)
+            {
+                <option value="@tipo.Id" selected="@(Model.Item.Tipo == tipo.Id)">@tipo.Name</option>
+            }
+        </select>
+    </div>
+</div>

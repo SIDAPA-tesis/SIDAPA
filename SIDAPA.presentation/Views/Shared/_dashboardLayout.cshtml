@@ -10,7 +10,7 @@
     <title>@ViewData["Title"] - SIDAPA </title>
 
     <script>
-        (function ()){
+        (function () {
             try {
                 var movil = window.matchMedia("(max-width: 767px)").matches;
                 var guardado = localStorage.getItem("sidebar-collapsed") == "1"; 
@@ -20,13 +20,17 @@
             } catch (e) {
                 console.error("Error al cargar el menu desplegable ", e);
             }
-        }
+        })();
     </script>
 
+    @* Bootstrap local y la paleta primero; los estilos del layout y de cada pantalla van después. *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/base/theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/componets/slideMenu.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/layout/adminPanel/adminPanel.css" asp-append-version="true"/>
+    @await RenderSectionAsync("Styles", required: false)
 
 </head>
 <body>

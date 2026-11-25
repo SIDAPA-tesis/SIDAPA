@@ -30,4 +30,5 @@ dotnet user-secrets set "Email:User" "<correo>" --project SIDAPA.presentation
 dotnet user-secrets set "Email:Password" "<contraseña de aplicación>" --project SIDAPA.presentation
 ```
 
-Prueba (solo Development): `/dev/avisos`.
+Pruebas automáticas: `NotificationServiceTests` (`test/SIDAPA.application.test`) y
+`NotificationRepositoryTests` (`test/SIDAPA.infraestructure.test`, PostgreSQL real con Testcontainers).

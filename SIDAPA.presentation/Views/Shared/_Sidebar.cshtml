@@ -1,15 +1,19 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using SIDAPA.domain.Enums.Core
 @{
-    var actual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var actual =ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
     var opciones = new[]
     {
+        // Los roles coinciden con las políticas de cada controller (Security/AuthorizationSetup.cs).
         (Controlador: "Home", Texto: "Inicio", Roles: Array.Empty<string>()),
-        (Controlador: "Usuarios", Texto: "Usuarios", Roles: new[] { "ADMINISTRADOR" }),
-        (Controlador: "Reportes", Texto: "Reportes", Roles: new[] { "ADMINISTRADOR" }),
-        (Controlador: "Pedimentos", Texto: "Pedimentos", Roles: new [] { "ADMINISTRADOR", "VALIDADOR", "CAPTURADOR", "GLOSADOR"}),
-        (Controlador: "Productos", Texto: "Productos", Roles: new [] { "ADMINISTRADOR", "GLOSADOR"}),
+        (Controlador: "Usuarios", Texto: "Usuarios", Roles: new[] { nameof(RolesEnum.ADMINISTRADOR) }),
+        (Controlador: "Reportes", Texto: "Reportes", Roles: new[] { nameof(RolesEnum.ADMINISTRADOR) }),
+        (Controlador: "Pedimentos", Texto: "Pedimentos", Roles: new[] { nameof(RolesEnum.ADMINISTRADOR), nameof(RolesEnum.CAPTURADOR), nameof(RolesEnum.GLOSADOR) }),
+        (Controlador: "Claves", Texto: "Claves", Roles: new[] { nameof(RolesEnum.ADMINISTRADOR), nameof(RolesEnum.GLOSADOR) }),
+        (Controlador: "Productos", Texto: "Productos", Roles: new[] { nameof(RolesEnum.ADMINISTRADOR), nameof(RolesEnum.GLOSADOR) }),
+        (Controlador: "Avisos", Texto: "Mis avisos de arribo", Roles: new[] { nameof(RolesEnum.CLIENTE) }),
     };
 }
 

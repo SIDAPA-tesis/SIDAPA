@@ -1,9 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SIDAPA.application;
+using SIDAPA.application.Interface.Core;
 using SIDAPA.infraestructure;
 using SIDAPA.infraestructure.External.CloudStorage;
 using SIDAPA.infraestructure.Email;
+using SIDAPA.infraestructure.Persistence;
 using SIDAPA.infraestructure.Persistence.Seed;
 using SIDAPA.infraestructure.Security;
 using SIDAPA.presentation.Security;
@@ -43,7 +46,12 @@ if (string.IsNullOrWhiteSpace(gcs.BucketName))
 if (string.IsNullOrWhiteSpace(gcs.CredentialsJson))
     throw new InvalidOperationException("Missing 'GoogleCloudStorage:CredentialsJson'. Set it with dotnet user-secrets.");
 var email = builder.Configuration.GetSection("Email").Get<EmailOptions>() ?? new EmailOptions();
-builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs,email);
+builder.Services.AddApplication();
+builder.Services.AddInfraestructure(connectionString, readerBaseUrl, jwt, gcs, email);
+
+// Usuario de la petición actual (menú lateral por rol).
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserActual, UsuarioActual>();
 
 builder.Services.AddSidapaAuthorization();
 
@@ -94,16 +102,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+// Migraciones automáticas al arrancar. Apagado por defecto (en local se sigue usando `dotnet ef database update`);
+// docker-compose lo enciende con Database__MigrateOnStartup=true. Si falla, la app NO arranca:
+// es preferible un contenedor que se reinicia con el error en el log a una app sobre un esquema incompleto.
+var migrateOnStartup = app.Configuration.GetValue<bool>("Database:MigrateOnStartup");
+if (migrateOnStartup)
+    await DatabaseMigrator.MigrateAsync(app.Services);
+
 // Roles (cat_rol) y, solo en Development, usuarios de prueba <rol>@sidapa.local.
-// La contraseña de prueba sale de user-secrets: dotnet user-secrets set "DevUsers:Password" "..."
-try
+// La contraseña de prueba sale de user-secrets (DevUsers:Password) o, en Docker, de DEV_USERS_PASSWORD en .env.
+var devUsersPassword = app.Environment.IsDevelopment() ? app.Configuration["DevUsers:Password"] : null;
+if (migrateOnStartup)
 {
-    var devUsersPassword = app.Environment.IsDevelopment() ? app.Configuration["DevUsers:Password"] : null;
+    // Docker: la base la acaba de preparar el migrador, así que un fallo aquí es un error real y debe tumbar el arranque.
     await DatabaseSeeder.SeedAsync(app.Services, devUsersPassword);
 }
-catch (Exception ex)
+else
 {
-    app.Logger.LogWarning(ex, "No se pudieron crear los datos iniciales. ¿Ya corriste las migraciones (dotnet ef database update)?");
+    // Local: se deja arrancar la app aunque la base no esté lista, pero con el error completo en el log.
+    try
+    {
+        await DatabaseSeeder.SeedAsync(app.Services, devUsersPassword);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex,
+            "No se pudieron crear los datos iniciales (roles y usuarios de prueba). Revisa la excepción; " +
+            "si la base está vacía corre `dotnet ef database update` o arranca con Database:MigrateOnStartup=true.");
+    }
 }
 
 // Configure the HTTP request pipeline.

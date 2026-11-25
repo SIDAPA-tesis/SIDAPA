@@ -9,7 +9,8 @@ namespace SIDAPA.application.Services.Core;
 public class NotificationService(
     INotificationRepository notifications,
     IUserRepository users,
-    IEmailSender emailSender) : INotificationService
+    IEmailSender emailSender,
+    TimeProvider clock) : INotificationService
 {
     private const string EmailSubject = "SIDAPA · Tienes un nuevo aviso";
 
@@ -66,8 +67,22 @@ public class NotificationService(
             return;
 
         var email = new EmailMessageDto(user.Email, EmailSubject, BuildEmailBody(user.Name, text));
-        if (await emailSender.SendAsync(email, ct))
+        if (await TrySendEmailAsync(email, ct))
             await notifications.MarkEmailSentAsync(notification.Id, ct);
+    }
+
+    // Un correo que lanza cuenta como "no salió" (enviada_correo = false), igual que si regresara false:
+    // así un buzón malo no deja sin aviso al resto de los usuarios del cliente. La cancelación sí sube.
+    private async Task<bool> TrySendEmailAsync(EmailMessageDto email, CancellationToken ct)
+    {
+        try
+        {
+            return await emailSender.SendAsync(email, ct);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return false;
+        }
     }
 
     private static string BuildEmailBody(string name, string text) =>
@@ -81,6 +96,6 @@ public class NotificationService(
         Este correo se envió automáticamente; no lo respondas.
         """;
 
-    // Igual que en UserService: la columna es "timestamp without time zone".
-    private static DateTime UtcNow() => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+    // UTC sin zona: la columna es "timestamp without time zone". El reloj entra por DI (TimeProvider.System).
+    private DateTime UtcNow() => DateTime.SpecifyKind(clock.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
 }

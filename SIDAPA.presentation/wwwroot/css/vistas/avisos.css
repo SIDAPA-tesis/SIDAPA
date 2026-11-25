@@ -1,0 +1,36 @@
+/* Aviso de arribo del Cliente (Views/Avisos). Solo lo que Bootstrap no trae; colores de css/base/theme.css. */
+
+/* Zona para arrastrar y soltar: la muestra avisos.js (sin JS queda oculta y se usan los renglones). */
+.avisos-dropzone {
+    border: 0.125rem dashed var(--sidapa-color-border);
+    background: var(--sidapa-color-background);
+    cursor: copy;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.avisos-dropzone--activa {
+    border-color: var(--sidapa-color-primary);
+    background: var(--sidapa-color-background-alt);
+    color: var(--sidapa-color-ink);
+}
+
+/* Renglón de documento con archivo elegido. */
+.avisos-renglon {
+    border: 1px solid transparent;
+}
+
+.avisos-renglon--lleno {
+    border-color: var(--sidapa-color-border);
+    background: var(--sidapa-color-background);
+}
+
+/* Referencia recién creada en el panel del cliente. */
+.avisos-fila--nueva > * {
+    background: var(--sidapa-color-background-alt);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .avisos-dropzone {
+        transition: none;
+    }
+}

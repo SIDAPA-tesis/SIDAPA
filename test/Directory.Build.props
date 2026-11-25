@@ -1,0 +1,27 @@
+<Project>
+    <!--
+      Configuración común de los proyectos de pruebas de SIDAPA (uno por capa: SIDAPA.<capa>.test).
+      Estándar de pruebas: xUnit v3 + Shouldly (aserciones) + NSubstitute (interacciones).
+      Guía para escribir pruebas: .claude/skills/sidapa-testing/SKILL.md
+    -->
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="xunit.v3" Version="4.0.3" />
+        <PackageReference Include="Shouldly" Version="4.3.0" />
+        <PackageReference Include="NSubstitute" Version="6.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+        <Using Include="Shouldly" />
+        <Using Include="NSubstitute" />
+    </ItemGroup>
+</Project>

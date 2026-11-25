@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: notification-service-refactor
+expected_outcome: |
+  NotificationService recibe TimeProvider sin romper el registro DI ni otras construcciones, y tiene pruebas unitarias en application que cubren fallo del correo, aviso a todos los usuarios de un cliente, validación del mensaje y fecha determinista, todas en verde.

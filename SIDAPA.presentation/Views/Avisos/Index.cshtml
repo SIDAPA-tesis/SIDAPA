@@ -1,0 +1,59 @@
+@model PanelClienteViewModel
+
+@{
+    
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = "Mis avisos de arribo";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/vistas/avisos.css" asp-append-version="true" />
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Mis avisos de arribo</h1>
+        <a asp-action="Nuevo" class="btn btn-primary">+ Nuevo aviso de arribo</a>
+    </div>
+
+    @if (Model.ReferenciaCreada is not null)
+    {
+        <div class="alert alert-success" role="status">
+            Recibimos tu aviso de arribo. Tu número de referencia es <strong>@Model.ReferenciaCreada</strong>.
+        </div>
+    }
+
+    @if (Model.Referencias.Count == 0)
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center text-body-secondary py-5">
+                Aún no tienes avisos de arribo. Crea el primero con el botón <strong>Nuevo aviso de arribo</strong>.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Referencia</th>
+                            <th scope="col">Aduana</th>
+                            <th scope="col">Arribo estimado</th>
+                            <th scope="col">Estatus</th>
+                            <th scope="col" class="text-end">Documentos</th>
+                            <th scope="col">Fecha del aviso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fila in Model.Filas)
+                        {
+                            <partial name="_FilaReferencia" model="fila" />
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

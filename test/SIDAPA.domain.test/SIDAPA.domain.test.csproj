@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Pruebas de SIDAPA.domain: reglas, entidades e invariantes. C# puro, sin dobles ni BD. -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\SIDAPA.domain\SIDAPA.domain.csproj" />
+    </ItemGroup>
+
+</Project>

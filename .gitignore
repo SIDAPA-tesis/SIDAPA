@@ -38,3 +38,6 @@ logs/
 
 # Pruebas locales con curl (pueden traer tokens)
 cookies.txt
+
+# Resultados de evals de skills (skill-creator), no se versionan
+.claude/skills/*-workspace/
