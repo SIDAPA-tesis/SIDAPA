@@ -20,7 +20,11 @@ body {
 
 /* ---------- Menú lateral ---------- */
 
+/* Fijo a la altura de la pantalla: en páginas largas el menú y "Cerrar sesión" siguen a la vista. */
 .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     width: var(--sidapa-sidebar-width);
@@ -170,6 +174,7 @@ html.sidebar-collapsed .sidebar {
         top: var(--sidapa-topbar-height);
         bottom: 0;
         left: 0;
+        height: auto;
         z-index: 10;
         width: min(var(--sidapa-sidebar-width), 80vw);
     }

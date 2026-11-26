@@ -18,15 +18,15 @@
         }
 
         <div class="flex-grow-1 overflow-hidden">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-                <h2 class="h6 mb-0 font-monospace text-truncate">@Model.Numero</h2>
-                <span class="badge rounded-pill text-bg-@Model.Urgencia.ColorBootstrap()">@Model.Urgencia.Etiqueta()</span>
-            </div>
+            <h2 class="h6 mb-0 font-monospace fw-semibold text-truncate">@Model.Numero</h2>
             <p class="small text-body-secondary mb-2 text-truncate">@Model.Empresa</p>
 
-            <p class="small text-body-secondary mb-1">
-                Fecha límite: <time datetime="@Model.FechaLimite.Iso()">@Model.FechaLimite.Texto()</time>
-            </p>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <span class="small text-body-secondary">
+                    Fecha límite: <time datetime="@Model.FechaLimite.Iso()">@Model.FechaLimite.Texto()</time>
+                </span>
+                <span class="badge rounded-pill text-bg-@Model.Urgencia.ColorBootstrap()">@Model.Urgencia.Etiqueta()</span>
+            </div>
 
             @* Barra de avance *@
             <div class="d-flex align-items-center gap-2">

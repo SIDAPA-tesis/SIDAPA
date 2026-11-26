@@ -1,0 +1,12 @@
+@model SIDAPA.presentation.Models.Dashboard.IndicadorPedimentosViewModel
+
+@* Tarjeta de conteo del resumen de pedimentos en Inicio; lleva al panel de Pedimentos. *@
+<div class="col">
+    <a class="card h-100 border-0 border-start border-4 border-@Model.Color shadow-sm text-reset text-decoration-none"
+       asp-controller="Pedimentos" asp-action="Index">
+        <div class="card-body">
+            <p class="small text-body-secondary mb-2">@Model.Titulo</p>
+            <p class="fs-2 fw-semibold lh-1 mb-0">@Model.Total</p>
+        </div>
+    </a>
+</div>

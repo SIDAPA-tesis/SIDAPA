@@ -85,3 +85,16 @@
     --bs-btn-disabled-bg: var(--sidapa-color-primary);
     --bs-btn-disabled-border-color: var(--sidapa-color-primary);
 }
+
+.btn-outline-primary {
+    --bs-btn-color: var(--sidapa-color-primary);
+    --bs-btn-border-color: var(--sidapa-color-primary);
+    --bs-btn-hover-color: var(--sidapa-color-on-primary);
+    --bs-btn-hover-bg: var(--sidapa-color-primary);
+    --bs-btn-hover-border-color: var(--sidapa-color-primary);
+    --bs-btn-active-color: var(--sidapa-color-on-primary);
+    --bs-btn-active-bg: var(--sidapa-color-primary-hover);
+    --bs-btn-active-border-color: var(--sidapa-color-primary-hover);
+    --bs-btn-disabled-color: var(--sidapa-color-primary);
+    --bs-btn-disabled-border-color: var(--sidapa-color-primary);
+}

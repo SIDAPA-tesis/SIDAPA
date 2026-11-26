@@ -121,6 +121,26 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
         html.Contains("Indicadores principales").ShouldBe(loVe);
     }
 
+    [Fact]
+    public async Task Inicio_Capturador_MuestraElResumenDeSusPedimentos()
+    {
+        var html = await GetHtmlAsync(RolesEnum.CAPTURADOR, "/Home");
+
+        html.ShouldContain("Pedimentos por urgencia");
+        html.ShouldContain("Próximos a vencer");
+        html.ShouldContain("href=\"/Pedimentos/Detalle/1\"");   // el vencido sale en la lista
+        html.ShouldContain("Ver todos (2)");
+    }
+
+    [Fact]
+    public async Task Inicio_RolSinPedimentos_NoConsultaNiMuestraElResumen()
+    {
+        var html = await GetHtmlAsync(RolesEnum.VALIDADOR, "/Home");
+
+        html.ShouldNotContain("Pedimentos por urgencia");
+        await _pedimentos.DidNotReceiveWithAnyArgs().ObtenerPanelAsync(default, default, default);
+    }
+
     /// <summary>HTML ya decodificado: Razor escribe los acentos como entidades (Próximo → Pr&amp;#xF3;ximo).</summary>
     private async Task<string> GetHtmlAsync(RolesEnum rol, string ruta) =>
         WebUtility.HtmlDecode(await ClientAs(rol).GetStringAsync(ruta, _ct));
