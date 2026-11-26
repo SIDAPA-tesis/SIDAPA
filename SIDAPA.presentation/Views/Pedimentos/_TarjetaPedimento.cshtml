@@ -1,29 +1,41 @@
 ﻿@model SIDAPA.application.DTOs.Core.Pedimento.PedimentoDto
 
+@* Card completa clicable: lleva a la vista del pedimento. Estilos: Bootstrap + css/vistas/pedimentos.css (de la página). *@
+<a class="tarjeta-pedimento card h-100 text-reset text-decoration-none"
+   asp-controller="Pedimentos" asp-action="Detalle" asp-route-id="@Model.Id">
+    <div class="card-body d-flex gap-3 align-items-start">
 
-@* Card completa clicable: lleva a la vista del pedimento. Estilos: css/componentes/tarjeta-pedimento.css *@
-<a class="tarjeta-pedimento" asp-controller="Pedimentos" asp-action="Detalle" asp-route-id="@Model.Id">
+        @* Imagen del pedimento o de la empresa; si no hay, la inicial. *@
+        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+        {
+            <img class="tarjeta-pedimento__imagen rounded-circle object-fit-cover flex-shrink-0"
+                 src="@Model.ImagenUrl" alt="" loading="lazy" width="44" height="44" />
+        }
+        else
+        {
+            <span class="tarjeta-pedimento__imagen rounded-circle flex-shrink-0 d-inline-flex align-items-center justify-content-center fw-semibold"
+                  aria-hidden="true">@(Model.Empresa.Length > 0 ? Model.Empresa[..1].ToUpperInvariant() : "·")</span>
+        }
 
-    @* Imagen representativa del pedimento o de la empresa (si no hay, se muestra la inicial) *@
-    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
-    {
-        <img class="tarjeta-pedimento__imagen" src="@Model.ImagenUrl" alt="" loading="lazy" />
-    }
-    else
-    {
-        <span class="tarjeta-pedimento__imagen tarjeta-pedimento__imagen--vacia" aria-hidden="true">@(Model.Empresa.Length > 0 ? Model.Empresa[..1].ToUpperInvariant() : "·")</span>
-    }
+        <div class="flex-grow-1 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <h2 class="h6 mb-0 font-monospace text-truncate">@Model.Numero</h2>
+                <span class="badge rounded-pill text-bg-@Model.Urgencia.ColorBootstrap()">@Model.Urgencia.Etiqueta()</span>
+            </div>
+            <p class="small text-body-secondary mb-2 text-truncate">@Model.Empresa</p>
 
-    <div>
-        <h2 class="tarjeta-pedimento__titulo">@Model.Numero</h2>
-        <p class="tarjeta-pedimento__subtitulo">@Model.Empresa</p>
+            <p class="small text-body-secondary mb-1">
+                Fecha límite: <time datetime="@Model.FechaLimite.Iso()">@Model.FechaLimite.Texto()</time>
+            </p>
 
-        @* Barra de progreso *@
-        <div class="tarjeta-pedimento__avance">
-            <div class="tarjeta-pedimento__barra" role="progressbar" aria-label="Avance del pedimento"
-                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Model.Avance"
-                 style="--avance:@(Model.Avance)%"></div>
-            <span class="tarjeta-pedimento__porcentaje">@Model.Avance %</span>
+            @* Barra de avance *@
+            <div class="d-flex align-items-center gap-2">
+                <div class="tarjeta-pedimento__avance progress flex-grow-1" role="progressbar" aria-label="Avance del pedimento"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Model.Avance">
+                    <div class="progress-bar" style="width: @(Model.Avance)%"></div>
+                </div>
+                <span class="small fw-semibold">@Model.Avance %</span>
+            </div>
         </div>
     </div>
 </a>

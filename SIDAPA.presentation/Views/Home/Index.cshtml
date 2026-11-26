@@ -1,38 +1,42 @@
-﻿@{
+﻿@model SIDAPA.presentation.Models.Dashboard.HomeViewModel
+@{
     ViewData["Title"] = "Inicio";
-    var nombreUsuario = User.Identity?.Name ?? "ADMINISTRADOR";
+    ViewData["ClasePagina"] = "page-content--ancha";
     Layout = "_dashboardLayout";
 }
 
-<div class="home-dashboard">
-    <header class="home-dashboard__heading">
-        <div>
-            <p class="home-dashboard__eyebrow">PANEL DE CONTROL</p>
-            <h1>Bienvenido, @nombreUsuario</h1>
-            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de SIDAPA</p>
-        </div>
-        <span class="home-dashboard__period">Resumen general</span>
-    </header>
+<header class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <p class="small fw-bold text-uppercase text-primary mb-1">Panel de control</p>
+        <h1 class="h3 mb-1">Bienvenido, @Model.Nombre</h1>
+        <p class="text-body-secondary mb-0">Aquí tienes el resumen de actividad de SIDAPA</p>
+    </div>
+    <span class="badge rounded-pill bg-body border text-body-secondary fw-normal px-3 py-2">Resumen general</span>
+</header>
 
-    @if (User.IsInRole("ADMINISTRADOR"))
-    {
-        <partial name="_HomeAdmin" />
-    }
-    @* falta implementar las vistas de home y demas aspectos en el dashboard en el siguiente SCRUM las implemento*@
-    @if (User.IsInRole("CAPTURADOR"))
-    {
-        //<partial name="#" />
-    }
-    @if (User.IsInRole("GLOSADOR"))
-    {
-        //<partial name="#" />
-    }
-    @if (User.IsInRole("VALIDADOR"))
-    {
-        //<partial name="#" />
-    }
-    <section class="home-dashboard__panel">
+@if (Model.EsAdministrador)
+{
+    <partial name="_HomeAdmin" />
+}
 
-    </section>
-    <p class="home-dashboard__disclaimer">Los indicadores y registros mostrados son datos de ejemplo, no información consultada de la base de datos.</p>
-</div>
+@* Accesos y novedades salen del mismo servicio para todos los roles (IPermisosService / INotificationService). *@
+<section class="card border-0 shadow-sm mb-3" aria-labelledby="home-accesos-titulo">
+    <div class="card-body">
+        <h2 class="h6 mb-1" id="home-accesos-titulo">Accesos rápidos</h2>
+        <p class="small text-body-secondary mb-3">Los módulos de tu rol.</p>
+        @await Component.InvokeAsync("AccesosRapidos")
+    </div>
+</section>
+
+<section class="card border-0 shadow-sm mb-3" aria-labelledby="home-novedades-titulo">
+    <div class="card-body">
+        <h2 class="h6 mb-1" id="home-novedades-titulo">Novedades</h2>
+        <p class="small text-body-secondary mb-3">Tus avisos más recientes.</p>
+        @await Component.InvokeAsync("Novedades")
+    </div>
+</section>
+
+@if (Model.EsAdministrador)
+{
+    <p class="small text-body-secondary mb-0">Los indicadores y la actividad del panel de administración son datos de ejemplo, no información consultada de la base de datos.</p>
+}

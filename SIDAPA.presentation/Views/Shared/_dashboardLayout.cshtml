@@ -1,19 +1,17 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
-    <title>@ViewData["Title"] - SIDAPA </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SIDAPA</title>
 
+    @* Va en línea a propósito: contrae el menú antes del primer pintado (si esperara a dashboard.js, parpadea).
+       El corte (767.98px = debajo de md de Bootstrap) es el mismo de slideMenu.css y js/dashboard.js. *@
     <script>
         (function () {
             try {
-                var movil = window.matchMedia("(max-width: 767px)").matches;
-                var guardado = localStorage.getItem("sidebar-collapsed") == "1"; 
+                var movil = window.matchMedia("(max-width: 767.98px)").matches;
+                var guardado = localStorage.getItem("sidebar-collapsed") == "1";
                 if (movil || guardado) {
                     document.documentElement.classList.add("sidebar-collapsed");
                 }
@@ -23,20 +21,16 @@
         })();
     </script>
 
-    @* Bootstrap local y la paleta primero; los estilos del layout y de cada pantalla van después. *@
+    @* Bootstrap local y la paleta primero; el armazón del layout y el CSS de cada pantalla van después. *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/base/theme.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/componets/slideMenu.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/layout/adminPanel/adminPanel.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/componets/slideMenu.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
-
 </head>
 <body>
     <div class="dashboard">
         <aside class="sidebar" id="sidebar">
-            <partial name="_Sidebar"/>
+            <partial name="_Sidebar" />
         </aside>
 
         <div class="main-content">
@@ -46,21 +40,22 @@
                         class="menu-toggle"
                         aria-controls="sidebar"
                         aria-expanded="true"
-                        aria-label="Mostrar u ocultar Menu">
-                        ☰
+                        aria-label="Mostrar u ocultar menú">
+                    ☰
                 </button>
 
                 <span>@ViewData["Title"]</span>
             </header>
 
-            <main class="page-content">
+            <main class="page-content @ViewData["ClasePagina"]">
                 @RenderBody()
             </main>
         </div>
     </div>
 
-        <script src="~/js/dashboard.js" asp-append-version="true"></script>
-
-        @await RenderSectionAsync("Scripts", required: false)
+    @* Bootstrap JS: dropdown, collapse, modal… con data-bs-* sin escribir JS propio. *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

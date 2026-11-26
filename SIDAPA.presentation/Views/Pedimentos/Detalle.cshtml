@@ -1,4 +1,4 @@
-﻿@model SIDAPA.application.DTOs.Core.Pedimento.PedimentoDto;
+﻿@model SIDAPA.application.DTOs.Core.Pedimento.PedimentoDto
 
 @{
     Layout = "_dashboardLayout";
@@ -6,22 +6,40 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/vistas/pedimentos.css" asp-append-version="true" />
 }
 
-<a class="pedimento-detalle__volver" asp-action="Index">&larr; Volver a pedimentos</a>
+<div class="container-fluid py-3">
 
-<h1 class="pedimento-detalle__titulo">@Model.Numero</h1>
-<p class="pedimento-detalle__empresa">@Model.Empresa</p>
+    <a class="btn btn-sm btn-link px-0 mb-2" asp-action="Index">&larr; Volver a pedimentos</a>
 
-<dl class="ficha">
-    <dt>Fecha límite</dt>
-    <dd>@Model.FechaLimite.Texto()</dd>
-    <dt>Avance</dt>
-    <dd>@Model.Avance %</dd>
-    <dt>Estado</dt>
-    <dd><span class="insignia insignia--@Model.Urgencia.ClaseEstado()">@Model.Urgencia.Etiqueta()</span></dd>
-</dl>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+        <h1 class="h3 mb-0 font-monospace">@Model.Numero</h1>
+        <span class="badge rounded-pill text-bg-@Model.Urgencia.ColorBootstrap()">@Model.Urgencia.Etiqueta()</span>
+    </div>
+    <p class="text-body-secondary mb-4">@Model.Empresa</p>
 
-@* AQUÍ VA LA VISTA COMPLETA DEL PEDIMENTO (destino de las cards) *@
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-12 col-sm-4 col-lg-3">Fecha límite</dt>
+                <dd class="col-12 col-sm-8 col-lg-9">
+                    <time datetime="@Model.FechaLimite.Iso()">@Model.FechaLimite.Texto()</time>
+                </dd>
+
+                <dt class="col-12 col-sm-4 col-lg-3">Avance</dt>
+                <dd class="col-12 col-sm-8 col-lg-9 mb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="tarjeta-pedimento__avance progress flex-grow-1" role="progressbar" aria-label="Avance del pedimento"
+                             aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Model.Avance">
+                            <div class="progress-bar" style="width: @(Model.Avance)%"></div>
+                        </div>
+                        <span class="small fw-semibold">@Model.Avance %</span>
+                    </div>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    @* AQUÍ VA LA VISTA COMPLETA DEL PEDIMENTO (destino de las cards) *@
+</div>

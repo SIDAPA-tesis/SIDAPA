@@ -1,0 +1,18 @@
+@model SIDAPA.presentation.Models.Core.Notifications.NovedadesViewModel
+
+@*
+    Avisos recientes del usuario en sesión (INotificationService). Es component: solo Bootstrap.
+*@
+@if (Model.Novedades.Count == 0)
+{
+    <p class="text-body-secondary mb-0">No tienes novedades por ahora.</p>
+}
+else
+{
+    <ul class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 list-unstyled mb-0">
+        @foreach (var novedad in Model.Novedades)
+        {
+            <partial name="_TarjetaNovedad" model="novedad" />
+        }
+    </ul>
+}

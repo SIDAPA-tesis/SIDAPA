@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SIDAPA.presentation.Models.Dashboard;
 
 namespace SIDAPA.presentation.Controllers.Web.Dashboard
 {
@@ -6,7 +7,7 @@ namespace SIDAPA.presentation.Controllers.Web.Dashboard
     {
         public IActionResult index()
         {
-            return View();
+            return View(HomeViewModel.Desde(User));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿(() => {
     const root = document.documentElement;
     const toggle = document.getElementById("toggleSidebar");
-    const movil = window.matchMedia("(max-width: 768px)");
+    const movil = window.matchMedia("(max-width: 767.98px)");
 
     if (!toggle) return;
 

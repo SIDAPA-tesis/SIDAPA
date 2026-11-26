@@ -1,4 +1,11 @@
-﻿
+﻿/* Estructura del dashboard (_dashboardLayout): menú lateral, barra superior y área de contenido.
+   Solo el armazón del layout: lo de cada pantalla va en css/vistas/<vista>.css y con Bootstrap.
+   Colores y medidas de css/base/theme.css. */
+
+body {
+    background: var(--sidapa-color-background);
+}
+
 .dashboard {
     display: flex;
     min-height: 100vh;
@@ -14,10 +21,12 @@
 /* ---------- Menú lateral ---------- */
 
 .sidebar {
-    width: var(--sidebar-w);
+    display: flex;
+    flex-direction: column;
+    width: var(--sidapa-sidebar-width);
     flex-shrink: 0;
-    background: var(--ink);
-    color: #fff;
+    background: var(--sidapa-sidebar-bg);
+    color: var(--sidapa-sidebar-text-active);
     overflow: hidden;
     white-space: nowrap;
     transition: width 0.2s ease;
@@ -26,50 +35,84 @@
 .brand {
     display: flex;
     align-items: center;
-    height: var(--topbar-h);
-    padding: 0 20px;
+    height: var(--sidapa-topbar-height);
+    padding: 0 1.25rem;
     font-size: 1.125rem;
     font-weight: 700;
-    border-bottom: 1px solid var(--ink-soft);
+    border-bottom: 1px solid var(--sidapa-sidebar-bg-hover);
 }
 
 .sidebar nav {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 16px 12px;
+    gap: 0.25rem;
+    padding: 1rem 0.75rem;
 }
 
 .sidebar a {
-    padding: 10px 12px;
-    border-radius: 6px;
-    color: #e6eaf1;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.375rem;
+    color: var(--sidapa-sidebar-text);
     text-decoration: none;
 }
 
-    .sidebar a:hover {
-        background: var(--ink-soft);
-    }
+.sidebar a:hover {
+    background: var(--sidapa-sidebar-bg-hover);
+}
 
-    .sidebar a.active {
-        background: var(--ink-soft);
-        color: #fff;
-        font-weight: 600;
-        box-shadow: inset 3px 0 0 var(--accent-soft);
-    }
+.sidebar a.active {
+    background: var(--sidapa-sidebar-bg-hover);
+    color: var(--sidapa-sidebar-text-active);
+    font-weight: 600;
+    box-shadow: inset 0.1875rem 0 0 var(--sidapa-sidebar-accent);
+}
 
-    .sidebar a:focus-visible,
-    .menu-toggle:focus-visible,
-    .section-list a:focus-visible {
-        outline: 2px solid var(--accent-soft);
-        outline-offset: 2px;
-    }
+.sidebar a:focus-visible,
+.menu-toggle:focus-visible,
+.logout-btn:focus-visible {
+    outline: 0.125rem solid var(--sidapa-sidebar-accent);
+    outline-offset: 0.125rem;
+}
 
 /* Menú contraído: sin ancho y fuera del orden de tabulación */
 html.sidebar-collapsed .sidebar {
     width: 0;
     visibility: hidden;
     transition: width 0.2s ease, visibility 0s linear 0.2s;
+}
+
+/* ---------- Cerrar sesión (al fondo del menú) ---------- */
+
+.logout-section {
+    margin-top: auto;
+    padding: 1rem 0.75rem;
+    border-top: 1px solid var(--sidapa-sidebar-bg-hover);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--sidapa-sidebar-danger);
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: var(--sidapa-sidebar-danger-bg);
+    color: var(--sidapa-sidebar-danger-hover);
+}
+
+.logout-btn svg {
+    flex-shrink: 0;
 }
 
 /* ---------- Barra superior ---------- */
@@ -80,211 +123,55 @@ html.sidebar-collapsed .sidebar {
     z-index: 20;
     display: flex;
     align-items: center;
-    gap: 16px;
-    height: var(--topbar-h);
-    padding: 0 20px;
+    gap: 1rem;
+    height: var(--sidapa-topbar-height);
+    padding: 0 1.25rem;
     font-weight: 600;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+    background: var(--sidapa-color-surface);
+    border-bottom: 1px solid var(--sidapa-color-border);
 }
 
 .menu-toggle {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     font-size: 1.25rem;
     line-height: 1;
-    color: var(--text);
+    color: var(--sidapa-color-ink);
     background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 6px;
+    border: 1px solid var(--sidapa-color-border);
+    border-radius: 0.375rem;
     cursor: pointer;
 }
 
-    .menu-toggle:hover {
-        background: var(--paper);
-    }
+.menu-toggle:hover {
+    background: var(--sidapa-color-background);
+}
 
 /* ---------- Contenido ---------- */
 
 .page-content {
     width: 100%;
-    max-width: 960px;
-    padding: 28px 24px;
+    max-width: var(--sidapa-page-width);
+    padding: 1.75rem 1.5rem;
 }
 
-    .page-content h1 {
-        margin: 0 0 4px;
-        font-size: 1.5rem;
-        line-height: 1.25;
-    }
-
-.lead {
-    max-width: 65ch;
-    margin: 0 0 24px;
-    color: var(--muted);
+/* Pantallas con panel lateral (Pedimentos, Claves): ViewData["ClasePagina"] = "page-content--ancha". */
+.page-content--ancha {
+    max-width: none;
 }
 
-.toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-}
+/* ---------- Pantallas pequeñas (< md de Bootstrap; mismo corte que js/dashboard.js) ---------- */
 
-.btn {
-    padding: 9px 16px;
-    font: inherit;
-    font-weight: 600;
-    color: #fff;
-    background: var(--accent);
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-    .btn:hover {
-        background: var(--accent-hover);
-    }
-
-    .btn:focus-visible {
-        outline: 2px solid var(--ink);
-        outline-offset: 2px;
-    }
-
-/* Inicio */
-
-.section-list {
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-    .section-list a {
-        display: block;
-        padding: 16px 20px;
-        color: inherit;
-        text-decoration: none;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-    }
-
-        .section-list a:hover {
-            border-color: var(--accent);
-        }
-
-    .section-list strong {
-        display: block;
-    }
-
-    .section-list span {
-        color: var(--muted);
-    }
-
-/* Usuarios */
-
-.table-wrap {
-    overflow-x: auto;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px 16px;
-    text-align: left;
-    white-space: nowrap;
-    border-bottom: 1px solid var(--line);
-}
-
-th {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--muted);
-}
-
-tbody tr:last-child td {
-    border-bottom: 0;
-}
-
-.estado {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-    .estado::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        background: var(--muted);
-        border-radius: 50%;
-    }
-
-    .estado.activo::before {
-        background: var(--accent);
-    }
-
-/* Reportes */
-
-.bars {
-    display: grid;
-    gap: 14px;
-    margin: 0;
-    padding: 20px;
-    list-style: none;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-}
-
-    .bars li {
-        display: grid;
-        grid-template-columns: 3rem 1fr 2.5rem;
-        align-items: center;
-        gap: 12px;
-    }
-
-.bar {
-    height: 12px;
-    overflow: hidden;
-    background: var(--paper);
-    border-radius: 6px;
-}
-
-    .bar span {
-        display: block;
-        height: 100%;
-        background: var(--accent);
-    }
-
-.bars b {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-}
-
-
-
-/* ---------- Pantallas pequeñas ---------- */
-
-@media (max-width: 768px) {
+@media (max-width: 47.99875rem) {
     .sidebar {
         position: fixed;
-        top: var(--topbar-h);
+        top: var(--sidapa-topbar-height);
         bottom: 0;
         left: 0;
         z-index: 10;
-        width: min(var(--sidebar-w), 80vw);
+        width: min(var(--sidapa-sidebar-width), 80vw);
     }
 
     .brand {
@@ -292,53 +179,14 @@ tbody tr:last-child td {
     }
 
     .page-content {
-        padding: 20px 16px;
+        padding: 1.25rem 1rem;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .sidebar,
-    html.sidebar-collapsed .sidebar {
+    html.sidebar-collapsed .sidebar,
+    .logout-btn {
         transition: none;
     }
 }
-
-/* ---------- Cerrar Sesión ---------- */
-
-.logout-section {
-    margin-top: auto; /* Si el sidebar es flex, empuja el botón hasta abajo */
-    padding: 16px 12px;
-    border-top: 1px solid var(--ink-soft);
-}
-
-.logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 12px;
-    font: inherit;
-    font-size: 0.95rem;
-    color: #ff8a8a; /* Un tono rojo claro que resalta en fondo oscuro */
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-    .logout-btn:hover {
-        background: rgba(220, 53, 69, 0.15); /* Fondo rojo tenue al pasar el mouse */
-        color: #ffb3b3;
-    }
-
-    .logout-btn:focus-visible {
-        outline: 2px solid var(--accent-soft);
-        outline-offset: 2px;
-    }
-
-    /* Para que el icono herede el color del texto */
-    .logout-btn svg {
-        flex-shrink: 0;
-    }

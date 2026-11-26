@@ -1,0 +1,10 @@
+@model SIDAPA.presentation.Models.Core.Permissions.ModuloViewModel
+
+<li class="col">
+    <a class="card h-100 shadow-sm text-reset text-decoration-none" asp-controller="@Model.Controlador" asp-action="Index">
+        <div class="card-body">
+            <h3 class="h6 card-title mb-1">@Model.Texto</h3>
+            <p class="card-text small text-body-secondary mb-0">@Model.Descripcion</p>
+        </div>
+    </a>
+</li>
