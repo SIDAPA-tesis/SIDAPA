@@ -1,0 +1,79 @@
+/* Panel de pedimentos del Capturador (Views/Pedimentos: Index y Detalle).
+   Solo lo que Bootstrap no trae; colores de css/base/theme.css. */
+
+.pedimentos-buscador {
+    width: min(100%, 24rem);
+}
+
+/* ---------- Card de pedimento ---------- */
+
+/* Sin border-0/shadow-sm de Bootstrap: llevan !important y no dejarían animar el hover. */
+.tarjeta-pedimento {
+    border: 0;
+    border-inline-start: 0.25rem solid transparent;
+    box-shadow: var(--bs-box-shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.tarjeta-pedimento:hover,
+.tarjeta-pedimento:focus-visible {
+    transform: translateY(-0.125rem);
+    border-inline-start-color: var(--sidapa-color-primary);
+    box-shadow: var(--bs-box-shadow);
+}
+
+.tarjeta-pedimento:focus-visible {
+    outline: 0.125rem solid var(--sidapa-color-primary);
+    outline-offset: 0.125rem;
+}
+
+.tarjeta-pedimento__imagen {
+    width: var(--sidapa-control-size);
+    height: var(--sidapa-control-size);
+    background: var(--sidapa-color-background-alt);
+    color: var(--sidapa-color-primary);
+}
+
+/* Barra de avance (card y detalle): más delgada; el color primario lo pone theme.css. */
+.tarjeta-pedimento__avance {
+    --bs-progress-height: 0.5rem;
+    --bs-progress-bg: var(--sidapa-color-background-alt);
+}
+
+/* ---------- Calendario ---------- */
+
+/* Bootstrap no tiene rejilla de 7 columnas (row-cols llega a 6). */
+.calendario {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    text-align: center;
+}
+
+.calendario__dia {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+}
+
+.calendario__dia--hoy {
+    outline: 0.125rem solid var(--sidapa-color-primary);
+    outline-offset: -0.125rem;
+}
+
+.calendario__marca {
+    display: inline-block;
+    width: 0.625rem;
+    height: 0.625rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tarjeta-pedimento {
+        transition: none;
+    }
+
+    .tarjeta-pedimento:hover,
+    .tarjeta-pedimento:focus-visible {
+        transform: none;
+    }
+}

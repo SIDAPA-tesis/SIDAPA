@@ -66,7 +66,24 @@ Si un estilo lo usan varias páginas, va en el layout. Si es de una sola, va en 
 **4. Bootstrap primero.** Grid (`row`, `col-12 col-lg-6`), `card`, `table table-hover`, `badge`,
 `btn`, `form-control`, utilidades (`d-flex`, `gap-3`, `mb-4`, `text-muted`). CSS propio solo para
 lo que Bootstrap no tiene. Colores siempre con `var(--sidapa-*)` de `wwwroot/css/base/theme.css`.
-Responsividad con las clases de Bootstrap, no con `@media`.
+Responsividad con las clases de Bootstrap, no con `@media`. Ejemplos de referencia que ya siguen
+estas reglas: `Views/Pedimentos/` (+ `css/vistas/pedimentos.css`), `Views/Avisos/`, `Views/Claves/` y
+`Views/Home/` (estas dos sin CSS propio). El "primary" de Bootstrap (`text-bg-primary`, `border-primary`,
+`.progress`, enlaces) ya es el primario de la paleta: lo conecta `theme.css`, no lo repitas por pantalla.
+`.btn`, `table`, `th`/`td` no se redefinen en ninguna hoja: un selector global así pisa a Bootstrap en todo
+el dashboard (antes `slideMenu.css` pintaba de verde todos los `.btn`, incluso `btn-outline-*`).
+
+Estados con color (urgencia, vigencia…): usa los colores contextuales de Bootstrap (`danger`,
+`warning`, `success`, `secondary`) con una extensión que traduzca el enum, como
+`UrgenciaEnum.ColorBootstrap()` en `Models/PresentacionExtenciones.cs`:
+```cshtml
+<span class="badge rounded-pill text-bg-@Model.Urgencia.ColorBootstrap()">@Model.Urgencia.Etiqueta()</span>
+<li class="bg-@color-subtle text-@color-emphasis">…</li>
+```
+No inventes clases propias para eso (`insignia--error`, `marca--aviso`).
+
+Paneles laterales y diálogos que abre el servidor (p. ej. `?clave=A1` en Claves): `offcanvas offcanvas-end show`
+o `modal` con `show`, y el cierre es un `<a class="btn-close">` a la URL sin el parámetro. Sin JS ni CSS propio.
 
 **5. JS mínimo.** Filtros, búsquedas y paginación se hacen con `<form method="get">`, y las
 acciones con `<form method="post">` + `asp-*`. El servidor vuelve a renderizar la vista (así lo
@@ -80,7 +97,8 @@ escribir JS. Solo lo que el servidor no puede hacer va a `wwwroot/js/<vista>.js`
 application y arma el ViewModel, como en `PanelPedimentosViewModel.Desde(dto, busqueda)` de
 `Models/Pedimentos/PanelPedimentosViewModel.cs`. En la vista se usan tag helpers (`asp-controller`,
 `asp-action`, `asp-route-id`, `asp-for`, `asp-validation-summary`), `@if` / `@foreach`. No se pasan
-datos por `ViewBag`/`ViewData` (salvo `Title`), ni se pone lógica de negocio en la vista.
+datos por `ViewBag`/`ViewData` (salvo `Title` y `ClasePagina`, que son para el layout), ni se pone
+lógica de negocio en la vista.
 
 **7. Components para lo repetitivo que viene del backend.**
 - **Partial view** (opción por defecto): rows de tabla, cards, artículos, secciones repetidas.
@@ -98,7 +116,7 @@ datos por `ViewBag`/`ViewData` (salvo `Title`), ni se pone lógica de negocio en
   ```
 - **ViewComponent**: solo cuando el bloque **obtiene sus propios datos** (menú lateral, widget de
   novedades). Va en `SIDAPA.presentation/ViewComponets/<Nombre>ViewComponent.cs`, inyecta un
-  **servicio o interfaz de application** (como `MenuLateralViewComponet` con `IPermisosService`),
+  **servicio o interfaz de application** (como `MenuLateralViewComponent` con `IPermisosService`),
   **nunca `SidapaDbContext`**, y su vista va en `Views/Shared/Components/<Nombre>/Default.cshtml`.
 - **Nunca dentro de un component**: `<link>`, `<script>`, `@section`. Sus estilos van en el CSS
   de la página o del layout, y su JS en el `.js` de la página.
@@ -115,33 +133,61 @@ datos por `ViewBag`/`ViewData` (salvo `Title`), ni se pone lógica de negocio en
 
 ## Gotchas (verificados en el repo)
 
-- **`Styles` solo lo renderiza `_AuthLayout`.** `_dashboardLayout` e `_inicioLayout` no tienen
-  `RenderSectionAsync("Styles")`, y `Pedimentos`/`Claves` declaran `@section Estilos`, que ningún
-  layout renderiza. Antes de poner CSS de página en una vista que usa esos layouts, agrega
-  `@await RenderSectionAsync("Styles", required: false)` en el `<head>` del layout, **después** de
-  Bootstrap y `theme.css`.
+- **Los tres layouts renderizan `Styles` y cargan Bootstrap → `theme.css` → su CSS → `Styles`.** La sección
+  se llama `Styles` (no `Estilos`): con otro nombre ningún layout la pinta y la página sale sin estilos sin
+  dar error. `_dashboardLayout` e `_inicioLayout` también cargan `bootstrap.bundle.min.js`, así que
+  `data-bs-*` (dropdown, collapse, modal) funciona sin JS propio.
+- **CSS de cada layout.** `_dashboardLayout` → `css/componets/slideMenu.css` (solo el armazón: menú lateral,
+  barra superior, `.page-content`, cerrar sesión). `_inicioLayout` → `css/layout/landingPage/inicio-*.css`.
+  `_AuthLayout` → nada extra. Lo de una pantalla nunca va en la hoja del layout.
+- **Ancho de la página en `_dashboardLayout`.** `.page-content` tiene `max-width: var(--sidapa-page-width)`
+  (60rem). Una página con panel lateral o tablas anchas pone `ViewData["ClasePagina"] = "page-content--ancha"`
+  (regla en `slideMenu.css`); el layout la agrega al `<main>`. Así lo hacen Inicio, Pedimentos y Claves.
+- **Tema oscuro.** La portada tiene "Cambiar tema" (`data-bs-theme`, `js/tema.js`). `theme.css` solo
+  sobreescribe textos/fondos/bordes de Bootstrap en tema claro (`:root:not([data-bs-theme="dark"])`); si
+  agregas un `--bs-*` de color, ponlo ahí y no en `:root`, o el modo oscuro deja de funcionar.
+- **Corte móvil del dashboard = `md` de Bootstrap (767.98px).** Está en tres lugares que deben coincidir:
+  el script en línea del `<head>` de `_dashboardLayout`, `js/dashboard.js` y el `@media` de `slideMenu.css`
+  (`47.99875rem`).
+- **Utilidades de Bootstrap con `!important`.** `border-0`, `shadow-sm`, `shadow`, `bg-*`, `p-*`… llevan
+  `!important`, así que un `:hover` en tu CSS no las puede cambiar. Si el elemento anima borde o sombra
+  (como `.tarjeta-pedimento`), no pongas esas utilidades en el HTML: decláralas en tu CSS con las
+  variables de Bootstrap (`box-shadow: var(--bs-box-shadow-sm)`). Para `text-truncate` dentro de un
+  flex usa `overflow-hidden` en el hijo (Bootstrap no tiene `min-w-0`).
 - **Convención de nombres de ViewComponents.** MVC quita el sufijo exacto `ViewComponent` y busca la vista en
-  `Views/Shared/Components/<Nombre>/Default.cshtml`. La clase existente `MenuLateralViewComponet`
-  (sufijo mal escrito) se registra como `MenuLateralViewComponet`, y su vista está en
-  `Views/Shared/Componets/`, una carpeta que MVC no revisa. En components nuevos usa la ortografía
-  correcta; la carpeta de clases `ViewComponets/` se queda como está.
+  `Views/Shared/Components/<Nombre>/Default.cshtml`. Con el sufijo mal escrito (`…ViewComponet`) la
+  clase se registra con otro nombre y la vista no se encuentra. La carpeta de clases `ViewComponets/`
+  se queda como está.
+- **Opciones por rol.** El menú lateral y las tarjetas de accesos rápidos salen de `IPermisosService` +
+  `Models/Core/Permissions/ModuloCatalogo.cs`. No hagas partials por rol (`_AccesosAdmin`, `_novedadesGlosador`…)
+  ni `User.IsInRole("…")` para armar ligas: agrega el módulo al servicio y al catálogo. Lo que dependa del
+  rol dentro de una página va como `bool` en su ViewModel (p. ej. `HomeViewModel.EsAdministrador`).
 - **Mayúsculas y minúsculas.** En Docker (Linux), `~/css/vistas/Usuarios.css` ≠ `usuarios.css`, y lo mismo pasa con `<partial name>`.
   En Windows funciona y en el contenedor da 404 o "partial not found".
-- **Carpetas parecidas.** Ya existen `css/componets/` (con archivos) y referencias a `css/componentes/` (que no
-  existe en disco). El CSS de página nuevo va en `css/vistas/`.
+- **Carpetas.** El CSS de página nuevo va en `css/vistas/`. `css/componets/` (mal escrito) solo guarda
+  `slideMenu.css`; no crees `css/componentes/` ni hojas por componente: los components no llevan CSS.
+- **Un `<link>` a un archivo inexistente no falla en el build ni en el checker.** Lo atrapa
+  `test/SIDAPA.presentation.test/Views/DashboardViewsTests.cs` (pide cada hoja de cada pantalla y espera 200).
+  Si agregas una pantalla con CSS, súmala al `[Theory]` de esa prueba.
+- **Razor codifica los acentos** (`Próximo` → `Pr&#xF3;ximo`). En pruebas que buscan texto en el HTML,
+  decodifica primero con `WebUtility.HtmlDecode`.
 - **Python no está instalado** en la máquina de desarrollo; por eso el checker es PowerShell
   (funciona con Windows PowerShell 5.1 y con pwsh). El script es ASCII a propósito: PS 5.1 lee
   un `.ps1` sin BOM como ANSI.
 
-## Deuda conocida (al 2026-11-23, `-NoWarnings`)
+## Deuda conocida (al 2026-11-25)
 
-```
-CSS-PER-PAGE  Views/Claves/Index.cshtml        2 CSS
-CSS-PER-PAGE  Views/Pedimentos/Detalle.cshtml  2 CSS
-CSS-PER-PAGE  Views/Pedimentos/Index.cshtml    4 CSS
-CSS-LINES     wwwroot/css/componets/slideMenu.css          344 líneas
-CSS-LINES     wwwroot/css/layout/adminPanel/adminPanel.css 423 líneas
-```
-Además hay unos 230 warnings (px y colores hex en `app.css`, `variables.css`, `slideMenu.css` y
-`inicio-*.css`, y un `onclick` en `_inicioLayout`). Se atienden en tareas SCRUM aparte. No los
-arregles de paso dentro de otra tarea.
+El checker sale limpio con `-Strict`: **0 errores y 0 warnings**. Queda lo que el checker no mide:
+
+- **Vistas sin `@model`** (regla 6): `Productos/Index` (pantalla por construir), `Auth/Denied` (estática),
+  `Shared/_HomeAdmin` (datos de ejemplo escritos en el partial) y `Shared/_Sidebar` (parte del layout).
+  `Usuarios` y `Reportes` reciben un `IEnumerable<…>` armado a mano en el controller, sin servicio ni `…ViewModel`.
+- **`User.IsInRole` en `Views/SIDAPA/Index.cshtml`** (sección "Acerca de" solo para el Cliente): debería
+  venir como `bool` en `InicioViewModel`.
+- **`@media` en la portada** (`inicio-hero.css`): la rejilla del hero es propia; pasarla al grid de Bootstrap
+  cuando diseño cierre la portada.
+- **Estilos en línea `style="width: …%"`** en barras de avance: es el único modo sin JS de pasar un valor
+  del servidor; se aceptan. `_HomeAdmin` además usa `style="height: 0.3rem"` porque un partial no puede traer CSS.
+
+Fuera de front-end (no lo arregles aquí): 5 warnings CS8618 en `SIDAPA.domain/.../PersonEntity.cs`, y 6
+warnings `CLOCK` del checker de pruebas (`DateTime.UtcNow` en `JwtTokenServiceTests` y `AuthCookieTests`).

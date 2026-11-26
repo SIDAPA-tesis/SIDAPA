@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIDAPA.presentation.Security;
 
 namespace SIDAPA.presentation.Controllers.Web.Dashboard
 {
+    [Authorize(Policy = Policies.Glosa)]   // mismo alcance que Claves (docs/permisos-por-rol.md)
     public class ProductosController : Controller
     {
         // GET: ProductosController

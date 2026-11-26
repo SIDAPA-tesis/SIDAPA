@@ -7,45 +7,53 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/componentes/tarjeta-pedimento.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/componentes/calendario.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/vistas/pedimentos.css" asp-append-version="true" />
 }
 
-<div class="vista-pedimentos">
+<div>
 
-    @* ---------- Buscador (sin JavaScript: se envía por GET y filtra en el servidor) ---------- *@
-    <form class="buscador" role="search" method="get">
-        <label class="solo-lectores" for="busqueda">Buscar pedimentos</label>
-        <input id="busqueda" type="search" name="q" value="@Model.Busqueda" placeholder="Buscar por número o empresa" />
-        <input type="hidden" name="mes" value="@Model.Calendario.MesActual" />
-        <button type="submit">Buscar</button>
-    </form>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <h1 class="h3 mb-0" id="titulo-lista">Mis pedimentos</h1>
 
-    <div class="vista-pedimentos__cuerpo">
+        @* Buscador sin JavaScript: se envía por GET y filtra en el servidor. *@
+        <form class="pedimentos-buscador" role="search" method="get">
+            <label class="visually-hidden" for="busqueda">Buscar pedimentos</label>
+            <div class="input-group">
+                <input id="busqueda" class="form-control" type="search" name="q" value="@Model.Busqueda"
+                       placeholder="Buscar por número o empresa" />
+                <input type="hidden" name="mes" value="@Model.Calendario.MesActual" />
+                <button class="btn btn-primary" type="submit">Buscar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-4">
 
         @* ---------- Cards de pedimentos ---------- *@
-        <section aria-labelledby="titulo-lista">
-            <h1 class="vista-pedimentos__titulo" id="titulo-lista">Mis pedimentos</h1>
-
+        <section class="col-12 col-xl-8" aria-labelledby="titulo-lista">
             @if (Model.Pedimentos.Count == 0)
             {
-                <p class="vista-pedimentos__vacio">No se encontraron pedimentos.</p>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center text-body-secondary py-5">
+                        @(string.IsNullOrWhiteSpace(Model.Busqueda)
+                            ? "Aún no tienes pedimentos asignados."
+                            : $"No se encontraron pedimentos para «{Model.Busqueda}».")
+                    </div>
+                </div>
             }
             else
             {
-                <ul class="lista-tarjetas">
+                <ul class="list-unstyled row row-cols-1 row-cols-md-2 g-3 mb-0">
                     @foreach (var pedimento in Model.Pedimentos)
                     {
-                        <li><partial name="_TarjetaPedimento" model="pedimento" /></li>
+                        <li class="col"><partial name="_TarjetaPedimento" model="pedimento" /></li>
                     }
                 </ul>
             }
         </section>
 
         @* ---------- Calendario de fechas límite ---------- *@
-        <aside aria-label="Calendario de fechas límite">
+        <aside class="col-12 col-xl-4" aria-label="Calendario de fechas límite">
             <partial name="_Calendario" model="Model.Calendario" />
         </aside>
 

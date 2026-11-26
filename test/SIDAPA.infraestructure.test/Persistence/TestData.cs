@@ -84,6 +84,24 @@ public static class TestData
         return document;
     }
 
+    /// <summary>Solicitud de documento faltante (ope_solicitud_documento), abierta salvo que se diga lo contrario.</summary>
+    public static async Task<DocumentRequestEntity> DocumentRequestAsync(SidapaDbContext context, int referenciaId,
+        int capturadorId, DocumentTypeEnum type = DocumentTypeEnum.DOCUMENTO_TRANSPORTE, DateTime? attendedAt = null)
+    {
+        var request = new DocumentRequestEntity
+        {
+            ReferenciaId = referenciaId,
+            DocumentTypeId = (short)type,
+            Note = "Nota de prueba",
+            RequestedByUserId = capturadorId,
+            RequestedAt = new DateTime(2026, 11, 23, 11, 0, 0),
+            AttendedAt = attendedAt
+        };
+        context.DocumentRequests.Add(request);
+        await context.SaveChangesAsync();
+        return request;
+    }
+
     /// <summary>Registro previo en ope_bitacora_estatus.</summary>
     public static async Task<StatusHistoryEntity> StatusHistoryAsync(SidapaDbContext context, int referenciaId,
         int userId, ReferenciaStatusEnum status = ReferenciaStatusEnum.RECIBIDA)

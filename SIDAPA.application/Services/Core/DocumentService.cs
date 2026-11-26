@@ -16,6 +16,36 @@ public class DocumentService(
 {
     public async Task<DocumentDto> UploadAsync(UploadDocumentDto upload, CancellationToken ct = default)
     {
+        var stored = await StoreFileAsync(upload, ct);
+
+        var document = new DocumentEntity
+        {
+            ReferenciaId = upload.ReferenciaId,
+            DocumentTypeId = (short)upload.DocumentType,
+            FileName = stored.FileName,
+            BucketPath = stored.BucketPath,
+            SizeInBytes = (int)stored.SizeInBytes,   // ya validado: máximo 20 MB
+            Status = nameof(DocumentStatusEnum.RECIBIDO),
+            UploadedByUserId = upload.UploadedByUserId,
+            UploadedAt = stored.UploadedAt
+        };
+
+        try
+        {
+            await documentRepository.AddAsync(document, ct);
+        }
+        catch
+        {
+            // Si no se pudo registrar en la BD, se borra del bucket para no dejar archivos sin dueño.
+            await DeleteFileQuietlyAsync(stored.BucketPath);
+            throw;
+        }
+
+        return ToDto(document);
+    }
+
+    public async Task<StoredFileDto> StoreFileAsync(UploadDocumentDto upload, CancellationToken ct = default)
+    {
         if (!Enum.IsDefined(upload.DocumentType))
             throw new InvalidDocumentTypeException();
 
@@ -36,30 +66,7 @@ public class DocumentService(
 
         await cloudStorage.UploadAsync(new CloudStorageUploadRequest(upload.Content, bucketPath, contentType), ct);
 
-        var document = new DocumentEntity
-        {
-            ReferenciaId = upload.ReferenciaId,
-            DocumentTypeId = (short)upload.DocumentType,
-            FileName = DocumentPathRule.OriginalFileName(upload.FileName),
-            BucketPath = bucketPath,
-            SizeInBytes = (int)upload.SizeInBytes,   // ya validado: máximo 20 MB
-            Status = nameof(DocumentStatusEnum.RECIBIDO),
-            UploadedByUserId = upload.UploadedByUserId,
-            UploadedAt = now
-        };
-
-        try
-        {
-            await documentRepository.AddAsync(document, ct);
-        }
-        catch
-        {
-            // Si no se pudo registrar en la BD, se borra del bucket para no dejar archivos sin dueño.
-            await DeleteQuietlyAsync(bucketPath);
-            throw;
-        }
-
-        return ToDto(document);
+        return new StoredFileDto(bucketPath, DocumentPathRule.OriginalFileName(upload.FileName), upload.SizeInBytes, now);
     }
 
     public async Task<IReadOnlyList<DocumentDto>> GetByReferenciaAsync(int referenciaId, CancellationToken ct = default)
@@ -77,7 +84,7 @@ public class DocumentService(
     }
 
     // Si también falla el borrado, se deja pasar el error original (el de la BD), que es el importante.
-    private async Task DeleteQuietlyAsync(string bucketPath)
+    public async Task DeleteFileQuietlyAsync(string bucketPath)
     {
         try
         {

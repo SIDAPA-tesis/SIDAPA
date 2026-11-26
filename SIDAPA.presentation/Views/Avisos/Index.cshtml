@@ -23,6 +23,9 @@
         </div>
     }
 
+    @* HU-05: documentos que pidió el Capturador, con su botón para subir solo ese archivo. *@
+    @await Component.InvokeAsync("SolicitudesPendientes")
+
     @if (Model.Referencias.Count == 0)
     {
         <div class="card border-0 shadow-sm">

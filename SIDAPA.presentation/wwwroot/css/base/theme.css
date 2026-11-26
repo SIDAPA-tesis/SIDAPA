@@ -1,7 +1,7 @@
 /* Paleta y medidas comunes de SIDAPA.
    PROVISIONAL: los valores los define diseño (Armando). Al cambiar uno aquí cambia en todas las pantallas.
    Regla: ninguna otra hoja escribe colores directos (#hex, rgb, nombres); siempre var(--sidapa-…).
-   Se carga en los layouts después de Bootstrap y antes de los estilos de cada pantalla. */
+   Se carga en los tres layouts después de Bootstrap y antes de los estilos de cada pantalla. */
 
 :root {
     /* ---------- Colores ---------- */
@@ -17,15 +17,58 @@
     --sidapa-color-background-alt: #dde6f0;  /* fondo decorativo, zonas secundarias */
     --sidapa-color-border: #c9d3df;
 
+    /* ---------- Menú lateral y barra superior del dashboard (_dashboardLayout) ---------- */
+    --sidapa-sidebar-bg: #172033;
+    --sidapa-sidebar-bg-hover: #344155;      /* opción activa / al pasar el mouse; también la línea divisoria */
+    --sidapa-sidebar-text: #e6eaf1;
+    --sidapa-sidebar-text-active: #ffffff;
+    --sidapa-sidebar-accent: #7fd6cb;        /* marca de la opción activa y foco */
+    --sidapa-sidebar-danger: #ff8a8a;        /* "Cerrar sesión" sobre fondo oscuro */
+    --sidapa-sidebar-danger-hover: #ffb3b3;
+    --sidapa-sidebar-danger-bg: rgb(220 53 69 / 0.15);
+
+    /* ---------- Portada (_inicioLayout, Views/SIDAPA) ---------- */
+    --sidapa-landing-blue: #2f5aff;
+    --sidapa-landing-navy: #011832;
+    --sidapa-landing-light: #fafafa;
+    --sidapa-landing-gray: #d9d9d9;
+    --sidapa-landing-cyan: #48cae4;
+    --sidapa-landing-ice: #ebfdff;
+    --sidapa-landing-green: #6aa63a;         /* logo provisional */
+    --sidapa-landing-soft: rgb(1 24 50 / 0.75);   /* texto secundario sobre la portada */
+
     /* ---------- Medidas (relativas, nada en px) ---------- */
     --sidapa-control-size: 2.75rem;          /* botones de ícono, círculos */
     --sidapa-form-width: 26rem;              /* ancho máximo de formularios sueltos (login) */
+    --sidapa-sidebar-width: 15.625rem;
+    --sidapa-topbar-height: 3.5rem;
+    --sidapa-page-width: 60rem;              /* ancho máximo de .page-content (ver .page-content--ancha) */
+    --sidapa-landing-nav-height: 4rem;
+    --sidapa-landing-width: 68.75rem;        /* ancho máximo del contenido de la portada */
 
-    /* ---------- Bootstrap usa la misma paleta ---------- */
+    /* ---------- "primary" de Bootstrap = primario de la paleta (badges, bordes, enlaces) ---------- */
+    /* El *-rgb es el mismo color en tripleta (Bootstrap lo usa para transparencias). */
+    --bs-primary: var(--sidapa-color-primary);
+    --bs-primary-rgb: 31, 78, 121;
+    --bs-link-color: var(--sidapa-color-primary);
+    --bs-link-color-rgb: 31, 78, 121;
+    --bs-link-hover-color: var(--sidapa-color-primary-hover);
+    --bs-link-hover-color-rgb: 24, 61, 95;
+}
+
+/* Textos, fondos y bordes de Bootstrap con la paleta, solo en tema claro: con data-bs-theme="dark"
+   (botón "Cambiar tema" de la portada) Bootstrap conserva sus valores oscuros. */
+:root:not([data-bs-theme="dark"]) {
     --bs-body-color: var(--sidapa-color-ink);
     --bs-body-bg: var(--sidapa-color-surface);      /* Bootstrap lo usa para tarjetas e inputs */
     --bs-secondary-color: var(--sidapa-color-muted);
     --bs-border-color: var(--sidapa-color-border);
+}
+
+/* Barras de avance (.progress declara su propia variable, por eso no basta con :root). */
+.progress,
+.progress-stacked {
+    --bs-progress-bar-bg: var(--sidapa-color-primary);
 }
 
 /* Bootstrap compila el color de sus botones; aquí se reemplaza por el de la paleta. */
@@ -40,5 +83,18 @@
     --bs-btn-active-bg: var(--sidapa-color-primary-hover);
     --bs-btn-active-border-color: var(--sidapa-color-primary-hover);
     --bs-btn-disabled-bg: var(--sidapa-color-primary);
+    --bs-btn-disabled-border-color: var(--sidapa-color-primary);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--sidapa-color-primary);
+    --bs-btn-border-color: var(--sidapa-color-primary);
+    --bs-btn-hover-color: var(--sidapa-color-on-primary);
+    --bs-btn-hover-bg: var(--sidapa-color-primary);
+    --bs-btn-hover-border-color: var(--sidapa-color-primary);
+    --bs-btn-active-color: var(--sidapa-color-on-primary);
+    --bs-btn-active-bg: var(--sidapa-color-primary-hover);
+    --bs-btn-active-border-color: var(--sidapa-color-primary-hover);
+    --bs-btn-disabled-color: var(--sidapa-color-primary);
     --bs-btn-disabled-border-color: var(--sidapa-color-primary);
 }

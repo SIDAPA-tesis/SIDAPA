@@ -5,6 +5,7 @@ using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Entities.Core.Catalogs;
 using SIDAPA.domain.Entities.Core.Operative;
 using SIDAPA.domain.Enums.Core;
+using SIDAPA.infraestructure.Repositories.CaseFile.Documents;
 
 namespace SIDAPA.infraestructure.Persistence.Seed;
 
@@ -54,7 +55,64 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync(ct);
 
         await SeedDemoClientAsync(context, hasher, devUsersPassword, ct);
+        await SeedDemoDocumentRequestsAsync(context, ct);
     }
+
+    /// <summary>
+    /// HU-05 (SCRUM-64): mientras no exista HU-04 (el Capturador pide documentos), deja una referencia demo
+    /// en "En espera de documentos" con dos solicitudes abiertas para probar la subida desde el portal del cliente.
+    /// Las solicitudes se crean con el mismo repositorio que usará HU-04. Solo Development.
+    /// </summary>
+    private static async Task SeedDemoDocumentRequestsAsync(SidapaDbContext context, CancellationToken ct)
+    {
+        const string referenciaNumber = "DEMO-HU05";
+        if (await context.Referencias.AnyAsync(r => r.ReferenciaNumber == referenciaNumber, ct))
+            return;
+
+        var cliente = await context.Users.FirstOrDefaultAsync(u => u.Email == "cliente@sidapa.local", ct);
+        var capturador = await context.Users.FirstOrDefaultAsync(u => u.Email == "capturador@sidapa.local", ct);
+        if (cliente?.ClientId is not { } clientId || capturador is null)
+            return;
+
+        var receivedAt = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(-2), DateTimeKind.Unspecified);
+        var requestedAt = receivedAt.AddDays(1);
+
+        var referencia = new ReferenciaEntity
+        {
+            ReferenciaNumber = referenciaNumber,
+            ClientId = clientId,
+            OperationTypeCode = (short)OperationTypeEnum.IMPORTACION,
+            AduanaCode = "470",   // AICM, sembrada por la migración AvisoArribo
+            StatusId = (short)ReferenciaStatusEnum.EN_ESPERA_DE_DOCUMENTOS,
+            CreatedAt = receivedAt
+        };
+        referencia.StatusHistories.Add(History(ReferenciaStatusEnum.RECIBIDA, cliente.Id, receivedAt, "Aviso de arribo recibido"));
+        referencia.StatusHistories.Add(History(ReferenciaStatusEnum.EN_REVISION, capturador.Id, receivedAt.AddHours(2), "Datos de demostración"));
+        referencia.StatusHistories.Add(History(ReferenciaStatusEnum.EN_ESPERA_DE_DOCUMENTOS, capturador.Id, requestedAt, "Datos de demostración: se pidieron documentos"));
+        context.Referencias.Add(referencia);
+        await context.SaveChangesAsync(ct);
+
+        var requests = new DocumentRequestRepository(context);
+        await requests.CreateAsync(new DocumentRequestEntity
+        {
+            ReferenciaId = referencia.Id,
+            DocumentTypeId = (short)DocumentTypeEnum.DOCUMENTO_TRANSPORTE,
+            Note = "El B/L que enviaste no es legible. Súbelo de nuevo, por favor.",
+            RequestedByUserId = capturador.Id,
+            RequestedAt = requestedAt
+        }, ct);
+        await requests.CreateAsync(new DocumentRequestEntity
+        {
+            ReferenciaId = referencia.Id,
+            DocumentTypeId = (short)DocumentTypeEnum.LISTA_EMPAQUE,
+            Note = "Falta la lista de empaque.",
+            RequestedByUserId = capturador.Id,
+            RequestedAt = requestedAt
+        }, ct);
+    }
+
+    private static StatusHistoryEntity History(ReferenciaStatusEnum status, int userId, DateTime at, string comment) =>
+        new() { StatusId = (short)status, UserId = userId, ChangedAt = at, Comment = comment };
 
     /// <summary>Empresa demo y su usuario Cliente (HU-02). Solo Development: llega aquí únicamente con contraseña.</summary>
     private static async Task SeedDemoClientAsync(SidapaDbContext context, IPasswordHasher hasher, string password, CancellationToken ct)

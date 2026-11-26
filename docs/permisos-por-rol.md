@@ -29,6 +29,22 @@ opciones, no protege nada por sí mismo.
 - Que un Cliente solo vea **sus** referencias (claim `client_id`) se valida en cada caso de uso,
   no con estas políticas.
 
+## Pantallas y menú lateral
+
+| Pantalla | Política | Ven la opción en el menú |
+|---|---|---|
+| `/Home` (Inicio) | sesión | Todos |
+| `/Pedimentos` | `Staff` | Capturador, Glosador, Administrador |
+| `/Claves`, `/Productos` | `Glosa` | Glosador, Administrador |
+| `/Usuarios`, `/Reportes` | `Administration` | Administrador |
+| `/Avisos`, `/Solicitudes` | `ClientPortal` | Cliente |
+
+- Qué módulos ve cada rol lo decide **una sola clase**: `PermisosService` (`SIDAPA.application/Services/Core/`).
+  El menú lateral (`MenuLateralViewComponent`) y las tarjetas de accesos rápidos (`AccesosRapidosViewComponent`)
+  la usan; el texto y la liga de cada módulo están en `Models/Core/Permissions/ModuloCatalogo.cs`.
+- Un módulo nuevo: valor en `ModuleEnum`, roles en `PermisosService`, entrada en `ModuloCatalogo` y
+  `[Authorize(Policy = …)]` en su controller. Si falta el atributo, la opción se esconde pero la URL sigue abierta.
+
 ## Cómo se prueba
 
 Con pruebas automáticas en `test/SIDAPA.presentation.test/Security/` (app completa en memoria con
@@ -40,6 +56,9 @@ Con pruebas automáticas en `test/SIDAPA.presentation.test/Security/` (app compl
 - `AuthCookieTests`: sin sesión → `/Auth/Login?returnUrl=…`; Capturador en `/Claves` → `/Auth/Denied`;
   token vencido o firmado con otra llave → sin sesión; token a media vida → se entrega cookie nueva
   (HttpOnly, Secure, SameSite=Strict).
+- `DashboardRoutesTests`: `/Usuarios`, `/Reportes` y `/Productos` mandan a `/Auth/Denied` a los roles sin permiso y
+  dejan entrar a los que sí; el menú lateral del Glosador solo tiene sus módulos y marca la pantalla actual.
+- `PermisosServiceTests` (application) y `ModuloCatalogoTests` (presentation): módulos por rol y cómo se pintan.
 
 ```bash
 dotnet test --project test/SIDAPA.presentation.test

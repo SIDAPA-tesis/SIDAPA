@@ -1,0 +1,20 @@
+﻿@model SIDAPA.presentation.Models.Core.Permissions.MenuLateralViewModel
+
+@*
+    Quién está en sesión y las opciones de su rol (IPermisosService + ModuloCatalogo).
+    Es component: sin CSS ni JS propios. Las ligas toman el estilo de `.sidebar a` (css/componets/slideMenu.css).
+*@
+<div class="px-4 py-3 border-bottom border-secondary-subtle">
+    <div class="fw-semibold text-truncate">@Model.Nombre</div>
+    <div class="small text-white-50 text-truncate">@Model.Rol</div>
+</div>
+
+<nav aria-label="Menú principal">
+    @foreach (var opcion in Model.Opciones)
+    {
+        <a asp-controller="@opcion.Controlador"
+           asp-action="Index"
+           class="@(opcion.Activa ? "active" : null)"
+           aria-current="@(opcion.Activa ? "page" : null)">@opcion.Texto</a>
+    }
+</nav>

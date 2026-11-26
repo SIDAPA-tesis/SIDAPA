@@ -1,0 +1,19 @@
+@model SIDAPA.presentation.Models.Core.Permissions.AccesosRapidosViewModel
+
+@*
+    Una tarjeta por módulo del rol (los mismos del menú lateral, sin Inicio). Es component: solo Bootstrap,
+    para que se vea igual en la portada (_inicioLayout) y en el dashboard (_dashboardLayout).
+*@
+@if (Model.Accesos.Count == 0)
+{
+    <p class="text-body-secondary mb-0">Tu rol todavía no tiene módulos asignados.</p>
+}
+else
+{
+    <ul class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 list-unstyled mb-0">
+        @foreach (var acceso in Model.Accesos)
+        {
+            <partial name="_TarjetaModulo" model="acceso" />
+        }
+    </ul>
+}

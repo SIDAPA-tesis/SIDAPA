@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SIDAPA.presentation.Security;
 using SIDAPA.presentation.Models.Dashboard;
 
 namespace SIDAPA.presentation.Controllers.Web.Dashboard
 {
+    [Authorize(Policy = Policies.Administration)]   // HU-22 (docs/permisos-por-rol.md)
     public class UsuariosController : Controller
     {
         public IActionResult Index()

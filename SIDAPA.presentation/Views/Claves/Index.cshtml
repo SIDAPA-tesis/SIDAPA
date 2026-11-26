@@ -8,138 +8,144 @@
     var total = tablero.Metricas.Vigentes + tablero.Metricas.NoVigentes;
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/componentes/estados.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/vistas/claves.css" asp-append-version="true" />
-}
+<div>
 
-<div class="vista-claves">
-
-    <h1 class="vista-claves__titulo">Gestión de claves</h1>
+    <h1 class="h3 mb-4">Gestión de claves</h1>
 
     @* ---------- Métricas ---------- *@
-    <section class="metricas" aria-label="Resumen de claves">
-        <div class="metrica">
-            <p class="metrica__titulo">Total de claves</p>
-            <p class="metrica__valor">@total.ToString("N0", CultureInfo.InvariantCulture)</p>
+    <section class="row row-cols-1 row-cols-sm-3 g-3 mb-4" aria-label="Resumen de claves">
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="small text-body-secondary mb-1">Total de claves</p>
+                    <p class="fs-3 fw-semibold mb-0">@total.ToString("N0", CultureInfo.InvariantCulture)</p>
+                </div>
+            </div>
         </div>
-        <div class="metrica">
-            <p class="metrica__titulo">Vigentes</p>
-            <p class="metrica__valor">@tablero.Metricas.Vigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="small text-body-secondary mb-1">Vigentes</p>
+                    <p class="fs-3 fw-semibold mb-0">@tablero.Metricas.Vigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+                </div>
+            </div>
         </div>
-        <div class="metrica">
-            <p class="metrica__titulo">No vigentes</p>
-            <p class="metrica__valor metrica__valor--error">@tablero.Metricas.NoVigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="small text-body-secondary mb-1">No vigentes</p>
+                    <p class="fs-3 fw-semibold text-danger mb-0">@tablero.Metricas.NoVigentes.ToString("N0", CultureInfo.InvariantCulture)</p>
+                </div>
+            </div>
         </div>
     </section>
 
     @* ---------- Filtros (GET, sin JavaScript) ---------- *@
-    <form class="herramientas" method="get" role="search">
-        <div class="herramientas__filtros">
-            <label class="solo-lectores" for="filtro-busqueda">Buscar por clave, descripción o grupo</label>
-            <input id="filtro-busqueda" type="search" name="q" value="@Model.Busqueda"
-                   placeholder="Buscar por clave, descripción o grupo..." />
-
-            <label class="solo-lectores" for="filtro-vigente">Vigencia</label>
-            <select id="filtro-vigente" name="vigente">
-                <option value="">Todas</option>
-                <option value="true" selected="@(Model.Vigente == true)">Vigentes</option>
-                <option value="false" selected="@(Model.Vigente == false)">No vigentes</option>
-            </select>
-
-            <button type="submit" class="btn">Filtrar</button>
-        </div>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+        <form class="row g-2 align-items-center flex-grow-1" method="get" role="search">
+            <div class="col-12 col-md">
+                <label class="visually-hidden" for="filtro-busqueda">Buscar por clave, descripción o grupo</label>
+                <input id="filtro-busqueda" class="form-control" type="search" name="q" value="@Model.Busqueda"
+                       placeholder="Buscar por clave, descripción o grupo..." />
+            </div>
+            <div class="col-8 col-md-auto">
+                <label class="visually-hidden" for="filtro-vigente">Vigencia</label>
+                <select id="filtro-vigente" class="form-select" name="vigente">
+                    <option value="">Todas</option>
+                    <option value="true" selected="@(Model.Vigente == true)">Vigentes</option>
+                    <option value="false" selected="@(Model.Vigente == false)">No vigentes</option>
+                </select>
+            </div>
+            <div class="col-4 col-md-auto">
+                <button type="submit" class="btn btn-outline-secondary w-100">Filtrar</button>
+            </div>
+        </form>
 
         @* TODO: enlazar a la acción para crear una clave *@
-        <button type="button" class="btn">+ Nueva clave</button>
-    </form>
+        <button type="button" class="btn btn-primary">+ Nueva clave</button>
+    </div>
 
-    @* ---------- Tabla (cada fila abre el panel de detalle) ---------- *@
-    <div class="claves-contenedor">
-        <table class="claves-tabla">
-            <thead>
-                <tr>
-                    <th scope="col">Clave</th>
-                    <th scope="col">Descripción</th>
-                    <th scope="col">Grupo</th>
-                    <th scope="col">Subgrupo</th>
-                    <th scope="col">Vigencia</th>
-                    <th scope="col">Actualización</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (tablero.Claves.Count == 0)
-                {
-                    <tr class="claves-vacio"><td colspan="6">No se encontraron claves.</td></tr>
-                }
-
-                @foreach (var clave in tablero.Claves)
-                {
-                    var activa = clave.Codigo == tablero.Seleccionada?.Codigo;
-
-                    <tr class="claves-fila @(activa ? "claves-fila--activa" : null)">
-                        <td class="clave-codigo">
-                            <a class="claves-fila__enlace" asp-action="Index" asp-all-route-data="@Model.Ruta(clave.Codigo)">@clave.Codigo</a>
-                        </td>
-                        <td>@clave.Descripcion</td>
-                        <td>@clave.Grupo</td>
-                        <td>@(string.IsNullOrWhiteSpace(clave.SubGrupo) ? "—" : clave.SubGrupo)</td>
-                        <td>
-                            <span class="insignia @(clave.Vigente ? "insignia--ok" : "insignia--error")">@(clave.Vigente ? "Vigente" : "No vigente")</span>
-                        </td>
-                        <td>@(clave.FechaActualizacion?.Texto() ?? "—")</td>
+    @* ---------- Tabla (cada clave abre el panel de detalle) ---------- *@
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Clave</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Grupo</th>
+                        <th scope="col">Subgrupo</th>
+                        <th scope="col">Vigencia</th>
+                        <th scope="col" class="text-nowrap">Actualización</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (tablero.Claves.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-body-secondary py-4">No se encontraron claves.</td></tr>
+                    }
+
+                    @foreach (var clave in tablero.Claves)
+                    {
+                        var activa = clave.Codigo == tablero.Seleccionada?.Codigo;
+
+                        <tr class="@(activa ? "table-active" : null)">
+                            <td class="font-monospace text-nowrap">
+                                <a asp-action="Index" asp-all-route-data="@Model.Ruta(clave.Codigo)"
+                                   aria-current="@(activa ? "true" : null)">@clave.Codigo</a>
+                            </td>
+                            <td>@clave.Descripcion</td>
+                            <td>@clave.Grupo</td>
+                            <td>@(string.IsNullOrWhiteSpace(clave.SubGrupo) ? "—" : clave.SubGrupo)</td>
+                            <td>
+                                <span class="badge rounded-pill @(clave.Vigente ? "text-bg-success" : "text-bg-danger")">@(clave.Vigente ? "Vigente" : "No vigente")</span>
+                            </td>
+                            <td class="text-nowrap">@(clave.FechaActualizacion?.Texto() ?? "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-@* ---------- Panel lateral de detalle (se muestra cuando la URL trae ?clave=...) ---------- *@
+@* ---------- Panel lateral de detalle (offcanvas de Bootstrap abierto desde el servidor cuando la URL trae ?clave=...) ---------- *@
 @if (tablero.Seleccionada is { } seleccionada)
 {
-    <aside class="panel-detalle" role="dialog" aria-labelledby="panel-detalle-titulo">
-        <div class="panel-detalle__cabecera">
-            <h2 id="panel-detalle-titulo">Detalle de la clave</h2>
-            <a class="panel-detalle__cerrar" asp-action="Index" asp-all-route-data="@Model.Ruta()" aria-label="Cerrar detalle">&times;</a>
+    <aside class="offcanvas offcanvas-end show shadow" tabindex="-1" role="dialog" aria-labelledby="panel-detalle-titulo">
+        <div class="offcanvas-header border-bottom">
+            <h2 class="offcanvas-title h5" id="panel-detalle-titulo">Detalle de la clave</h2>
+            <a class="btn-close" asp-action="Index" asp-all-route-data="@Model.Ruta()" aria-label="Cerrar detalle"></a>
         </div>
 
-        <dl class="panel-detalle__campos">
-            <div class="panel-detalle__campo">
-                <dt>Código de clave</dt>
-                <dd class="clave-codigo clave-codigo--grande">@seleccionada.Codigo</dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Descripción</dt>
-                <dd>@seleccionada.Descripcion</dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Grupo</dt>
-                <dd>@seleccionada.Grupo</dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Subgrupo</dt>
-                <dd>@(string.IsNullOrWhiteSpace(seleccionada.SubGrupo) ? "—" : seleccionada.SubGrupo)</dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Supuestos</dt>
-                <dd>@(string.IsNullOrWhiteSpace(seleccionada.Supuestos) ? "—" : seleccionada.Supuestos)</dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Vigencia</dt>
-                <dd>
-                    <span class="insignia @(seleccionada.Vigente ? "insignia--ok" : "insignia--error")">@(seleccionada.Vigente ? "Vigente" : "No vigente")</span>
-                </dd>
-            </div>
-            <div class="panel-detalle__campo">
-                <dt>Última actualización</dt>
-                <dd>@(seleccionada.FechaActualizacion?.Texto() ?? "—")</dd>
-            </div>
-        </dl>
+        <div class="offcanvas-body">
+            <dl class="mb-4">
+                <dt class="small text-body-secondary fw-normal">Código de clave</dt>
+                <dd class="fs-4 font-monospace fw-semibold">@seleccionada.Codigo</dd>
 
-        <div class="panel-detalle__acciones">
+                <dt class="small text-body-secondary fw-normal">Descripción</dt>
+                <dd>@seleccionada.Descripcion</dd>
+
+                <dt class="small text-body-secondary fw-normal">Grupo</dt>
+                <dd>@seleccionada.Grupo</dd>
+
+                <dt class="small text-body-secondary fw-normal">Subgrupo</dt>
+                <dd>@(string.IsNullOrWhiteSpace(seleccionada.SubGrupo) ? "—" : seleccionada.SubGrupo)</dd>
+
+                <dt class="small text-body-secondary fw-normal">Supuestos</dt>
+                <dd>@(string.IsNullOrWhiteSpace(seleccionada.Supuestos) ? "—" : seleccionada.Supuestos)</dd>
+
+                <dt class="small text-body-secondary fw-normal">Vigencia</dt>
+                <dd>
+                    <span class="badge rounded-pill @(seleccionada.Vigente ? "text-bg-success" : "text-bg-danger")">@(seleccionada.Vigente ? "Vigente" : "No vigente")</span>
+                </dd>
+
+                <dt class="small text-body-secondary fw-normal">Última actualización</dt>
+                <dd class="mb-0">@(seleccionada.FechaActualizacion?.Texto() ?? "—")</dd>
+            </dl>
+
             @* TODO: enlazar a la acción para editar *@
-            <button type="button" class="btn">Editar registro</button>
+            <button type="button" class="btn btn-primary w-100">Editar registro</button>
         </div>
     </aside>
 }

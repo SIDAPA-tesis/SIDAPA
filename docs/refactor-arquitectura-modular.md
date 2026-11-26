@@ -81,7 +81,7 @@ Module    ∈ { Core, CaseFile, CustomDeclaration }
 
 | Módulo | Submódulos |
 |---|---|
-| Core | `Auth`, `Users`, `Permissions`, `Notifications`, `Storage`, `Home` |
+| Core | `Auth`, `Users`, `Permissions`, `Notifications`, `Storage`, `Home`, `Persistence` |
 | CaseFile | `ArrivalNotice`, `Referencias`, `Documents`, `Expediente` |
 | CustomDeclaration | `Catalogs`, `Pedimentos`, `Claves`, `Invoices`, `Products` |
 
@@ -98,8 +98,8 @@ Si un archivo nuevo no cabe en ninguno, pregunta antes de crear un submódulo.
 | H3 | `IUserActual` no estaba registrado. | ✅ Resuelto en `f14becb` (`Program.cs:53-54`) |
 | H4 | `IClaveRepositorio`/`IPedimentoRepositorio` no tenían implementación. | ✅ Resuelto en `a011619` |
 | H5 | Infraestructura registra **servicios de aplicación** (`UserService`, `NotificationService`, `DocumentService`, `ExpedienteService`, `DocumentFileValidator`). | ⬜ Fase 0 |
-| H6 | ViewComponents de presentación inyectan `SidapaDbContext` (`WidgetNovedadesViewComponent`, `WidgetAccesosRapidosViewComponet`). | ⬜ Fase 0 |
-| H7 | Typo `ViewComponets`/`Componets`, y clases con sufijo `…ViewComponet`. MVC no encuentra `Views/Shared/Components/{Name}/Default.cshtml`. | ⬜ Fase 0 |
+| H6 | ViewComponents de presentación inyectan `SidapaDbContext` (`WidgetNovedadesViewComponent`, `WidgetAccesosRapidosViewComponet`). | ✅ Resuelto (2026-11-25): se borraron y se reemplazaron por `AccesosRapidosViewComponent` (`IPermisosService`) y `NovedadesViewComponent` (`INotificationService`) |
+| H7 | Typo `ViewComponets`/`Componets`, y clases con sufijo `…ViewComponet`. MVC no encuentra `Views/Shared/Components/{Name}/Default.cshtml`. | 🟡 Parcial (2026-11-25): `MenuLateralViewComponent` renombrado y su vista ya está en `Views/Shared/Components/MenuLateral/`; falta renombrar la carpeta `ViewComponets/` |
 | H8 | Core depende de módulos: `ClientEntity.Referencias`, `ClientEntity.Products`, `NotificationEntity.Referencia`, `SupplierEntity.Country`. | ⬜ Fase 1 |
 | H9 | Entidades, enums, reglas y excepciones de negocio están bajo `Core`. | ⬜ Fase 1 |
 | H10 | `PersonEntity` tiene el namespace `SIDAPA.domain.Entities`, que no coincide con su carpeta. | ⬜ Fase 1 |
@@ -135,7 +135,7 @@ Si un archivo nuevo no cabe en ninguno, pregunta antes de crear un submódulo.
       `IExpedienteService→ExpedienteService` y, si ya existe, `IArrivalNoticeService→ArrivalNoticeService`.
       En infraestructura se quedan solo repositorios, clientes externos, seguridad y email.
       Conserva el mismo *lifetime* de cada registro.
-- [ ] **H6.** En `WidgetNovedadesViewComponent` y `WidgetAccesosRapidosViewComponet`: quitar la inyección de
+- [x] **H6.** En `WidgetNovedadesViewComponent` y `WidgetAccesosRapidosViewComponet`: quitar la inyección de
       `SidapaDbContext` y los `using` de EF e infraestructura. Las consultas ya están comentadas: deja un
       `// TODO: usar I<Servicio> de application` y que devuelvan la vista vacía o con datos de ejemplo.
 - [ ] **H7.** `git mv SIDAPA.presentation/ViewComponets SIDAPA.presentation/ViewComponents`. Renombrar
@@ -369,3 +369,5 @@ Actualizar los `@using`/`@model` de las vistas y de los `_ViewImports` según lo
 |---|---|---|
 | 2026-11-23 | Luis Lobato + Claude Code | Revisión de organización y creación de este plan. H1–H4 ya resueltos en `SCRUM-46` (`f14becb`, `a011619`). |
 | 2026-11-23 | Luis Lobato + Claude Code | SCRUM-46 (`290d316`): `IArrivalNoticeService` ya se registra en `AddApplication` (parte de H5). Archivos nuevos de presentación con la regla objetivo: `Controllers/Web/CaseFile/ArrivalNotice/AvisosController`, `Models/CaseFile/ArrivalNotice/`. Las vistas quedan en `Views/Avisos/` hasta que exista `ModuleViewLocationExpander` (Fase 3 → `Views/CaseFile/Avisos/`). Nuevo DTO `DocumentTypeOptionDto` en `ArrivalNoticeDtos.cs` (Fase 2: va con `AduanaOptionDto` a `CustomDeclaration/Catalogs` o a `CaseFile/Documents`). |
+| 2026-11-24 | Luis Lobato + Claude Code | SCRUM-64 (HU-05): nuevo submódulo **`Core/Persistence`** (aprobado) para `IUnitOfWork`/`IUnitOfWorkTransaction` (`application/Interface/Core/Persistence/`); la implementación `UnitOfWork` queda en `infraestructure/Persistence/`. Archivos nuevos ya en ruta destino: `domain/Rules/CaseFile/DocumentRequestRule`, `domain/Exceptions/CaseFile/` (3 excepciones), `application/{Interface,Services,DTOs}/CaseFile/Documents/` (`IDocumentRequestRepository`, `IDocumentRequestService`, `DocumentRequestService`, DTOs), `infraestructure/Repositories/CaseFile/Documents/DocumentRequestRepository`, `presentation/Controllers/Web/CaseFile/Documents/SolicitudesController`, `presentation/Models/CaseFile/Documents/`. `IDocumentRequestService` se registra en `AddApplication`. Vistas en `Views/Solicitudes/` (Fase 3 → `Views/CaseFile/Solicitudes/`). ViewComponent nuevo `SolicitudesPendientesViewComponent` con el sufijo bien escrito, en la carpeta `ViewComponets/` (H7). |
+| 2026-11-25 | Luis Lobato + Claude Code | Menú lateral y tarjetas por rol con un solo servicio: `_Sidebar.cshtml` usa `MenuLateralViewComponent` (`IPermisosService` + `ModuloCatalogo`); se borraron los 8 partials `_Accesos*`/`_novedades*` por rol. **H6 resuelto**, **H7 parcial** (clase y vista; la carpeta `ViewComponets/` se queda como pide la skill de front-end). Archivos nuevos en ruta destino: `presentation/Models/Core/Permissions/` (`ModuloViewModel`, `ModuloCatalogo`, `MenuLateralViewModel`, `OpcionMenuViewModel`, `AccesosRapidosViewModel`) y `presentation/Models/Core/Notifications/` (`NovedadesViewModel`, `NovedadViewModel`); se borró `Models/MenuLateralViewModel.cs`. Pruebas: `application.test/Services/Core/Permissions/`, `presentation.test/Models/Core/{Permissions,Notifications}/`, `presentation.test/Security/DashboardRoutesTests`. |

@@ -1,45 +1,45 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model IEnumerable<SIDAPA.presentation.Models.Dashboard.Usuario>
+﻿@model IEnumerable<SIDAPA.presentation.Models.Dashboard.Usuario>
 @{
     ViewData["Title"] = "Usuarios";
     Layout = "_dashboardLayout";
 }
 
-<div class="toolbar">
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div>
-        <h1>Administracion de Usuarios</h1>
-        <p class="lead">Prueba parrafo</p>
+        <h1 class="h3 mb-1">Administración de usuarios</h1>
+        <p class="text-body-secondary mb-0">Usuarios con acceso a SIDAPA y su rol.</p>
     </div>
 
-    <button type="button" class="btn">Agregar Usuario</button>
+    @* TODO: enlazar a la acción para crear un usuario *@
+    <button type="button" class="btn btn-primary">Agregar usuario</button>
 </div>
 
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr>
-                <th scope="col">Nombre</th>
-                <th scope="col">Correo</th>
-                <th scope="col">Rol</th>
-                <th scope="col">Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var usuario in Model)
-            {
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-nowrap mb-0">
+            <thead>
                 <tr>
-                    <td>@usuario.Nombre</td>
-                    <td>@usuario.Correo</td>
-                    <td>@usuario.Rol</td>
-                    <td>
-                        <span class="estado @(usuario.Activo ? "activo" : null)">
-                            @(usuario.Activo ? "Activo" : "Inactivo")
-                        </span>
-                    </td>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Correo</th>
+                    <th scope="col">Rol</th>
+                    <th scope="col">Estado</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
+                {
+                    <tr>
+                        <td>@usuario.Nombre</td>
+                        <td>@usuario.Correo</td>
+                        <td>@usuario.Rol</td>
+                        <td>
+                            <span class="badge rounded-pill @(usuario.Activo ? "text-bg-success" : "text-bg-secondary")">
+                                @(usuario.Activo ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

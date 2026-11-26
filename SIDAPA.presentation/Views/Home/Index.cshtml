@@ -1,38 +1,90 @@
-﻿@{
+﻿@model SIDAPA.presentation.Models.Dashboard.HomeViewModel
+@{
     ViewData["Title"] = "Inicio";
-    var nombreUsuario = User.Identity?.Name ?? "ADMINISTRADOR";
+    ViewData["ClasePagina"] = "page-content--ancha";
     Layout = "_dashboardLayout";
+    var resumen = Model.Pedimentos;
 }
 
-<div class="home-dashboard">
-    <header class="home-dashboard__heading">
-        <div>
-            <p class="home-dashboard__eyebrow">PANEL DE CONTROL</p>
-            <h1>Bienvenido, @nombreUsuario</h1>
-            <p class="home-dashboard__subtitle">Aquí tienes el resumen de actividad de SIDAPA</p>
-        </div>
-        <span class="home-dashboard__period">Resumen general</span>
-    </header>
+<header class="mb-4">
+    <p class="small fw-bold text-uppercase text-primary mb-1">Panel de control</p>
+    <h1 class="h3 mb-1">Bienvenido, @Model.Nombre</h1>
+    <p class="text-body-secondary mb-0">
+        @if (resumen is null)
+        {
+            @:Tus accesos y avisos más recientes.
+        }
+        else
+        {
+            @:Así van tus pedimentos hoy.
+        }
+    </p>
+</header>
 
-    @if (User.IsInRole("ADMINISTRADOR"))
-    {
-        <partial name="_HomeAdmin" />
-    }
-    @* falta implementar las vistas de home y demas aspectos en el dashboard en el siguiente SCRUM las implemento*@
-    @if (User.IsInRole("CAPTURADOR"))
-    {
-        //<partial name="#" />
-    }
-    @if (User.IsInRole("GLOSADOR"))
-    {
-        //<partial name="#" />
-    }
-    @if (User.IsInRole("VALIDADOR"))
-    {
-        //<partial name="#" />
-    }
-    <section class="home-dashboard__panel">
-
+@* ---------- Resumen de pedimentos (personal: Capturador, Glosador, Administrador) ---------- *@
+@if (resumen is not null)
+{
+    <section class="row row-cols-2 row-cols-lg-4 g-3 mb-3" aria-label="Pedimentos por urgencia">
+        @foreach (var indicador in resumen.Indicadores)
+        {
+            <partial name="_IndicadorPedimentos" model="indicador" />
+        }
     </section>
-    <p class="home-dashboard__disclaimer">Los indicadores y registros mostrados son datos de ejemplo, no información consultada de la base de datos.</p>
+
+    <section class="card border-0 shadow-sm mb-3" aria-labelledby="home-proximos-titulo">
+        <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+            <div>
+                <h2 class="h6 mb-0" id="home-proximos-titulo">Próximos a vencer</h2>
+                <p class="small text-body-secondary mb-0">Los pendientes con la fecha límite más cercana.</p>
+            </div>
+            <a class="btn btn-sm btn-outline-primary" asp-controller="Pedimentos" asp-action="Index">Ver todos (@resumen.Total)</a>
+        </div>
+
+        @if (resumen.ProximosAVencer.Count == 0)
+        {
+            <div class="card-body text-center text-body-secondary py-4">No tienes pedimentos pendientes.</div>
+        }
+        else
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var pedimento in resumen.ProximosAVencer)
+                {
+                    <partial name="_PedimentoProximo" model="pedimento" />
+                }
+            </div>
+        }
+    </section>
+}
+
+@if (Model.EsAdministrador)
+{
+    <partial name="_HomeAdmin" />
+}
+
+@* Accesos y novedades salen del mismo servicio para todos los roles (IPermisosService / INotificationService). *@
+<div class="row g-3 mb-3">
+    <section class="col-12" aria-labelledby="home-accesos-titulo">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-1" id="home-accesos-titulo">Accesos rápidos</h2>
+                <p class="small text-body-secondary mb-3">Los módulos de tu rol.</p>
+                @await Component.InvokeAsync("AccesosRapidos")
+            </div>
+        </div>
+    </section>
+
+    <section class="col-12" aria-labelledby="home-novedades-titulo">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h2 class="h6 mb-1" id="home-novedades-titulo">Novedades</h2>
+                <p class="small text-body-secondary mb-3">Tus avisos más recientes.</p>
+                @await Component.InvokeAsync("Novedades")
+            </div>
+        </div>
+    </section>
 </div>
+
+@if (Model.EsAdministrador)
+{
+    <p class="small text-body-secondary mb-0">Los indicadores y la actividad del panel de administración son datos de ejemplo, no información consultada de la base de datos.</p>
+}

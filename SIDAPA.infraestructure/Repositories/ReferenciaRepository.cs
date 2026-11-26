@@ -27,7 +27,11 @@ public class ReferenciaRepository(SidapaDbContext context) : IReferenciaReposito
     public async Task<bool> ChangeStatusAsync(int referenciaId, ReferenciaStatusEnum from, ReferenciaStatusEnum to,
         int userId, string? comment, DateTime changedAt, CancellationToken ct = default)
     {
-        await using var transaction = await context.Database.BeginTransactionAsync(ct);
+        // Dentro de un IUnitOfWork ya hay transacción: se une a ella y el commit lo hace quien la abrió.
+        // EF no permite abrir una segunda transacción sobre la misma conexión.
+        await using var transaction = context.Database.CurrentTransaction is null
+            ? await context.Database.BeginTransactionAsync(ct)
+            : null;
 
         // La condición "sigue en from" va en el mismo UPDATE: si otro usuario la cambió (o tiene el candado
         // de la fila y luego confirma), PostgreSQL vuelve a evaluar el WHERE y no actualiza nada.
@@ -48,8 +52,21 @@ public class ReferenciaRepository(SidapaDbContext context) : IReferenciaReposito
         });
 
         await context.SaveChangesAsync(ct);
-        await transaction.CommitAsync(ct);    // estatus + bitácora en una sola transacción
+        if (transaction is not null)
+            await transaction.CommitAsync(ct);    // estatus + bitácora en una sola transacción
         return true;
+    }
+
+    public async Task<ReferenciaStatusEnum?> LockStatusAsync(int referenciaId, CancellationToken ct = default)
+    {
+        // Sin componer la consulta (nada de First/Single): EF la mandaría como subconsulta.
+        var status = await context.Database
+            .SqlQueryRaw<short>(
+                $"SELECT id_estatus AS \"Value\" FROM \"{SidapaDbContext.Schema}\".ope_referencia WHERE id_referencia = {{0}} FOR UPDATE",
+                referenciaId)
+            .ToListAsync(ct);
+
+        return status.Count == 0 ? null : (ReferenciaStatusEnum)status[0];
     }
 
     public Task<long> NextNumberAsync(CancellationToken ct = default) =>

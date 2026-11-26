@@ -10,5 +10,5 @@
     <td>@(r.ArrivalDate?.Texto() ?? "—")</td>
     <td><span class="badge @estatus">@r.StatusName</span></td>
     <td class="text-end">@r.DocumentCount</td>
-    <td>@r.CreatedAt.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+    <td>@Model.Creada.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</td>
 </tr>

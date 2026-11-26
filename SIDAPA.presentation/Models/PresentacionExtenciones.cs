@@ -7,27 +7,21 @@ namespace SIDAPA.presentation.Models
 {
     public static class PresentacionExtenciones
     {
-        public static string ClaseEstado(this UrgenciaEnum u) => u switch
+        /// <summary>Color contextual de Bootstrap (danger, warning…) para badges y fondos de la urgencia.</summary>
+        public static string ColorBootstrap(this UrgenciaEnum u) => u switch
         {
-            UrgenciaEnum.Vencido => "error",
-            UrgenciaEnum.Proximo => "aviso",
-            UrgenciaEnum.EnTiempo => "ok",
-            _ => "neutro"
+            UrgenciaEnum.Vencido => "danger",
+            UrgenciaEnum.Proximo => "warning",
+            UrgenciaEnum.EnTiempo => "success",
+            _ => "secondary"
         };
 
         public static string Etiqueta(this UrgenciaEnum u) => u switch
         {
             UrgenciaEnum.Vencido => "Vencido",
-            UrgenciaEnum.Proximo => "Proximo",
-            UrgenciaEnum.EnTiempo => "En Tiempo",
+            UrgenciaEnum.Proximo => "Próximo",
+            UrgenciaEnum.EnTiempo => "En tiempo",
             _ => "Completado",
-        };
-
-        public static string ClaseEstado(this ClaveStateEnum e) => e switch
-        {
-            ClaveStateEnum.Activo => "ok",
-            ClaveStateEnum.PorVencer => "aviso",
-            _ => "error"
         };
 
         public static string Etiqueta(this ClaveStateEnum e) => e switch

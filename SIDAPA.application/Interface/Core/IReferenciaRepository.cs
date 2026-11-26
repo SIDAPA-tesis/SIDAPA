@@ -14,9 +14,17 @@ public interface IReferenciaRepository
     /// <summary>
     /// Cambia el estatus solo si la referencia sigue en <paramref name="from"/> y deja el registro en
     /// ope_bitacora_estatus, todo en una sola transacción. Regresa false si ya estaba en otro estatus.
+    /// Si ya hay una transacción abierta (<see cref="Persistence.IUnitOfWork"/>), se une a ella.
     /// </summary>
     Task<bool> ChangeStatusAsync(int referenciaId, ReferenciaStatusEnum from, ReferenciaStatusEnum to,
         int userId, string? comment, DateTime changedAt, CancellationToken ct = default);
+
+    /// <summary>
+    /// Bloquea la fila de la referencia hasta que termine la transacción abierta (SELECT … FOR UPDATE) y regresa
+    /// su estatus actual; null si no existe. Serializa a quienes cambian la misma referencia al mismo tiempo.
+    /// Solo tiene sentido dentro de <see cref="Persistence.IUnitOfWork.BeginTransactionAsync"/>.
+    /// </summary>
+    Task<ReferenciaStatusEnum?> LockStatusAsync(int referenciaId, CancellationToken ct = default);
 
     /// <summary>Siguiente valor de la secuencia del número de referencia (sin huecos garantizados, pero sin duplicados).</summary>
     Task<long> NextNumberAsync(CancellationToken ct = default);
