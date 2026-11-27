@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SIDAPA.application.DTOs.CaseFile.Expediente;
 using SIDAPA.application.DTOs.Core.Claves;
 using SIDAPA.application.DTOs.Core.Pedimento;
+using SIDAPA.application.Interface.CaseFile.Expediente;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Enums.Core;
 using SIDAPA.presentation.Security;
@@ -24,6 +26,7 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
     private readonly IPedimentoService _pedimentos = Substitute.For<IPedimentoService>();
     private readonly IClaveService _claves = Substitute.For<IClaveService>();
     private readonly INotificationService _notificaciones = Substitute.For<INotificationService>();
+    private readonly IExpedienteReviewService _expedientes = Substitute.For<IExpedienteReviewService>();
     private readonly List<WebApplicationFactory<Program>> _apps = [];
     private readonly CancellationToken _ct = TestContext.Current.CancellationToken;
 
@@ -43,6 +46,11 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
                 return new TableroClavesDto(new MetricasClavesDto(1, 0), [clave], call.ArgAt<string?>(1) == "A1" ? clave : null);
             });
         _notificaciones.GetRecentAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
+        _expedientes.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns([]);
+        _expedientes.GetAsync(1, Arg.Any<CancellationToken>()).Returns(new ExpedienteReviewDto(
+            new ExpedienteDetailDto(1, "R-000001", "Importadora Norte", "AICM", "Importación", ReferenciaStatusEnum.RECIBIDA, "Recibida",
+                null, null, new DateTime(2026, 11, 23, 16, 0, 0), [], []),
+            [], CanBeReviewed: true));
 
         var app = factory.WithWebHostBuilder(b => b.ConfigureTestServices(s =>
         {
@@ -52,6 +60,8 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
             s.AddSingleton(_claves);
             s.RemoveAll<INotificationService>();
             s.AddSingleton(_notificaciones);
+            s.RemoveAll<IExpedienteReviewService>();
+            s.AddSingleton(_expedientes);
         }));
         _apps.Add(app);
 
@@ -72,6 +82,8 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
     [InlineData("/Claves?clave=A1", RolesEnum.GLOSADOR)]
     [InlineData("/Usuarios", RolesEnum.ADMINISTRADOR)]
     [InlineData("/Reportes", RolesEnum.ADMINISTRADOR)]
+    [InlineData("/Expedientes", RolesEnum.CAPTURADOR)]
+    [InlineData("/Expedientes/Detalle/1", RolesEnum.GLOSADOR)]
     public async Task Pantalla_TodasSusHojasDeEstiloExisten(string ruta, RolesEnum rol)
     {
         _pedimentos.ObtenerAsync(1, Arg.Any<CancellationToken>())

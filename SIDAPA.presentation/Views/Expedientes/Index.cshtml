@@ -1,0 +1,62 @@
+@model BandejaExpedientesViewModel
+
+@{
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = "Expedientes";
+    ViewData["ClasePagina"] = "page-content--ancha";
+}
+
+<div>
+    <h1 class="h3 mb-4">Expedientes</h1>
+
+    <form class="row g-2 align-items-center mb-3" method="get" role="search">
+        <div class="col-12 col-md">
+            <label class="visually-hidden" for="filtro-busqueda">Buscar por referencia o cliente</label>
+            <input id="filtro-busqueda" class="form-control" type="search" name="q" value="@Model.Busqueda"
+                   placeholder="Buscar por referencia o cliente..." />
+        </div>
+        <div class="col-8 col-md-auto">
+            <label class="visually-hidden" for="filtro-revision">Estatus</label>
+            <select id="filtro-revision" class="form-select" name="porRevisar">
+                <option value="false">Todas</option>
+                <option value="true" selected="@Model.PorRevisar">Por revisar</option>
+            </select>
+        </div>
+        <div class="col-4 col-md-auto">
+            <button type="submit" class="btn btn-outline-secondary w-100">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Referencia</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Aduana</th>
+                        <th scope="col">Estatus</th>
+                        <th scope="col" class="text-end">Documentos</th>
+                        <th scope="col" class="text-nowrap">Recibida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Filas.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-body-secondary py-4">No se encontraron referencias.</td></tr>
+                    }
+
+                    @foreach (var fila in Model.Filas)
+                    {
+                        <partial name="_FilaExpediente" model="fila" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (Model.Recortada)
+    {
+        <p class="small text-body-secondary mt-2">Se muestran solo las referencias más recientes. Usa el buscador para encontrar las demás.</p>
+    }
+</div>

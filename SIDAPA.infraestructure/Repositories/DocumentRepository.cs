@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.domain.Entities.Core.Operative;
+using SIDAPA.domain.Enums.Core;
 using SIDAPA.infraestructure.Persistence;
 
 namespace SIDAPA.infraestructure.Repositories;
@@ -31,4 +32,9 @@ public class DocumentRepository(SidapaDbContext context) : IDocumentRepository
             .OrderByDescending(x => x.UploadedAt)
             .ThenByDescending(x => x.Id)
             .ToListAsync(ct);
+
+    public async Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, CancellationToken ct = default) =>
+        await context.Documents
+            .Where(x => x.Id == documentId && x.ReferenciaId == referenciaId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, status.ToString()), ct) == 1;
 }

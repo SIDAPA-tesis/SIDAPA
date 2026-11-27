@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIDAPA.domain.Entities.Core.Catalogs;
 using SIDAPA.domain.Entities.CustomDeclaration.Catalogs;
+using SIDAPA.domain.Enums.Core;
 
 namespace SIDAPA.infraestructure.Persistence.Configurations.Core.Catalogs;
 
@@ -35,5 +36,28 @@ public class RequiredDocumentConfiguration : IEntityTypeConfiguration<RequiredDo
             .HasForeignKey(x => x.DocumentTypeId)
             .HasConstraintName("fk_cat_documento_requerido_id_tipo_documento")
             .OnDelete(DeleteBehavior.Restrict);
+
+        // HU-03: lista de verificación de importación, para cualquier clave de pedimento (acordado con el equipo,
+        // 2026-11-26). Los documentos 1–6 son del expediente del cliente, no de cada operación. Exportación queda
+        // pendiente: el aviso de arribo todavía no la permite.
+        builder.HasData(
+            Import(1, DocumentTypeEnum.FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, mandatory: true),
+            Import(2, DocumentTypeEnum.LISTA_EMPAQUE, mandatory: true),
+            Import(3, DocumentTypeEnum.DOCUMENTO_TRANSPORTE, mandatory: true),
+            Import(4, DocumentTypeEnum.PADRON_IMPORTADORES_SECTORES_ESPECIFICOS, mandatory: false),
+            Import(5, DocumentTypeEnum.CERTIFICADO_PRUEBA_ORIGEN, mandatory: false),
+            Import(6, DocumentTypeEnum.FICHA_TECNICA_HOJA_SEGURIDAD, mandatory: false),
+            Import(7, DocumentTypeEnum.PERMISOS_LICENCIAS_CERTIFICADOS_RRNA_NOM, mandatory: false),
+            Import(8, DocumentTypeEnum.POLIZA_SEGURO_TRANSPORTE, mandatory: false),
+            Import(9, DocumentTypeEnum.MANIFESTACION_VALOR_HOJA_CALCULO, mandatory: false),
+            Import(10, DocumentTypeEnum.COMPROBANTES_PAGO_FLETES_GASTOS_INCREMENTABLES, mandatory: false));
     }
+
+    private static RequiredDocumentEntity Import(int id, DocumentTypeEnum type, bool mandatory) => new()
+    {
+        Id = id,
+        OperationTypeCode = (short)OperationTypeEnum.IMPORTACION,
+        DocumentTypeId = (short)type,
+        IsMandatory = mandatory
+    };
 }

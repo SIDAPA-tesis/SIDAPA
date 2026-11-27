@@ -1,4 +1,5 @@
 using System.Text;
+using SIDAPA.domain.Enums.CaseFile;
 using SIDAPA.domain.Exceptions.CoreException;
 using SIDAPA.domain.Rules.Core;
 
@@ -218,4 +219,13 @@ public class DocumentFileRuleTests
     [InlineData("factura", "application/octet-stream")]
     public void ContentTypeFor_RegresaElTipoSegunLaExtension(string fileName, string expected) =>
         DocumentFileRule.ContentTypeFor(fileName).ShouldBe(expected);
+
+    [Theory]
+    [InlineData("factura.PDF", DocumentPreviewKindEnum.Pdf)]
+    [InlineData("cfdi.xml", DocumentPreviewKindEnum.Text)]
+    [InlineData("lista.xls", DocumentPreviewKindEnum.Spreadsheet)]
+    [InlineData("lista.xlsx", DocumentPreviewKindEnum.Spreadsheet)]
+    [InlineData("setup.exe", DocumentPreviewKindEnum.None)]
+    public void PreviewKindFor_RegresaComoSeMuestraSegunLaExtension(string fileName, DocumentPreviewKindEnum expected) =>
+        DocumentFileRule.PreviewKindFor(fileName).ShouldBe(expected);
 }

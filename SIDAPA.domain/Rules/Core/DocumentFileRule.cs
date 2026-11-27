@@ -1,4 +1,5 @@
 using System.Net;
+using SIDAPA.domain.Enums.CaseFile;
 using SIDAPA.domain.Exceptions.CoreException;
 
 namespace SIDAPA.domain.Rules.Core;
@@ -57,5 +58,13 @@ public static class DocumentFileRule
         ".xls" => "application/vnd.ms-excel",
         ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         _ => "application/octet-stream"
+    };
+
+    public static DocumentPreviewKindEnum PreviewKindFor(string fileName) => Path.GetExtension(fileName).ToLowerInvariant() switch
+    {
+        ".pdf" => DocumentPreviewKindEnum.Pdf,
+        ".xml" => DocumentPreviewKindEnum.Text,
+        ".xls" or ".xlsx" => DocumentPreviewKindEnum.Spreadsheet,
+        _ => DocumentPreviewKindEnum.None
     };
 }

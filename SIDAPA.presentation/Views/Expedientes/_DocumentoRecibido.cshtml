@@ -1,0 +1,34 @@
+@model DocumentoRecibidoViewModel
+
+<li class="list-group-item @(Model.Seleccionado ? "bg-body-tertiary" : null)" aria-current="@(Model.Seleccionado ? "true" : null)">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+        <div class="overflow-hidden">
+            <p class="fw-semibold mb-0">@Model.Tipo</p>
+            <p class="small text-body-secondary mb-0 text-truncate">
+                @Model.Archivo · @Model.Tamano · @Model.SubidoPor, @Model.Subido.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+            </p>
+        </div>
+        <span class="badge rounded-pill text-bg-@Model.Estado.ColorBootstrap()">@Model.Estado.Etiqueta()</span>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Detalle" asp-route-id="@Model.ReferenciaId"
+           asp-route-documento="@Model.Id">Vista previa</a>
+
+        @if (Model.PuedeMarcar)
+        {
+            <form class="d-flex flex-wrap gap-2" method="post" asp-action="Detalle" asp-route-id="@Model.ReferenciaId">
+                <input type="hidden" name="DocumentoMarcado" value="@Model.Id" />
+                <input type="hidden" name="Documento" value="@Model.VistaPreviaAbierta" />
+                @foreach (var marca in DocumentoRecibidoViewModel.Marcas)
+                {
+                    var actual = marca == Model.Estado;
+                    var color = marca.ColorBootstrap();
+                    <button type="submit" name="Estado" value="@marca"
+                            class="btn btn-sm @(actual ? "btn-" + color : "btn-outline-" + color)"
+                            aria-pressed="@(actual ? "true" : "false")">@marca.Etiqueta()</button>
+                }
+            </form>
+        }
+    </div>
+</li>

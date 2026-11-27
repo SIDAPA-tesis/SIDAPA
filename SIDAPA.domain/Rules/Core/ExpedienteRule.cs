@@ -27,4 +27,20 @@ public static class ExpedienteRule
     /// </summary>
     public static bool IsComplete(IReadOnlyCollection<DocumentTypeEnum> mandatory, IReadOnlyCollection<DocumentTypeEnum> missing) =>
         mandatory.Count > 0 && missing.Count == 0;
+
+    /// <summary>
+    /// Estado de un renglón de la lista de verificación. Sin archivo es FALTANTE; con varios archivos del mismo tipo
+    /// gana CORRECTO > RECIBIDO (falta revisarlo) > ERROR > FALTANTE: basta uno bueno, y uno nuevo sin revisar
+    /// pesa más que el rechazado al que reemplaza.
+    /// </summary>
+    public static DocumentStatusEnum ChecklistStatus(
+        DocumentTypeEnum type, IEnumerable<(DocumentTypeEnum Type, DocumentStatusEnum Status)> documents)
+    {
+        var statuses = documents.Where(d => d.Type == type).Select(d => d.Status).ToHashSet();
+
+        return ChecklistPriority.FirstOrDefault(statuses.Contains, DocumentStatusEnum.FALTANTE);
+    }
+
+    private static readonly DocumentStatusEnum[] ChecklistPriority =
+        [DocumentStatusEnum.CORRECTO, DocumentStatusEnum.RECIBIDO, DocumentStatusEnum.ERROR, DocumentStatusEnum.FALTANTE];
 }

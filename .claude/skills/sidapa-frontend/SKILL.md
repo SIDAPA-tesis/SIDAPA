@@ -122,6 +122,10 @@ lógica de negocio en la vista.
   de la página o del layout, y su JS en el `.js` de la página.
 - **Fuera de los components**: lo que no se repite (encabezado de la página, formulario de filtros único).
 
+**8. Comentarios solo para lo no obvio.** Ni `<summary>` ni `@* … *@` que repitan el nombre: nada de
+"true si…" sobre un `bool` (`PuedeMarcar`), ni de describir cada propiedad de un ViewModel o cada partial.
+Se comenta el porqué (una regla de negocio, un gotcha de Bootstrap, por qué hay JS).
+
 ## Receta: página nueva
 
 1. `Models/<Area>/<X>ViewModel.cs`: un `record` con lo que la vista muestra, y un `Desde(...)` si se arma desde un DTO.

@@ -38,6 +38,31 @@ namespace SIDAPA.presentation.Models
             _ => "Patente aduanal"
         };
 
+        public static string ColorBootstrap(this DocumentStatusEnum e) => e switch
+        {
+            DocumentStatusEnum.CORRECTO => "success",
+            DocumentStatusEnum.FALTANTE => "warning",
+            DocumentStatusEnum.ERROR => "danger",
+            _ => "secondary"
+        };
+
+        public static string Etiqueta(this DocumentStatusEnum e) => e switch
+        {
+            DocumentStatusEnum.CORRECTO => "Correcto",
+            DocumentStatusEnum.FALTANTE => "Faltante",
+            DocumentStatusEnum.ERROR => "Con error",
+            _ => "Recibido"
+        };
+
+        public static string ColorBootstrap(this ReferenciaStatusEnum e) => e switch
+        {
+            ReferenciaStatusEnum.RECIBIDA => "primary",
+            ReferenciaStatusEnum.EN_REVISION => "info",
+            ReferenciaStatusEnum.EN_ESPERA_DE_DOCUMENTOS => "warning",
+            ReferenciaStatusEnum.EXPEDIENTE_COMPLETO => "success",
+            _ => "secondary"
+        };
+
         public static string Texto(this DateOnly f) => f.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
         public static string TextoCorto(this DateOnly f) => f.ToString("dd/MM", CultureInfo.InvariantCulture);
         public static string Iso(this DateOnly f) => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
