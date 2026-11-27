@@ -10,4 +10,5 @@ public record ExpedienteDocumentDto(
     long SizeInBytes,
     DocumentStatusEnum Status,
     string UploadedByName,
-    DateTime UploadedAt);
+    DateTime UploadedAt,
+    string? Note);

@@ -14,7 +14,8 @@ public record DocumentoRecibidoViewModel(
     DateTime Subido,
     bool Seleccionado,
     bool PuedeMarcar,
-    int? VistaPreviaAbierta)
+    int? VistaPreviaAbierta,
+    string? Nota)
 {
     public static readonly DocumentStatusEnum[] Marcas =
         [DocumentStatusEnum.CORRECTO, DocumentStatusEnum.FALTANTE, DocumentStatusEnum.ERROR];

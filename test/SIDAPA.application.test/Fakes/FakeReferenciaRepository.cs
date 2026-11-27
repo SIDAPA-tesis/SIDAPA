@@ -59,6 +59,15 @@ public sealed class FakeReferenciaRepository : IReferenciaRepository
             : null);
     }
 
+    public Task<bool> AssignCapturadorAsync(int referenciaId, int userId, CancellationToken ct = default)
+    {
+        if (!_store.TryGetValue(referenciaId, out var referencia) || referencia.CapturadorId is not null)
+            return Task.FromResult(false);
+
+        referencia.CapturadorId = userId;
+        return Task.FromResult(true);
+    }
+
     public Task<long> NextNumberAsync(CancellationToken ct = default) => Task.FromResult(++_sequence);
 
     public Task AddAsync(ReferenciaEntity referencia, int userId, CancellationToken ct = default)

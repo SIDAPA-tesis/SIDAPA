@@ -46,10 +46,10 @@ public class DashboardViewsTests(SidapaWebFactory factory) : IClassFixture<Sidap
                 return new TableroClavesDto(new MetricasClavesDto(1, 0), [clave], call.ArgAt<string?>(1) == "A1" ? clave : null);
             });
         _notificaciones.GetRecentAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-        _expedientes.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns([]);
+        _expedientes.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns(new ExpedientePageDto([], 0, 1, 20));
         _expedientes.GetAsync(1, Arg.Any<CancellationToken>()).Returns(new ExpedienteReviewDto(
             new ExpedienteDetailDto(1, "R-000001", "Importadora Norte", "AICM", "Importación", ReferenciaStatusEnum.RECIBIDA, "Recibida",
-                null, null, new DateTime(2026, 11, 23, 16, 0, 0), [], []),
+                null, null, null, new DateTime(2026, 11, 23, 16, 0, 0), [], []),
             [], CanBeReviewed: true));
 
         var app = factory.WithWebHostBuilder(b => b.ConfigureTestServices(s =>

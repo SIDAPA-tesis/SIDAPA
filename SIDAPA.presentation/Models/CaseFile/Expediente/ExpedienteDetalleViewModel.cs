@@ -17,6 +17,7 @@ public class ExpedienteDetalleViewModel
     public int? Documento { get; set; }
     public int DocumentoMarcado { get; set; }
     public DocumentStatusEnum Estado { get; set; }
+    public string? Nota { get; set; }
 
     [BindNever] public ExpedienteDetailDto Referencia { get; private set; } = null!;
     [BindNever] public DateTime Recibida { get; private set; }
@@ -45,7 +46,7 @@ public class ExpedienteDetalleViewModel
             .Select(d => new DocumentoRecibidoViewModel(
                 review.Detail.Id, d.Id, d.TypeName, d.FileName, Tamano(d.SizeInBytes), d.Status, d.UploadedByName,
                 SolicitudesPendientesViewModel.HoraLocal(d.UploadedAt, zonaHoraria),
-                d.Id == VistaPrevia?.DocumentId, PuedeMarcar, VistaPrevia?.DocumentId))
+                d.Id == VistaPrevia?.DocumentId, PuedeMarcar, VistaPrevia?.DocumentId, d.Note))
             .ToList();
 
         Requisitos = review.Checklist.Select(RequisitoExpedienteViewModel.Desde).ToList();

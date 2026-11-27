@@ -69,6 +69,12 @@ public class ReferenciaRepository(SidapaDbContext context) : IReferenciaReposito
         return status.Count == 0 ? null : (ReferenciaStatusEnum)status[0];
     }
 
+    // ExecuteUpdate corre dentro de la transacción abierta si la hay (IUnitOfWork).
+    public async Task<bool> AssignCapturadorAsync(int referenciaId, int userId, CancellationToken ct = default) =>
+        await context.Referencias
+            .Where(x => x.Id == referenciaId && x.CapturadorId == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.CapturadorId, userId), ct) == 1;
+
     public Task<long> NextNumberAsync(CancellationToken ct = default) =>
         context.Database
             .SqlQueryRaw<long>(

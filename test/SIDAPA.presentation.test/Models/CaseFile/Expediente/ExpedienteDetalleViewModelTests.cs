@@ -13,9 +13,9 @@ public class ExpedienteDetalleViewModelTests
     private static readonly TimeZoneInfo Mexico = TimeZoneInfo.CreateCustomTimeZone("MX", TimeSpan.FromHours(-6), "MX", "MX");
 
     private static ExpedienteReviewDto Review(ReferenciaStatusEnum status, params ChecklistItemDto[] checklist) => new(
-        new ExpedienteDetailDto(7, "R-000007", "Importadora Norte", "AICM", "Importación", status, status.ToString(), null, null,
+        new ExpedienteDetailDto(7, "R-000007", "Importadora Norte", "AICM", "Importación", status, status.ToString(), null, null, null,
             new DateTime(2026, 11, 23, 18, 0, 0),
-            [new ExpedienteDocumentDto(11, LISTA_EMPAQUE, "Lista", "lista.xlsx", 1536, RECIBIDO, "Cliente", new DateTime(2026, 11, 23, 18, 5, 0))],
+            [new ExpedienteDocumentDto(11, LISTA_EMPAQUE, "Lista", "lista.xlsx", 1536, RECIBIDO, "Cliente", new DateTime(2026, 11, 23, 18, 5, 0), null)],
             []),
         checklist,
         CanBeReviewed: status is ReferenciaStatusEnum.RECIBIDA or ReferenciaStatusEnum.EN_REVISION);
@@ -89,5 +89,25 @@ public class ExpedienteDetalleViewModelTests
 
         (opcional.Etiqueta, opcional.Color).ShouldBe(("No recibido", "secondary"));
         (obligatorio.Etiqueta, obligatorio.Color).ShouldBe(("Faltante", "warning"));
+    }
+
+    [Theory]
+    [InlineData(1, 1, new[] { 1 })]
+    [InlineData(1, 3, new[] { 1, 2, 3 })]
+    [InlineData(1, 9, new[] { 1, 2, 3, 4, 5 })]
+    [InlineData(5, 9, new[] { 3, 4, 5, 6, 7 })]
+    [InlineData(9, 9, new[] { 5, 6, 7, 8, 9 })]
+    public void Bandeja_PaginasVisibles_CincoAlrededorDeLaActual(int pagina, int totalPaginas, int[] esperadas)
+    {
+        var bandeja = new BandejaExpedientesViewModel([], null, false, pagina, totalPaginas, totalPaginas * 20);
+
+        bandeja.PaginasVisibles.ShouldBe(esperadas);
+    }
+
+    [Fact]
+    public void Bandeja_Ruta_SoloLlevaLosFiltrosQueSeUsan()
+    {
+        new BandejaExpedientesViewModel([], null, false, 1, 2, 30).Ruta(2).ShouldBe(new Dictionary<string, string> { ["pagina"] = "2" });
+        new BandejaExpedientesViewModel([], "norte", true, 1, 2, 30).Ruta(2).Keys.ShouldBe(["pagina", "q", "porRevisar"]);
     }
 }

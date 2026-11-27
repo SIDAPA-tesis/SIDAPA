@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using SIDAPA.application.DTOs.CaseFile.Expediente;
 using SIDAPA.application.Interface.CaseFile.Expediente;
-using SIDAPA.application.Services.CaseFile.Expediente;
 using SIDAPA.domain.Enums.CaseFile;
 using SIDAPA.presentation.Filters;
 using SIDAPA.presentation.Models.CaseFile.Expediente;
@@ -24,11 +23,10 @@ public class ExpedientesController(
     private int? UserId => int.TryParse(User.FindFirst("sub")?.Value, out var id) ? id : null;
 
     [HttpGet]
-    public async Task<IActionResult> Index(string? q, bool porRevisar, CancellationToken ct)
+    public async Task<IActionResult> Index(string? q, bool porRevisar, int pagina = 1, CancellationToken ct = default)
     {
-        var referencias = await expedientes.SearchAsync(new ExpedienteFilterDto(q, porRevisar), ct);
-        return View(BandejaExpedientesViewModel.Desde(
-            referencias, q, porRevisar, ExpedienteReviewService.SearchLimit, clock.LocalTimeZone));
+        var referencias = await expedientes.SearchAsync(new ExpedienteFilterDto(q, porRevisar, pagina), ct);
+        return View(BandejaExpedientesViewModel.Desde(referencias, q, porRevisar, clock.LocalTimeZone));
     }
 
     [HttpGet]
@@ -56,7 +54,7 @@ public class ExpedientesController(
             return NotFound();
 
         var resultado = await expedientes.MarkAsync(
-            new ReviewDocumentDto(model.Id, model.DocumentoMarcado, model.Estado, userId), ct);
+            new ReviewDocumentDto(model.Id, model.DocumentoMarcado, model.Estado, userId, model.Nota), ct);
 
         Mensaje = ExpedienteDetalleViewModel.Confirmacion(resultado, model.Estado);
         return RedirectToAction(nameof(Detalle), new { id = model.Id, documento = model.Documento });

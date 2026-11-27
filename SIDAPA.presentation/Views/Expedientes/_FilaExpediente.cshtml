@@ -10,6 +10,7 @@
     <td>@r.ClientName</td>
     <td>@r.AduanaName</td>
     <td><span class="badge rounded-pill text-bg-@r.Status.ColorBootstrap()">@r.StatusName</span></td>
+    <td class="@(r.CapturadorName is null ? "text-body-secondary" : null)">@(r.CapturadorName ?? "Sin asignar")</td>
     <td class="text-end text-nowrap">
         @r.DocumentCount
         @if (r.PendingReviewCount > 0)

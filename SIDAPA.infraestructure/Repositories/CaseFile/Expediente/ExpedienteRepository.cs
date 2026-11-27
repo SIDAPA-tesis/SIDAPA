@@ -11,7 +11,7 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
     private static readonly short[] PendingReviewStatuses =
         [(short)ReferenciaStatusEnum.RECIBIDA, (short)ReferenciaStatusEnum.EN_REVISION];
 
-    public async Task<IReadOnlyList<ExpedienteSummaryDto>> SearchAsync(ExpedienteFilterDto filter, int limit, CancellationToken ct = default)
+    public async Task<ExpedientePageDto> SearchAsync(ExpedienteFilterDto filter, int pageSize, CancellationToken ct = default)
     {
         var query = context.Referencias.AsNoTracking();
 
@@ -25,10 +25,15 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
         if (filter.PendingReviewOnly)
             query = query.Where(x => PendingReviewStatuses.Contains(x.StatusId));
 
-        return await query
+        var total = await query.CountAsync(ct);
+        var lastPage = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+        var page = Math.Clamp(filter.Page, 1, lastPage);
+
+        var items = await query
             .OrderByDescending(x => x.CreatedAt)
             .ThenByDescending(x => x.Id)
-            .Take(limit)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(x => new ExpedienteSummaryDto(
                 x.Id,
                 x.ReferenciaNumber,
@@ -38,8 +43,11 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
                 x.Status.Name,
                 x.CreatedAt,
                 x.Documents.Count,
-                x.Documents.Count(d => d.Status == nameof(DocumentStatusEnum.RECIBIDO))))
+                x.Documents.Count(d => d.Status == nameof(DocumentStatusEnum.RECIBIDO)),
+                x.Capturador != null ? x.Capturador.Name : null))
             .ToListAsync(ct);
+
+        return new ExpedientePageDto(items, total, page, pageSize);
     }
 
     public async Task<ExpedienteDetailDto?> GetDetailAsync(int referenciaId, CancellationToken ct = default)
@@ -59,6 +67,7 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
                 StatusName = x.Status.Name,
                 x.ArrivalDate,
                 x.Notes,
+                CapturadorName = x.Capturador != null ? x.Capturador.Name : null,
                 x.CreatedAt
             })
             .FirstOrDefaultAsync(ct);
@@ -73,7 +82,7 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
             .Select(x => new
             {
                 x.Id, x.DocumentTypeId, TypeName = x.DocumentType.Name, x.FileName, x.SizeInBytes, x.Status,
-                UploadedByName = x.UploadedByUser.Name, x.UploadedAt
+                UploadedByName = x.UploadedByUser.Name, x.UploadedAt, x.Note
             })
             .ToListAsync(ct);
 
@@ -95,10 +104,11 @@ public class ExpedienteRepository(SidapaDbContext context) : IExpedienteReposito
             header.StatusName,
             header.ArrivalDate,
             header.Notes,
+            header.CapturadorName,
             header.CreatedAt,
             documents.Select(d => new ExpedienteDocumentDto(
                 d.Id, (DocumentTypeEnum)d.DocumentTypeId, d.TypeName, d.FileName, d.SizeInBytes,
-                Enum.Parse<DocumentStatusEnum>(d.Status, ignoreCase: true), d.UploadedByName, d.UploadedAt)).ToList(),
+                Enum.Parse<DocumentStatusEnum>(d.Status, ignoreCase: true), d.UploadedByName, d.UploadedAt, d.Note)).ToList(),
             // Un tipo puede venir dos veces (obligatorio y opcional): gana obligatorio.
             required
                 .GroupBy(r => (r.DocumentTypeId, r.Name))

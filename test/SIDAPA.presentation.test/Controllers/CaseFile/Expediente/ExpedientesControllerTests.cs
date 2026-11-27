@@ -65,9 +65,9 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
     private void GivenReferencia(ReferenciaStatusEnum status = ReferenciaStatusEnum.EN_REVISION) =>
         _service.GetAsync(ReferenciaId, Arg.Any<CancellationToken>()).Returns(new ExpedienteReviewDto(
             new ExpedienteDetailDto(ReferenciaId, "R-000007", "Importadora Norte", "AICM", "Importación", status, "En revisión",
-                new DateOnly(2026, 11, 30), null, new DateTime(2026, 11, 23, 16, 0, 0),
+                new DateOnly(2026, 11, 30), null, "Capturador Uno", new DateTime(2026, 11, 23, 16, 0, 0),
                 [new ExpedienteDocumentDto(FacturaId, FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, "Factura comercial", "factura.pdf",
-                    2048, DocumentStatusEnum.RECIBIDO, "Cliente demo", new DateTime(2026, 11, 23, 16, 5, 0))],
+                    2048, DocumentStatusEnum.RECIBIDO, "Cliente demo", new DateTime(2026, 11, 23, 16, 5, 0), "Sin firma del proveedor")],
                 [new RequiredDocumentDto(FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, "Factura comercial", true),
                  new RequiredDocumentDto(POLIZA_SEGURO_TRANSPORTE, "Póliza de seguro", false)]),
             [new ChecklistItemDto(FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, "Factura comercial", true, DocumentStatusEnum.RECIBIDO),
@@ -95,9 +95,9 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
     [InlineData(RolesEnum.ADMINISTRADOR)]
     public async Task Index_PersonalInterno_VeLaBandeja(RolesEnum role)
     {
-        _service.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns(
+        _service.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns(new ExpedientePageDto(
             [new ExpedienteSummaryDto(ReferenciaId, "R-000007", "Importadora Norte", "AICM", ReferenciaStatusEnum.RECIBIDA,
-                "Recibida", new DateTime(2026, 11, 23, 16, 0, 0), 3, 2)]);
+                "Recibida", new DateTime(2026, 11, 23, 16, 0, 0), 3, 2, null)], TotalCount: 1, Page: 1, PageSize: 20));
 
         var response = await ClientAs(role).GetAsync("/Expedientes?q=norte&porRevisar=true", _ct);
         var html = await HtmlAsync(response);
@@ -105,7 +105,48 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         html.ShouldContain("href=\"/Expedientes/Detalle/7\"");
         html.ShouldContain("2 por revisar");
-        await _service.Received(1).SearchAsync(new ExpedienteFilterDto("norte", true), Arg.Any<CancellationToken>());
+        await _service.Received(1).SearchAsync(new ExpedienteFilterDto("norte", true, 1), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Index_VariasPaginas_PintaLaPaginacionConservandoElFiltro()
+    {
+        _service.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>()).Returns(new ExpedientePageDto(
+            [new ExpedienteSummaryDto(ReferenciaId, "R-000007", "Importadora Norte", "AICM", ReferenciaStatusEnum.RECIBIDA,
+                "Recibida", new DateTime(2026, 11, 23, 16, 0, 0), 1, 0, null)], TotalCount: 45, Page: 2, PageSize: 20));
+
+        var html = await HtmlAsync(await ClientAs(RolesEnum.CAPTURADOR).GetAsync("/Expedientes?q=norte&porRevisar=true&pagina=2", _ct));
+
+        html.ShouldContain("Página 2 de 3 · 45 referencias");
+        html.ShouldContain("href=\"/Expedientes?pagina=3&q=norte&porRevisar=true\"");
+        Regex.IsMatch(html, "aria-current=\"page\"[^>]*>2</a>").ShouldBeTrue();
+        html.ShouldContain("Sin asignar");
+        await _service.Received(1).SearchAsync(new ExpedienteFilterDto("norte", true, 2), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Index_UnaSolaPagina_NoPintaPaginacion()
+    {
+        _service.SearchAsync(Arg.Any<ExpedienteFilterDto>(), Arg.Any<CancellationToken>())
+            .Returns(new ExpedientePageDto([], TotalCount: 0, Page: 1, PageSize: 20));
+
+        var html = await HtmlAsync(await ClientAs(RolesEnum.GLOSADOR).GetAsync("/Expedientes", _ct));
+
+        html.ShouldContain("No se encontraron referencias.");
+        html.ShouldNotContain("pagination");
+    }
+
+    [Fact]
+    public async Task Detalle_MuestraCapturadorYObservacion()
+    {
+        GivenReferencia();
+
+        var html = await HtmlAsync(await ClientAs(RolesEnum.CAPTURADOR).GetAsync(DetalleUrl, _ct));
+
+        html.ShouldContain("Capturador: Capturador Uno");
+        html.ShouldContain("Observación:</span> Sin firma del proveedor");
+        html.ShouldContain("name=\"Nota\"");
+        html.ShouldContain("maxlength=\"300\"");
     }
 
     [Fact]
@@ -241,7 +282,7 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
     // ------------------------------------------------------------------ Marcar (POST)
 
     // GET + POST con la misma sesión: el POST lleva el token del formulario y la cookie de antiforgery de ese GET.
-    private async Task<HttpResponseMessage> PostMarcaAsync(string estado)
+    private async Task<HttpResponseMessage> PostMarcaAsync(string estado, string nota = "")
     {
         var client = ClientAs(role: null);
         var session = $"{AuthCookie.Name}={factory.CreateToken(RolesEnum.CAPTURADOR, UserId).AccessToken}";
@@ -259,7 +300,8 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
             {
                 ["__RequestVerificationToken"] = token,
                 ["DocumentoMarcado"] = FacturaId.ToString(),
-                ["Estado"] = estado
+                ["Estado"] = estado,
+                ["Nota"] = nota
             })
         };
         post.Headers.Add("Cookie", $"{session}; {antiforgery}");
@@ -304,6 +346,19 @@ public class ExpedientesControllerTests(SidapaWebFactory factory) : IClassFixtur
         response.Headers.Location!.ToString().ShouldStartWith(DetalleUrl);
         await _service.Received(1).MarkAsync(
             new ReviewDocumentDto(ReferenciaId, FacturaId, DocumentStatusEnum.CORRECTO, UserId), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Marcar_ConObservacion_LaMandaAlServicio()
+    {
+        GivenReferencia();
+        _service.MarkAsync(Arg.Any<ReviewDocumentDto>(), Arg.Any<CancellationToken>())
+            .Returns(new ExpedienteStatusDto(ReferenciaId, ReferenciaStatusEnum.EN_REVISION, [], [], false, StatusChanged: false));
+
+        await PostMarcaAsync("ERROR", "Ilegible");
+
+        await _service.Received(1).MarkAsync(
+            new ReviewDocumentDto(ReferenciaId, FacturaId, DocumentStatusEnum.ERROR, UserId, "Ilegible"), Arg.Any<CancellationToken>());
     }
 
     [Fact]

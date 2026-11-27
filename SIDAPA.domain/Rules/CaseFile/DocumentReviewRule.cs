@@ -1,5 +1,6 @@
 using SIDAPA.domain.Enums.Core;
 using SIDAPA.domain.Exceptions.CaseFile;
+using SIDAPA.domain.Exceptions.CoreException;
 
 namespace SIDAPA.domain.Rules.CaseFile;
 
@@ -9,6 +10,9 @@ namespace SIDAPA.domain.Rules.CaseFile;
 /// </summary>
 public static class DocumentReviewRule
 {
+    /// <summary>Igual que la columna ope_documento.nota.</summary>
+    public const int MaxNoteLength = 300;
+
     // RECIBIDO es el estado con el que llega el archivo, no una marca de revisión.
     private static readonly DocumentStatusEnum[] Marks =
         [DocumentStatusEnum.CORRECTO, DocumentStatusEnum.FALTANTE, DocumentStatusEnum.ERROR];
@@ -29,4 +33,19 @@ public static class DocumentReviewRule
     }
 
     public static bool StartsReview(ReferenciaStatusEnum status) => status == ReferenciaStatusEnum.RECIBIDA;
+
+    /// <summary>
+    /// La observación explica qué falta o qué está mal; un documento Correcto no la conserva, para que no quede
+    /// el motivo de un rechazo anterior.
+    /// </summary>
+    public static string? NormalizeNote(DocumentStatusEnum status, string? note)
+    {
+        if (status == DocumentStatusEnum.CORRECTO || string.IsNullOrWhiteSpace(note))
+            return null;
+
+        var trimmed = note.Trim();
+        if (trimmed.Length > MaxNoteLength)
+            throw new NotesTooLongException(MaxNoteLength);
+        return trimmed;
+    }
 }

@@ -6,7 +6,7 @@ namespace SIDAPA.application.Interface.CaseFile.Expediente;
 /// <summary>HU-03: el personal consulta el expediente y el Capturador marca cada documento.</summary>
 public interface IExpedienteReviewService
 {
-    Task<IReadOnlyList<ExpedienteSummaryDto>> SearchAsync(ExpedienteFilterDto filter, CancellationToken ct = default);
+    Task<ExpedientePageDto> SearchAsync(ExpedienteFilterDto filter, CancellationToken ct = default);
 
     Task<ExpedienteReviewDto?> GetAsync(int referenciaId, CancellationToken ct = default);
 

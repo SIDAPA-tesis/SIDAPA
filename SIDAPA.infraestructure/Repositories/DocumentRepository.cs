@@ -33,8 +33,11 @@ public class DocumentRepository(SidapaDbContext context) : IDocumentRepository
             .ThenByDescending(x => x.Id)
             .ToListAsync(ct);
 
-    public async Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, CancellationToken ct = default) =>
+    public async Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, string? note,
+        CancellationToken ct = default) =>
         await context.Documents
             .Where(x => x.Id == documentId && x.ReferenciaId == referenciaId)
-            .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, status.ToString()), ct) == 1;
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(x => x.Status, status.ToString())
+                .SetProperty(x => x.Note, note), ct) == 1;
 }

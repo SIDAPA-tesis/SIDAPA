@@ -267,6 +267,62 @@ namespace SIDAPA.infraestructure.Migrations
                             DocumentTypeId = (short)16,
                             IsMandatory = false,
                             OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DocumentTypeId = (short)8,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DocumentTypeId = (short)9,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DocumentTypeId = (short)10,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DocumentTypeId = (short)11,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DocumentTypeId = (short)12,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 16,
+                            DocumentTypeId = (short)13,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 17,
+                            DocumentTypeId = (short)14,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 18,
+                            DocumentTypeId = (short)16,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
                         });
                 });
 

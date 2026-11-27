@@ -22,6 +22,7 @@
         @r.ClientName · @r.OperationTypeName · Aduana @r.AduanaName
         · Arribo @(r.ArrivalDate?.Texto() ?? "sin fecha")
         · Recibida el @Model.Recibida.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+        · Capturador: @(r.CapturadorName ?? "sin asignar")
     </p>
 
     @if (Model.Mensaje is not null)

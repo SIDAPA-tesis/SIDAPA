@@ -12,5 +12,5 @@ public interface IDocumentRepository
     Task<IReadOnlyList<DocumentEntity>> GetByReferenciaAsync(int referenciaId, CancellationToken ct = default);
 
     /// <summary>false si el documento no existe o es de otra referencia.</summary>
-    Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, CancellationToken ct = default);
+    Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, string? note, CancellationToken ct = default);
 }

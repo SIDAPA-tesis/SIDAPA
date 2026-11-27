@@ -23,11 +23,11 @@ public class ExpedienteReviewService(
     ISpreadsheetPreviewReader spreadsheets,
     TimeProvider clock) : IExpedienteReviewService
 {
-    public const int SearchLimit = 200;
+    public const int PageSize = 20;
     private const string StartReviewComment = "El Capturador comenzó a revisar el expediente.";
 
-    public Task<IReadOnlyList<ExpedienteSummaryDto>> SearchAsync(ExpedienteFilterDto filter, CancellationToken ct = default) =>
-        expedientes.SearchAsync(filter with { Query = filter.Query?.Trim() }, SearchLimit, ct);
+    public Task<ExpedientePageDto> SearchAsync(ExpedienteFilterDto filter, CancellationToken ct = default) =>
+        expedientes.SearchAsync(filter with { Query = filter.Query?.Trim(), Page = Math.Max(1, filter.Page) }, PageSize, ct);
 
     public async Task<ExpedienteReviewDto?> GetAsync(int referenciaId, CancellationToken ct = default)
     {
@@ -75,6 +75,7 @@ public class ExpedienteReviewService(
     public async Task<ExpedienteStatusDto> MarkAsync(ReviewDocumentDto review, CancellationToken ct = default)
     {
         DocumentReviewRule.EnsureValidMark(review.Status);
+        var note = DocumentReviewRule.NormalizeNote(review.Status, review.Note);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync(ct))
         {
@@ -91,8 +92,10 @@ public class ExpedienteReviewService(
                     StartReviewComment, Now(), ct);
             }
 
-            if (!await documents.UpdateStatusAsync(review.DocumentId, review.ReferenciaId, review.Status, ct))
+            if (!await documents.UpdateStatusAsync(review.DocumentId, review.ReferenciaId, review.Status, note, ct))
                 throw new DocumentNotFoundException();
+
+            await referencias.AssignCapturadorAsync(review.ReferenciaId, review.UserId, ct);
 
             await transaction.CommitAsync(ct);
         }

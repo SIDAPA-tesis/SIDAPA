@@ -12,6 +12,7 @@ public record ExpedienteDetailDto(
     string StatusName,
     DateOnly? ArrivalDate,
     string? Notes,
+    string? CapturadorName,
     DateTime CreatedAt,
     IReadOnlyList<ExpedienteDocumentDto> Documents,
     IReadOnlyList<RequiredDocumentDto> RequiredDocuments);

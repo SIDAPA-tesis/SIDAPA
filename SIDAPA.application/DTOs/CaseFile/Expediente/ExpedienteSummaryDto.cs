@@ -12,4 +12,5 @@ public record ExpedienteSummaryDto(
     string StatusName,
     DateTime CreatedAt,
     int DocumentCount,
-    int PendingReviewCount);
+    int PendingReviewCount,
+    string? CapturadorName);

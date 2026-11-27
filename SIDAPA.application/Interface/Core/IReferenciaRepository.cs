@@ -26,6 +26,12 @@ public interface IReferenciaRepository
     /// </summary>
     Task<ReferenciaStatusEnum?> LockStatusAsync(int referenciaId, CancellationToken ct = default);
 
+    /// <summary>
+    /// Asigna el Capturador solo si la referencia no tiene uno: la toma quien la revisa primero y otro usuario no se
+    /// la quita después. Si hay una transacción abierta, va dentro de ella.
+    /// </summary>
+    Task<bool> AssignCapturadorAsync(int referenciaId, int userId, CancellationToken ct = default);
+
     /// <summary>Siguiente valor de la secuencia del número de referencia (sin huecos garantizados, pero sin duplicados).</summary>
     Task<long> NextNumberAsync(CancellationToken ct = default);
 

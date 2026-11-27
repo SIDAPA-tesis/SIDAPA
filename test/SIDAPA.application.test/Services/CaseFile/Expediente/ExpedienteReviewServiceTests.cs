@@ -14,6 +14,7 @@ using SIDAPA.domain.Enums.CaseFile;
 using SIDAPA.domain.Enums.Core;
 using SIDAPA.domain.Exceptions.CaseFile;
 using SIDAPA.domain.Exceptions.CoreException;
+using SIDAPA.domain.Rules.CaseFile;
 using static SIDAPA.domain.Enums.Core.DocumentStatusEnum;
 using static SIDAPA.domain.Enums.Core.DocumentTypeEnum;
 using static SIDAPA.domain.Enums.Core.ReferenciaStatusEnum;
@@ -59,8 +60,74 @@ public class ExpedienteReviewServiceTests
         StatusId = (short)status
     });
 
-    private Task<ExpedienteStatusDto> Mark(DocumentEntity document, DocumentStatusEnum status) =>
-        _service.MarkAsync(new ReviewDocumentDto(ReferenciaId, document.Id, status, CapturadorId), _ct);
+    private Task<ExpedienteStatusDto> Mark(DocumentEntity document, DocumentStatusEnum status, string? note = null,
+        int userId = CapturadorId) =>
+        _service.MarkAsync(new ReviewDocumentDto(ReferenciaId, document.Id, status, userId, note), _ct);
+
+    // ------------------------------------------------------------------ Observación y Capturador
+
+    [Fact]
+    public async Task MarkAsync_ConErrorConObservacion_GuardaLaObservacionSinEspacios()
+    {
+        GivenReferencia(EN_REVISION);
+        var factura = _documents.Seed(ReferenciaId, FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, RECIBIDO);
+
+        await Mark(factura, ERROR, "  Falta el RFC del proveedor  ");
+
+        factura.Note.ShouldBe("Falta el RFC del proveedor");
+    }
+
+    [Fact]
+    public async Task MarkAsync_CorrectoDespuesDeUnError_BorraLaObservacionAnterior()
+    {
+        GivenReferencia(EN_REVISION);
+        var factura = _documents.Seed(ReferenciaId, FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, ERROR);
+        factura.Note = "Ilegible";
+
+        await Mark(factura, CORRECTO, "Ilegible");
+
+        factura.Note.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task MarkAsync_ObservacionDemasiadoLarga_SeRechazaSinAbrirTransaccion()
+    {
+        GivenReferencia(EN_REVISION);
+        var factura = _documents.Seed(ReferenciaId, FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, RECIBIDO);
+
+        await Should.ThrowAsync<NotesTooLongException>(() =>
+            Mark(factura, ERROR, new string('x', DocumentReviewRule.MaxNoteLength + 1)));
+
+        factura.Status.ShouldBe(nameof(RECIBIDO));
+        _unitOfWork.Begun.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task MarkAsync_ReferenciaSinCapturador_SeLaAsignaAQuienMarcaYOtroNoSeLaQuita()
+    {
+        GivenReferencia(RECIBIDA);
+        var factura = _documents.Seed(ReferenciaId, FACTURA_COMERCIAL_CFDI_COMERCIO_EXTERIOR, RECIBIDO);
+        var bl = _documents.Seed(ReferenciaId, DOCUMENTO_TRANSPORTE, RECIBIDO);
+
+        await Mark(factura, ERROR);
+        await Mark(bl, ERROR, userId: CapturadorId + 1);
+
+        (await _referencias.GetByIdAsync(ReferenciaId, _ct))!.CapturadorId.ShouldBe(CapturadorId);
+    }
+
+    // ------------------------------------------------------------------ SearchAsync
+
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(-3, 1)]
+    [InlineData(4, 4)]
+    public async Task SearchAsync_PaginaMenorAUno_PideLaPrimeraConElTamanoFijo(int requested, int expected)
+    {
+        await _service.SearchAsync(new ExpedienteFilterDto("  norte ", true, requested), _ct);
+
+        await _expedientes.Received(1).SearchAsync(new ExpedienteFilterDto("norte", true, expected),
+            ExpedienteReviewService.PageSize, Arg.Any<CancellationToken>());
+    }
 
     // ------------------------------------------------------------------ MarkAsync
 
@@ -263,10 +330,10 @@ public class ExpedienteReviewServiceTests
     private static ExpedienteDetailDto Detail(ReferenciaStatusEnum status,
         IReadOnlyList<ExpedienteDocumentDto> documents, IReadOnlyList<RequiredDocumentDto> required) => new(
         ReferenciaId, "R-000007", "Importadora Norte", "AICM", "Importación", status, status.ToString(),
-        new DateOnly(2026, 11, 30), null, new DateTime(2026, 11, 23, 10, 0, 0), documents, required);
+        new DateOnly(2026, 11, 30), null, null, new DateTime(2026, 11, 23, 10, 0, 0), documents, required);
 
     private static ExpedienteDocumentDto Document(int id, DocumentTypeEnum type, DocumentStatusEnum status) =>
-        new(id, type, type.ToString(), $"{type}.pdf", 1024, status, "Cliente demo", new DateTime(2026, 11, 23, 10, 5, 0));
+        new(id, type, type.ToString(), $"{type}.pdf", 1024, status, "Cliente demo", new DateTime(2026, 11, 23, 10, 5, 0), null);
 
     private static RequiredDocumentDto Required(DocumentTypeEnum type, bool mandatory) => new(type, type.ToString(), mandatory);
 }

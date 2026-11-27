@@ -1,5 +1,6 @@
 using SIDAPA.domain.Enums.Core;
 using SIDAPA.domain.Exceptions.CaseFile;
+using SIDAPA.domain.Exceptions.CoreException;
 using SIDAPA.domain.Rules.CaseFile;
 
 namespace SIDAPA.domain.test.Rules.CaseFile;
@@ -43,4 +44,21 @@ public class DocumentReviewRuleTests
     [InlineData(ReferenciaStatusEnum.EN_REVISION, false)]
     public void SoloRecibida_ComienzaLaRevision(ReferenciaStatusEnum status, bool starts) =>
         DocumentReviewRule.StartsReview(status).ShouldBe(starts);
+
+    [Theory]
+    [InlineData(DocumentStatusEnum.ERROR, "  Ilegible  ", "Ilegible")]
+    [InlineData(DocumentStatusEnum.FALTANTE, "   ", null)]
+    [InlineData(DocumentStatusEnum.FALTANTE, null, null)]
+    [InlineData(DocumentStatusEnum.CORRECTO, "Ilegible", null)]   // un documento bueno no arrastra el motivo de un rechazo
+    public void NormalizeNote_LimpiaLaObservacion(DocumentStatusEnum status, string? note, string? expected) =>
+        DocumentReviewRule.NormalizeNote(status, note).ShouldBe(expected);
+
+    [Fact]
+    public void NormalizeNote_EnElLimite_SeAceptaYUnoMasSeRechaza()
+    {
+        var limit = new string('x', DocumentReviewRule.MaxNoteLength);
+
+        DocumentReviewRule.NormalizeNote(DocumentStatusEnum.ERROR, limit).ShouldBe(limit);
+        Should.Throw<NotesTooLongException>(() => DocumentReviewRule.NormalizeNote(DocumentStatusEnum.ERROR, limit + "x"));
+    }
 }
