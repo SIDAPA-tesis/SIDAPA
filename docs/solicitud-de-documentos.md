@@ -30,7 +30,7 @@ regresar la referencia a **En revisión** y avisar al Capturador.
   subida el Capturador recibe un aviso: *"El cliente subió "Lista de empaque" de la referencia R-000123. Falta 1
   documento por recibir."* o *"… Ya no hay documentos pendientes: la referencia regresó a En revisión."*
 - Se avisa a quien pidió el documento (`ope_solicitud_documento.id_capturador`). `ope_referencia.id_capturador`
-  todavía no se asigna en ningún lado.
+  lo asigna la revisión del expediente (HU-03, `docs/revision-de-expediente.md`) a quien marca el primer documento.
 - El documento entra como **RECIBIDO**. El Capturador lo revisa; si también viene mal, la idea es pedirlo de nuevo con
   otra solicitud (HU-04). El documento rechazado anterior se conserva en el expediente.
 - El documento nuevo no cuenta para **Expediente completo** (SCRUM-56) hasta que el Capturador lo marque CORRECTO.

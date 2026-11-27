@@ -87,6 +87,9 @@ SIDAPA.presentation  ──►  SIDAPA.application  ──►  SIDAPA.domain
 - Suffixes: `…Entity`, `…Configuration`, `…Service`/`I…Service`, `…Repository`/`I…Repository`,
   `…Controller`, `…Dto`, `…Enum`.
 - `async`/`await` with `CancellationToken` for all I/O.
+- **Comments only for what the code can't say** (why, invariant, gotcha, business rule source). No `<summary>`
+  that restates the name or signature: not on a `bool` ("true si…"), a self-explanatory method, each enum member,
+  or an exception whose message already explains it. Don't strip existing comments in unrelated edits.
 - **File names are case-sensitive in Docker (Linux).** A view path in code must match the file's exact casing.
 
 ## Persistence (EF Core + PostgreSQL)

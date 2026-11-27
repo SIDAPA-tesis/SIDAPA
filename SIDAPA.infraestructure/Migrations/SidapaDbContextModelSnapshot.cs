@@ -196,6 +196,134 @@ namespace SIDAPA.infraestructure.Migrations
                     b.HasIndex("PedimentoKeyCode");
 
                     b.ToTable("cat_documento_requerido", "sidapa");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DocumentTypeId = (short)8,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DocumentTypeId = (short)9,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DocumentTypeId = (short)10,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DocumentTypeId = (short)7,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DocumentTypeId = (short)11,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DocumentTypeId = (short)12,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DocumentTypeId = (short)13,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DocumentTypeId = (short)14,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DocumentTypeId = (short)15,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DocumentTypeId = (short)16,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DocumentTypeId = (short)8,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DocumentTypeId = (short)9,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DocumentTypeId = (short)10,
+                            IsMandatory = true,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DocumentTypeId = (short)11,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DocumentTypeId = (short)12,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 16,
+                            DocumentTypeId = (short)13,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 17,
+                            DocumentTypeId = (short)14,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        },
+                        new
+                        {
+                            Id = 18,
+                            DocumentTypeId = (short)16,
+                            IsMandatory = false,
+                            OperationTypeCode = (short)2
+                        });
                 });
 
             modelBuilder.Entity("SIDAPA.domain.Entities.Core.Catalogs.RoleEntity", b =>

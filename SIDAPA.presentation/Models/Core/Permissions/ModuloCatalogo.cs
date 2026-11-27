@@ -12,6 +12,7 @@ public static class ModuloCatalogo
     private static readonly Dictionary<ModuleEnum, ModuloViewModel> Modulos = new ModuloViewModel[]
     {
         new(ModuleEnum.Inicio, "Inicio", "Home", "Resumen de tu actividad en SIDAPA."),
+        new(ModuleEnum.Expedientes, "Expedientes", "Expedientes", "Revisa los documentos de cada referencia."),
         new(ModuleEnum.Pedimentos, "Pedimentos", "Pedimentos", "Consulta los pedimentos y sus fechas de pago."),
         new(ModuleEnum.Claves, "Claves", "Claves", "Catálogo de claves del Anexo 22 y su vigencia."),
         new(ModuleEnum.Reportes, "Reportes", "Reportes", "Revisa las altas por mes."),

@@ -1,0 +1,14 @@
+/* Vista previa del expediente (Views/Expedientes/_VistaPrevia.cshtml): solo lo que Bootstrap no trae. */
+
+.vista-previa__marco {
+    height: 75vh;
+}
+
+/* Las hojas de Excel pueden ser anchas y largas: scroll dentro del diálogo, celdas en una sola línea. */
+.vista-previa__hoja {
+    max-height: 70vh;
+}
+
+.vista-previa__hoja td {
+    white-space: nowrap;
+}

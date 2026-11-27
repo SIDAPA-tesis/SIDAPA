@@ -47,13 +47,13 @@ public static class TestData
 
     /// <summary>Referencia de importación en la aduana 470 (AICM, sembrada por la migración AvisoArribo).</summary>
     public static async Task<ReferenciaEntity> ReferenciaAsync(SidapaDbContext context, int clientId,
-        ReferenciaStatusEnum status = ReferenciaStatusEnum.RECIBIDA)
+        ReferenciaStatusEnum status = ReferenciaStatusEnum.RECIBIDA, OperationTypeEnum operation = OperationTypeEnum.IMPORTACION)
     {
         var referencia = new ReferenciaEntity
         {
             ReferenciaNumber = $"T-{Unique()}",
             ClientId = clientId,
-            OperationTypeCode = (short)OperationTypeEnum.IMPORTACION,
+            OperationTypeCode = (short)operation,
             AduanaCode = "470",
             StatusId = (short)status,
             CreatedAt = new DateTime(2026, 11, 23, 10, 0, 0)

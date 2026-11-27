@@ -1,0 +1,22 @@
+@model FilaExpedienteViewModel
+@{
+    var r = Model.Referencia;
+}
+
+<tr>
+    <th scope="row" class="font-monospace text-nowrap">
+        <a asp-action="Detalle" asp-route-id="@r.Id">@r.ReferenciaNumber</a>
+    </th>
+    <td>@r.ClientName</td>
+    <td>@r.AduanaName</td>
+    <td><span class="badge rounded-pill text-bg-@r.Status.ColorBootstrap()">@r.StatusName</span></td>
+    <td class="@(r.CapturadorName is null ? "text-body-secondary" : null)">@(r.CapturadorName ?? "Sin asignar")</td>
+    <td class="text-end text-nowrap">
+        @r.DocumentCount
+        @if (r.PendingReviewCount > 0)
+        {
+            <span class="badge rounded-pill text-bg-secondary ms-1">@r.PendingReviewCount por revisar</span>
+        }
+    </td>
+    <td class="text-nowrap">@Model.Creada.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+</tr>

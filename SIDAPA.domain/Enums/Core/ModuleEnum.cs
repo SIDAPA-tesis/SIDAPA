@@ -7,6 +7,7 @@ namespace SIDAPA.domain.Enums.Core
     public enum ModuleEnum
     {
         Inicio,
+        Expedientes,
         Pedimentos,
         Claves,
         Reportes,

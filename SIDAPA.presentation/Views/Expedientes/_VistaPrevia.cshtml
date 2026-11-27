@@ -1,0 +1,60 @@
+@model DocumentPreviewDto
+
+@* Diálogo abierto desde el servidor (?documento=): se cierra con una liga, sin JS. *@
+<div class="modal show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="vista-previa-titulo">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 text-truncate" id="vista-previa-titulo">@Model.FileName</h2>
+                <a class="btn-close" asp-action="Detalle" asp-route-id="@Model.ReferenciaId" aria-label="Cerrar vista previa"></a>
+            </div>
+            <div class="modal-body p-0">
+                @if (Model.Kind is DocumentPreviewKindEnum.Pdf or DocumentPreviewKindEnum.Text)
+                {
+                    <iframe class="vista-previa__marco d-block w-100 border-0" src="@Url.Action("Archivo", new { id = Model.DocumentId })"
+                            title="Vista previa de @Model.FileName" loading="lazy"></iframe>
+                }
+                else if (Model.Spreadsheet is { } libro)
+                {
+                    @if (libro.Truncated)
+                    {
+                        <div class="alert alert-warning rounded-0 mb-0" role="status">
+                            El archivo es grande: solo se muestran las primeras hojas, filas y columnas.
+                        </div>
+                    }
+                    @foreach (var hoja in libro.Sheets)
+                    {
+                        <h3 class="h6 px-3 pt-3">@hoja.Name</h3>
+                        @if (hoja.Rows.Count == 0)
+                        {
+                            <p class="px-3 text-body-secondary">Hoja vacía.</p>
+                        }
+                        else
+                        {
+                            <div class="vista-previa__hoja table-responsive px-3 pb-3">
+                                <table class="table table-sm table-bordered small mb-0">
+                                    <tbody>
+                                        @foreach (var fila in hoja.Rows)
+                                        {
+                                            <tr>
+                                                @foreach (var celda in fila)
+                                                {
+                                                    <td>@celda</td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <p class="p-3 mb-0 text-body-secondary">Este archivo no tiene vista previa.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop show"></div>

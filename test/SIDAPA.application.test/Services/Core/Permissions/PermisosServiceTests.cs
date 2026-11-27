@@ -14,9 +14,9 @@ public class PermisosServiceTests
 
     public static TheoryData<RolesEnum, ModuleEnum[]> ModulosPorRol() => new()
     {
-        { RolesEnum.CAPTURADOR, [Inicio, Pedimentos] },
-        { RolesEnum.GLOSADOR, [Inicio, Pedimentos, Claves, Productos] },
-        { RolesEnum.ADMINISTRADOR, [Inicio, Pedimentos, Claves, Reportes, Productos, Usuarios] },
+        { RolesEnum.CAPTURADOR, [Inicio, Expedientes, Pedimentos] },
+        { RolesEnum.GLOSADOR, [Inicio, Expedientes, Pedimentos, Claves, Productos] },
+        { RolesEnum.ADMINISTRADOR, [Inicio, Expedientes, Pedimentos, Claves, Reportes, Productos, Usuarios] },
         { RolesEnum.VALIDADOR, [Inicio] },   // todavía sin política: solo Inicio
         { RolesEnum.CLIENTE, [Inicio, AvisosArribo] },
     };
@@ -61,6 +61,6 @@ public class PermisosServiceTests
     {
         var modulos = _service.ModulosPara([nameof(RolesEnum.CLIENTE), nameof(RolesEnum.CAPTURADOR)]);
 
-        modulos.ShouldBe([Inicio, Pedimentos, AvisosArribo]);
+        modulos.ShouldBe([Inicio, Expedientes, Pedimentos, AvisosArribo]);
     }
 }

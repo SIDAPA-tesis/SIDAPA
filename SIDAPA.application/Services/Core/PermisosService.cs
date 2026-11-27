@@ -13,8 +13,8 @@ namespace SIDAPA.application.Services.Core
         // Ordinal: el rol del token se compara exacto, igual que en las políticas ("glosador" no es GLOSADOR).
         private static readonly Dictionary<string, ModuleEnum[]> PorRol = new(StringComparer.Ordinal)
         {
-            [nameof(RolesEnum.CAPTURADOR)] = [ModuleEnum.Pedimentos],                                           // Staff
-            [nameof(RolesEnum.GLOSADOR)] = [ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Productos],   // Staff + Glosa
+            [nameof(RolesEnum.CAPTURADOR)] = [ModuleEnum.Expedientes, ModuleEnum.Pedimentos],                                  // Staff
+            [nameof(RolesEnum.GLOSADOR)] = [ModuleEnum.Expedientes, ModuleEnum.Pedimentos, ModuleEnum.Claves, ModuleEnum.Productos],   // Staff + Glosa
             [nameof(RolesEnum.ADMINISTRADOR)] = Enum.GetValues<ModuleEnum>().Where(m => m != ModuleEnum.AvisosArribo).ToArray(),
             [nameof(RolesEnum.VALIDADOR)] = [],   // sin política todavía (docs/permisos-por-rol.md): solo Inicio
             [nameof(RolesEnum.CLIENTE)] = [ModuleEnum.AvisosArribo],   // solo su portal (ClientPortal)

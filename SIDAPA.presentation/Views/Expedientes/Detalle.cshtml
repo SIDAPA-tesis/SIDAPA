@@ -1,0 +1,94 @@
+@model ExpedienteDetalleViewModel
+
+@{
+    Layout = "_dashboardLayout";
+    ViewData["Title"] = $"Expediente {Model.Referencia.ReferenciaNumber}";
+    ViewData["ClasePagina"] = "page-content--ancha";
+    var r = Model.Referencia;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/vistas/expedientes.css" asp-append-version="true" />
+}
+
+<div>
+    <a class="btn btn-sm btn-link px-0 mb-2" asp-action="Index">&larr; Volver a expedientes</a>
+
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+        <h1 class="h3 mb-0 font-monospace">@r.ReferenciaNumber</h1>
+        <span class="badge rounded-pill text-bg-@r.Status.ColorBootstrap()">@r.StatusName</span>
+    </div>
+    <p class="text-body-secondary mb-4">
+        @r.ClientName · @r.OperationTypeName · Aduana @r.AduanaName
+        · Arribo @(r.ArrivalDate?.Texto() ?? "sin fecha")
+        · Recibida el @Model.Recibida.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+        · Capturador: @(r.CapturadorName ?? "sin asignar")
+    </p>
+
+    @if (Model.Mensaje is not null)
+    {
+        <div class="alert alert-success" role="status">@Model.Mensaje</div>
+    }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+    }
+    @if (!Model.EnRevision)
+    {
+        <div class="alert alert-secondary" role="status">
+            La referencia está en «@r.StatusName»: sus documentos ya solo se consultan.
+        </div>
+    }
+
+    <div class="row g-4">
+        <section class="col-12 col-lg-7" aria-labelledby="titulo-documentos">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h2 class="h5 mb-0" id="titulo-documentos">Documentos recibidos (@Model.Documentos.Count)</h2>
+                </div>
+                @if (Model.Documentos.Count == 0)
+                {
+                    <div class="card-body text-center text-body-secondary py-5">El cliente todavía no ha subido documentos.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var documento in Model.Documentos)
+                        {
+                            <partial name="_DocumentoRecibido" model="documento" />
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+
+        <aside class="col-12 col-lg-5" aria-labelledby="titulo-requisitos">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h2 class="h5 mb-0" id="titulo-requisitos">Lista de verificación</h2>
+                    <p class="small text-body-secondary mb-0">
+                        @Model.ObligatoriosCorrectos de @Model.Obligatorios obligatorios correctos
+                    </p>
+                </div>
+                @if (Model.Requisitos.Count == 0)
+                {
+                    <div class="card-body text-body-secondary">Esta operación no tiene documentos requeridos configurados.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var requisito in Model.Requisitos)
+                        {
+                            <partial name="_RequisitoExpediente" model="requisito" />
+                        }
+                    </ul>
+                }
+            </div>
+        </aside>
+    </div>
+</div>
+
+@if (Model.VistaPrevia is { } vistaPrevia)
+{
+    <partial name="_VistaPrevia" model="vistaPrevia" />
+}

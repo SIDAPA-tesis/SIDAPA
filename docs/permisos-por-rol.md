@@ -19,7 +19,7 @@ opciones, no protege nada por sí mismo.
 | Política | Roles | Historias que cubre |
 |---|---|---|
 | `ClientPortal` | Cliente | HU-02 aviso de arribo · HU-05 subir documento faltante · HU-24 mis operaciones |
-| `Staff` | Capturador, Glosador, Administrador | Consulta de referencias del personal interno |
+| `Staff` | Capturador, Glosador, Administrador | Consulta de referencias del personal interno · HU-03 consulta del expediente |
 | `Capture` | Capturador, Administrador | HU-03, HU-04, HU-06 a HU-09, HU-11 a HU-17, HU-19 a HU-21 |
 | `Glosa` | Glosador, Administrador | HU-10 catálogo de fracciones · HU-18 glosa |
 | `Administration` | Administrador | HU-22 usuarios y roles · HU-23 tablero y reportes |
@@ -34,6 +34,8 @@ opciones, no protege nada por sí mismo.
 | Pantalla | Política | Ven la opción en el menú |
 |---|---|---|
 | `/Home` (Inicio) | sesión | Todos |
+| `/Expedientes` (consulta y vista previa) | `Staff` | Capturador, Glosador, Administrador |
+| `POST /Expedientes/Detalle/{id}` (marcar documentos) | `Capture` | — (los botones solo salen al Capturador y al Administrador) |
 | `/Pedimentos` | `Staff` | Capturador, Glosador, Administrador |
 | `/Claves`, `/Productos` | `Glosa` | Glosador, Administrador |
 | `/Usuarios`, `/Reportes` | `Administration` | Administrador |

@@ -5,16 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SIDAPA.application.Interface;
 using SIDAPA.application.Interface.CaseFile.Documents;
+using SIDAPA.application.Interface.CaseFile.Expediente;
 using SIDAPA.application.Interface.Core;
 using SIDAPA.application.Interface.Core.Persistence;
 using SIDAPA.application.Interface.External.CloudStorage;
 using SIDAPA.application.Services.Core;
 using SIDAPA.infraestructure.ApiClients;
 using SIDAPA.infraestructure.External.CloudStorage;
+using SIDAPA.infraestructure.External.Spreadsheets;
 using SIDAPA.infraestructure.Email;
 using SIDAPA.infraestructure.Persistence;
 using SIDAPA.infraestructure.Repositories;
 using SIDAPA.infraestructure.Repositories.CaseFile.Documents;
+using SIDAPA.infraestructure.Repositories.CaseFile.Expediente;
 using SIDAPA.infraestructure.Security;
 
 namespace SIDAPA.infraestructure;
@@ -58,6 +61,10 @@ public static class DependencyInjection
         // SCRUM-64 (HU-05): solicitudes de documentos y transacción entre repositorios
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentRequestRepository, DocumentRequestRepository>();
+
+        // SCRUM-55 (HU-03): revisión del expediente (el servicio se registra en AddApplication)
+        services.AddScoped<IExpedienteRepository, ExpedienteRepository>();
+        services.AddSingleton<ISpreadsheetPreviewReader, ExcelSpreadsheetPreviewReader>();
 
         // Panel de pedimentos y catálogo de claves (servicios en AddApplication)
         services.AddScoped<IPedimentoRepositorio, PedimentoRepository>();

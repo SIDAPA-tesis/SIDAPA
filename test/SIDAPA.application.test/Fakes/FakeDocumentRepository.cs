@@ -49,4 +49,15 @@ public sealed class FakeDocumentRepository : IDocumentRepository
 
     public Task<IReadOnlyList<DocumentEntity>> GetByReferenciaAsync(int referenciaId, CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<DocumentEntity>>(Saved.Where(x => x.ReferenciaId == referenciaId).ToList());
+
+    public Task<bool> UpdateStatusAsync(int documentId, int referenciaId, DocumentStatusEnum status, string? note, CancellationToken ct = default)
+    {
+        var document = Saved.FirstOrDefault(x => x.Id == documentId && x.ReferenciaId == referenciaId);
+        if (document is null)
+            return Task.FromResult(false);
+
+        document.Status = status.ToString();
+        document.Note = note;
+        return Task.FromResult(true);
+    }
 }
